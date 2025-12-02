@@ -1,0 +1,174 @@
+@use '@angular/material' as mat;
+
+// Определение тем
+$light-theme: mat.define-theme((
+  color: (
+    primary: mat.$azure-palette,
+    tertiary: mat.$blue-palette,
+    theme-type: light,
+  ),
+  typography: (
+    plain-family: Roboto,
+  ),
+  density: (
+    scale: 0,
+  )
+));
+
+$dark-theme: mat.define-theme((
+  color: (
+    primary: mat.$azure-palette,
+    tertiary: mat.$blue-palette,
+    theme-type: dark,
+  ),
+  typography: (
+    plain-family: Roboto,
+  ),
+  density: (
+    scale: 0,
+  )
+));
+
+// ========================================
+// ГЛОБАЛЬНЫЕ CSS ПЕРЕМЕННЫЕ
+// ========================================
+
+// Светлая тема (по умолчанию)
+:root, html.light-theme {
+  @include mat.all-component-themes($light-theme);
+
+  // Цвета фона
+  --bg-primary: #fafafa;
+  --bg-secondary: #f5f5f5;
+  --bg-card: #ffffff;
+  --bg-gradient-primary: linear-gradient(135deg, #f0f0f4 0%, #d9def3 50%, #a1b7ee 100%);
+  --bg-gradient-card: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+  --bg-gradient-accent: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+
+  // Цвета текста
+  --text-primary: rgba(0, 0, 0, 0.87);
+  --text-secondary: rgba(0, 0, 0, 0.7);
+  --text-muted: rgba(0, 0, 0, 0.5);
+  --text-disabled: rgba(0, 0, 0, 0.38);
+  --text-unique: #ffffff;
+
+  // Цвета границ и теней
+  --border-color: #e0e0e0;
+  --shadow-color: rgba(0, 0, 0, 0.1);
+  --hover-color: rgba(0, 0, 0, 0.04);
+
+  // Цвета статусов
+  --status-active: #4caf50;
+  --status-completed: #9e9e9e;
+  --status-warning: #ff9800;
+  --status-error: #d32f2f;
+  --status-safe: #66bb6a;
+
+  // Цвета угроз
+  --threat-critical: #d32f2f;
+  --threat-high: #f57c00;
+  --threat-medium: #fbc02d;
+  --threat-low: #66bb6a;
+  --threat-none: #e0e0e0;
+
+  // Цвета ролей
+  --role-admin: #f44336;
+  --role-analyst: #2196f3;
+  --role-user: #4caf50;
+
+  // Цвета кнопок
+  --button-primary: #1976d2;
+  --button-warn: #d32f2f;
+  --button-success: #4caf50;
+
+  // Градиенты для карточек статистики
+  --gradient-danger: linear-gradient(135deg, #ff5252 0%, #f44336 100%);
+  --gradient-critical: linear-gradient(135deg, #d32f2f 0%, #c62828 100%);
+  --gradient-warning: linear-gradient(135deg, #ff9800 0%, #f57c00 100%);
+  --gradient-success: linear-gradient(135deg, #4caf50 0%, #66bb6a 100%);
+  --gradient-primary: linear-gradient(135deg, #2196f3 0%, #1976d2 100%);
+  --gradient-purple: linear-gradient(135deg, #9c27b0 0%, #ab47bc 100%);
+
+  background: var(--bg-gradient-primary);
+}
+
+// Темная тема
+html.dark-theme {
+  @include mat.all-component-themes($dark-theme);
+
+  // Цвета фона
+  --bg-primary: #121212;
+  --bg-secondary: #1e1e1e;
+  --bg-card: #1e1e1e;
+  --bg-gradient-primary: linear-gradient(135deg, #000000 0%, #0d1521 50%, #070e18 100%);
+  --bg-gradient-card: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+  --bg-gradient-accent: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+
+  // Цвета текста
+  --text-primary: rgba(255, 255, 255, 0.92);
+  --text-secondary: rgba(255, 255, 255, 0.8);
+  --text-muted: rgba(255, 255, 255, 0.5);
+  --text-disabled: rgba(255, 255, 255, 0.38);
+  --text-unique: rgba(255, 255, 255, 0.92);
+
+  // Цвета границ и теней
+  --border-color: #333333;
+  --shadow-color: rgba(0, 0, 0, 0.5);
+  --hover-color: rgba(255, 255, 255, 0.08);
+
+  // Цвета статусов (приглушенные для темной темы)
+  --status-active: #2196f3;
+  --status-completed: #666;
+  --status-warning: #ff9800;
+  --status-error: #f44336;
+  --status-safe: #66bb6a;
+
+  // Цвета угроз (приглушенные)
+  --threat-critical: #f44336;
+  --threat-high: #ff9800;
+  --threat-medium: #ffeb3b;
+  --threat-low: #81c784;
+  --threat-none: #757575;
+
+  // Цвета ролей
+  --role-admin: #f44336;
+  --role-analyst: #2196f3;
+  --role-user: #4caf50;
+
+  // Цвета кнопок
+  --button-primary: #1976d2;
+  --button-warn: #f44336;
+  --button-success: #4caf50;
+
+  // Градиенты для карточек статистики (приглушенные)
+  --gradient-danger: linear-gradient(135deg, #f44336 0%, #d32f2f 100%);
+  --gradient-critical: linear-gradient(135deg, #d32f2f 0%, #c62828 100%);
+  --gradient-warning: linear-gradient(135deg, #ff9800 0%, #f57c00 100%);
+  --gradient-success: linear-gradient(135deg, #4caf50 0%, #388e3c 100%);
+  --gradient-primary: linear-gradient(135deg, #2196f3 0%, #1976d2 100%);
+  --gradient-purple: linear-gradient(135deg, #9c27b0 0%, #7b1fa2 100%);
+
+  background: var(--bg-gradient-primary);
+}
+
+//.mat-mdc-raised-button.mat-primary,
+//.mat-mdc-unelevated-button.mat-primary {
+//  background-color: var(--button-primary);
+//  color: white;
+//}
+//
+//.mat-mdc-icon-button {
+//  color: var(--text-primary);
+//}
+//
+//.mat-mdc-icon-button.mat-warn {
+//  color: var(--button-warn);
+//}
+//
+//.mat-mdc-icon-button:hover {
+//  background-color: var(--hover-color);
+//}
+
+
+
+

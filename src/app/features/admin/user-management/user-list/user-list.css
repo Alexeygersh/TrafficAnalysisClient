@@ -1,0 +1,119 @@
+.user-list-card {
+  box-shadow: 0 2px 8px var(--shadow-color);
+}
+
+.user-list-card mat-card-header {
+  padding: 20px 20px 0 20px;
+}
+
+.user-list-card mat-card-title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.users-table {
+  width: 100%;
+  margin-top: 16px;
+}
+
+.username-cell {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.username-cell mat-icon {
+  color: var(--text-muted);
+}
+
+.mat-mdc-cell mat-icon{
+  color: var(--text-muted);
+}
+
+.current-user-chip {
+  background-color: var(--status-active) !important;
+  color: white !important;
+  font-size: 11px !important;
+  font-weight: 600 !important;
+  min-height: 20px !important;
+  padding: 0 6px !important;
+  margin-left: 8px;
+}
+
+.role-admin {
+  background-color: var(--role-admin) !important;
+  color: white !important;
+  --mat-chip-label-text-color: var(--text-secondary);
+
+}
+
+.role-analyst {
+  background-color: var(--role-analyst) !important;
+  color: white !important;
+  --mat-chip-label-text-color: var(--text-secondary);
+}
+
+mat-chip {
+  color: white !important;
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+  .users-table {
+    font-size: 12px;
+  }
+
+  .username-cell mat-icon {
+    display: none;
+  }
+}
+
+/*!* ========================================*/
+/*   СВЕТЛАЯ ТЕМА - БОЛЕЕ КОНТРАСТНЫЕ ЦВЕТА*/
+/*   ======================================== *!*/
+
+
+/*html.light-theme .users-table {*/
+/*  color: var(--text-primary) !important;*/
+/*}*/
+
+/*html.light-theme .mat-mdc-icon-button {*/
+/*  color: var(--text-primary) !important;*/
+/*}*/
+
+/*html.light-theme .mat-mdc-icon-button.mat-warn {*/
+/*  color: var(--button-warn) !important;*/
+/*}*/
+
+/*html.light-theme .mat-mdc-raised-button.mat-primary {*/
+/*  background-color: var(--button-primary) !important;*/
+/*  color: white !important;*/
+/*}*/
+
+/*!* ========================================*/
+/*   ТЁМНАЯ ТЕМА - БОЛЕЕ СВЕТЛЫЕ ЦВЕТА*/
+/*   ======================================== *!*/
+
+/*html.dark-theme .users-table {*/
+/*  color: var(--text-primary) !important;*/
+/*}*/
+
+/*html.dark-theme .mat-mdc-header-cell {*/
+/*  color: var(--text-primary) !important;*/
+/*}*/
+
+/*html.dark-theme .mat-mdc-cell {*/
+/*  color: var(--text-primary) !important;*/
+/*}*/
+
+/*html.dark-theme .mat-mdc-icon-button {*/
+/*  color: var(--text-primary) !important;*/
+/*}*/
+
+/*html.dark-theme .mat-mdc-icon-button.mat-warn {*/
+/*  color: var(--button-warn) !important;*/
+/*}*/

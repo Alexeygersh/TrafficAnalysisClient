@@ -1,0 +1,258 @@
+<!--<app-main-layout>-->
+  <div class="packet-list-container">
+    <!-- Заголовок -->
+    <div class="header">
+      <h1>
+        <mat-icon>network_check</mat-icon>
+        Сетевые пакеты
+      </h1>
+      <div class="header-actions">
+        <button
+          mat-icon-button
+          [matTooltip]="viewMode() === 'table' ? 'Карточки' : 'Таблица'"
+          (click)="toggleViewMode()">
+          <mat-icon>{{ viewMode() === 'table' ? 'view_module' : 'view_list' }}</mat-icon>
+        </button>
+
+        @if (isAdmin) {
+          <button
+            mat-raised-button
+            color="primary"
+            routerLink="/packets/new">
+            <mat-icon>add</mat-icon>
+            Добавить пакет
+          </button>
+        }
+      </div>
+    </div>
+
+    <!-- Фильтры -->
+    <mat-card class="filters-card">
+      <mat-card-content>
+        <div class="filters">
+          <!-- Поиск -->
+          <mat-form-field appearance="outline" class="filter-field">
+            <mat-label>Поиск по IP или протоколу</mat-label>
+            <input
+              matInput
+              [ngModel]="filters().searchTerm"
+              (ngModelChange)="applyFilters({ searchTerm: $event })"
+              placeholder="192.168.1.1">
+            <mat-icon matPrefix>search</mat-icon>
+          </mat-form-field>
+
+          <!-- Протокол -->
+          <mat-form-field appearance="outline" class="filter-field">
+            <mat-label>Протокол</mat-label>
+            <mat-select
+              [ngModel]="filters().protocol"
+              (ngModelChange)="applyFilters({ protocol: $event })">
+              <mat-option [value]="undefined">Все</mat-option>
+              @for (protocol of protocols; track protocol) {
+                <mat-option [value]="protocol">
+                  {{ protocol }}
+                </mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+
+          <!-- Уровень угрозы -->
+          <mat-form-field appearance="outline" class="filter-field">
+            <mat-label>Уровень угрозы</mat-label>
+            <mat-select
+              [ngModel]="filters().threatLevel"
+              (ngModelChange)="applyFilters({ threatLevel: $event })">
+              <mat-option [value]="undefined">Все</mat-option>
+              @for (level of threatLevels; track level) {
+                <mat-option [value]="level">
+                  {{ level }}
+                </mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+
+          <!-- Кнопка сброса -->
+          <button
+            mat-stroked-button
+            (click)="clearFilters()"
+            [disabled]="!filters().searchTerm && !filters().protocol && !filters().threatLevel">
+            <mat-icon>clear</mat-icon>
+            Сбросить
+          </button>
+        </div>
+
+        <!-- Статистика -->
+        <div class="stats">
+          <mat-chip-set>
+            <mat-chip>
+              <mat-icon>analytics</mat-icon>
+              Всего: {{ allPackets().length }}
+            </mat-chip>
+            <mat-chip>
+              <mat-icon>filter_alt</mat-icon>
+              Отфильтровано: {{ filteredPackets().length }}
+            </mat-chip>
+          </mat-chip-set>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Загрузка -->
+    @if (isLoading()) {
+      <div class="loading">
+        <mat-spinner></mat-spinner>
+        <p>Загрузка пакетов...</p>
+      </div>
+    }
+
+    <!-- Ошибка -->
+    @if (errorMessage()) {
+      <mat-card class="error-card">
+        <mat-icon color="warn">error</mat-icon>
+        <p>{{ errorMessage() }}</p>
+        <button mat-button (click)="loadPackets()">Повторить</button>
+      </mat-card>
+    }
+
+    <!-- Таблица пакетов -->
+    @if (!isLoading() && viewMode() === 'table' && filteredPackets().length > 0) {
+      <mat-card>
+        <table mat-table [dataSource]="filteredPackets()" class="packets-table">
+
+          <!-- ID -->
+          <ng-container matColumnDef="id">
+            <th mat-header-cell *matHeaderCellDef (click)="changeSort('id')">
+              ID
+              @if (sortBy() === 'id') {
+                <mat-icon>
+                  {{ sortDirection() === 'asc' ? 'arrow_upward' : 'arrow_downward' }}
+                </mat-icon>
+              }
+            </th>
+            <td mat-cell *matCellDef="let packet">#{{ packet.id }}</td>
+          </ng-container>
+
+          <!-- Source IP -->
+          <ng-container matColumnDef="sourceIP">
+            <th mat-header-cell *matHeaderCellDef (click)="changeSort('sourceIP')">
+              Источник
+            </th>
+            <td mat-cell *matCellDef="let packet">
+              <code>{{ packet.sourceIP }}</code>
+            </td>
+          </ng-container>
+
+          <!-- Destination IP -->
+          <ng-container matColumnDef="destinationIP">
+            <th mat-header-cell *matHeaderCellDef (click)="changeSort('destinationIP')">
+              Назначение
+            </th>
+            <td mat-cell *matCellDef="let packet">
+              <code>{{ packet.destinationIP }}</code>
+            </td>
+          </ng-container>
+
+          <!-- Port -->
+          <ng-container matColumnDef="port">
+            <th mat-header-cell *matHeaderCellDef (click)="changeSort('port')">Порт</th>
+            <td mat-cell *matCellDef="let packet">{{ packet.port }}</td>
+          </ng-container>
+
+          <!-- Protocol -->
+          <ng-container matColumnDef="protocol">
+            <th mat-header-cell *matHeaderCellDef (click)="changeSort('protocol')">Протокол</th>
+            <td mat-cell *matCellDef="let packet">
+              <mat-chip>{{ packet.protocol }}</mat-chip>
+            </td>
+          </ng-container>
+
+          <!-- Packet Size -->
+          <ng-container matColumnDef="packetSize">
+            <th mat-header-cell *matHeaderCellDef (click)="changeSort('packetSize')">Размер</th>
+            <td mat-cell *matCellDef="let packet">{{ formatSize(packet.packetSize) }}</td>
+          </ng-container>
+
+          <!-- Timestamp -->
+          <ng-container matColumnDef="timestamp">
+            <th mat-header-cell *matHeaderCellDef (click)="changeSort('timestamp')">
+              Время
+            </th>
+            <td mat-cell *matCellDef="let packet">{{ formatDate(packet.timestamp) }}</td>
+          </ng-container>
+
+          <!-- Threat Level -->
+          <ng-container matColumnDef="threatLevel">
+            <th mat-header-cell *matHeaderCellDef>Угроза</th>
+            <td mat-cell *matCellDef="let packet">
+              @if (packet.analysis) {
+                <mat-chip [class]="getThreatClass(packet.analysis.threatLevel)">
+                  {{ packet.analysis.threatLevel }}
+                </mat-chip>
+              } @else {
+                <span class="no-analysis">Нет анализа</span>
+              }
+            </td>
+          </ng-container>
+
+          <!-- Actions -->
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef>Действия</th>
+            <td mat-cell *matCellDef="let packet">
+              <button
+                mat-icon-button
+                [routerLink]="['/packets', packet.id]"
+                matTooltip="Просмотр">
+                <mat-icon>visibility</mat-icon>
+              </button>
+              @if (isAdmin) {
+                <button
+                  mat-icon-button
+                  [routerLink]="['/packets', packet.id, 'edit']"
+                  matTooltip="Редактировать">
+                  <mat-icon>edit</mat-icon>
+                </button>
+                <button
+                  mat-icon-button
+                  color="warn"
+                  (click)="deletePacket(packet.id)"
+                  matTooltip="Удалить">
+                  <mat-icon>delete</mat-icon>
+                </button>
+              }
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+        </table>
+      </mat-card>
+    }
+
+    <!-- Карточный вид пакетов -->
+    @if (!isLoading() && viewMode() === 'cards' && filteredPackets().length > 0) {
+      <div class="cards-grid">
+        @for (packet of filteredPackets(); track packet.id) {
+          <app-packet-card
+            [packet]="packet"
+            (delete)="deletePacket($event)">
+          </app-packet-card>
+        }
+      </div>
+    }
+
+    <!-- Пустой результат -->
+    @if (!isLoading() && filteredPackets().length === 0) {
+      <mat-card class="empty-state">
+        <mat-icon>inbox</mat-icon>
+        <h3>Пакеты не найдены</h3>
+        <p>Попробуйте изменить фильтры или добавьте новые пакеты</p>
+        @if (isAdmin) {
+          <button mat-raised-button color="primary" routerLink="/packets/new">
+            Добавить первый пакет
+          </button>
+        }
+      </mat-card>
+    }
+  </div>
+<!--</app-main-layout>-->
+

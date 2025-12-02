@@ -1,0 +1,197 @@
+.packet-list-container {
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.header h1 {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 28px;
+  font-weight: 500;
+  margin: 0;
+  color: var(--text-primary);
+}
+
+.header-actions {
+  display: flex;
+  gap: 12px;
+}
+
+.filters-card {
+  margin-bottom: 24px;
+}
+
+.filters {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.filter-field {
+  min-width: 200px;
+  flex: 1;
+}
+
+.stats {
+  margin-top: 8px;
+}
+
+mat-chip-set {
+  display: flex;
+  gap: 8px;
+}
+
+mat-chip {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px;
+  gap: 16px;
+}
+
+.error-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 20px;
+  background-color: #ffebee;
+  color: var(--status-error);
+}
+
+.packets-table {
+  width: 100%;
+}
+
+.packets-table th {
+  cursor: pointer;
+  -webkit-user-select: none;
+  user-select: none;
+  font-weight: 600;
+}
+
+.packets-table th mat-icon {
+  font-size: 16px;
+  width: 16px;
+  height: 16px;
+  vertical-align: middle;
+  margin-left: 4px;
+}
+
+.packets-table code {
+  background-color: var(--bg-secondary);
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-size: 13px;
+  color: var(--text-primary);
+}
+
+.no-analysis {
+  color: var(--text-muted);
+  font-style: italic;
+  font-size: 13px;
+}
+
+/* Цвета уровней угроз */
+.threat-critical {
+  background-color: var(--threat-critical) !important;
+  color: white !important;
+}
+
+.threat-high {
+  background-color: var(--threat-high) !important;
+  color: white !important;
+}
+
+.threat-medium {
+  background-color: var(--threat-medium) !important;
+  color: #333 !important;
+}
+
+.threat-low {
+  background-color: var(--threat-low) !important;
+  color: white !important;
+}
+
+.threat-none {
+  background-color: var(--threat-none) !important;
+  color: #666 !important;
+}
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 60px;
+  text-align: center;
+}
+
+.empty-state mat-icon {
+  font-size: 72px;
+  width: 72px;
+  height: 72px;
+  color: var(--status-completed);
+  margin-bottom: 16px;
+}
+
+.empty-state h3 {
+  margin: 0 0 8px 0;
+  font-size: 20px;
+  color: var(--text-secondary);
+}
+
+.empty-state p {
+  margin: 0 0 24px 0;
+  color: var(--text-muted);
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+
+  .filters {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .filter-field {
+    min-width: 100%;
+  }
+
+  .packets-table {
+    font-size: 12px;
+  }
+}
+
+.cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 24px;
+  margin-top: 24px;
+}
+
+@media (max-width: 768px) {
+  .cards-grid {
+    grid-template-columns: 1fr;
+  }
+}

@@ -1,0 +1,282 @@
+<div class="session-list-container">
+  <!-- Заголовок -->
+  <div class="header">
+    <h1>
+      <mat-icon>schedule</mat-icon>
+      Сессии мониторинга
+    </h1>
+    <div class="header-actions">
+<!--      @if (isAdmin) {-->
+        <button
+          mat-raised-button
+          color="primary"
+          routerLink="/sessions/new">
+          <mat-icon>add</mat-icon>
+          Новая сессия
+        </button>
+<!--      }-->
+    </div>
+  </div>
+
+  <!-- Статистика -->
+  <div class="stats-grid">
+    <mat-card class="stat-card">
+      <mat-icon class="stat-icon">folder</mat-icon>
+      <div class="stat-info">
+        <div class="stat-value">{{ statistics().total }}</div>
+        <div class="stat-label">Всего сессий</div>
+      </div>
+    </mat-card>
+
+    <mat-card class="stat-card active">
+      <mat-icon class="stat-icon">play_circle</mat-icon>
+      <div class="stat-info">
+        <div class="stat-value">{{ statistics().active }}</div>
+        <div class="stat-label">Активных</div>
+      </div>
+    </mat-card>
+
+    <mat-card class="stat-card closed">
+      <mat-icon class="stat-icon">check_circle</mat-icon>
+      <div class="stat-info">
+        <div class="stat-value">{{ statistics().closed }}</div>
+        <div class="stat-label">Завершенных</div>
+      </div>
+    </mat-card>
+
+    <mat-card class="stat-card packets">
+      <mat-icon class="stat-icon">network_check</mat-icon>
+      <div class="stat-info">
+        <div class="stat-value">{{ statistics().totalPackets }}</div>
+        <div class="stat-label">Всего пакетов</div>
+      </div>
+    </mat-card>
+  </div>
+
+  <!-- Фильтры -->
+  <mat-card class="filters-card">
+    <mat-card-content>
+      <div class="filters">
+        <!-- Поиск -->
+        <mat-form-field appearance="outline" class="filter-field">
+          <mat-label>Поиск по названию</mat-label>
+          <input
+            matInput
+            [ngModel]="filters().searchTerm"
+            (ngModelChange)="applyFilters({ searchTerm: $event })"
+            placeholder="Введите название сессии">
+          <mat-icon matPrefix>search</mat-icon>
+        </mat-form-field>
+
+        <!-- Статус -->
+        <mat-form-field appearance="outline" class="filter-field">
+          <mat-label>Статус</mat-label>
+          <mat-select
+            [ngModel]="filters().isActive"
+            (ngModelChange)="applyFilters({ isActive: $event })">
+            @for (opt of statusOptions; track opt.value) {
+              <mat-option [value]="opt.value">
+                {{ opt.label }}
+              </mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+
+        <!-- Минимальное количество пакетов -->
+        <mat-form-field appearance="outline" class="filter-field">
+          <mat-label>Мин. пакетов</mat-label>
+          <input
+            matInput
+            type="number"
+            [ngModel]="filters().minPackets"
+            (ngModelChange)="applyFilters({ minPackets: $event })"
+            placeholder="0">
+          <mat-icon matPrefix>filter_list</mat-icon>
+        </mat-form-field>
+
+        <!-- Кнопка сброса -->
+        <button
+          mat-stroked-button
+          (click)="clearFilters()"
+          [disabled]="!filters().searchTerm && filters().isActive === undefined && !filters().minPackets">
+          <mat-icon>clear</mat-icon>
+          Сбросить
+        </button>
+      </div>
+
+      <!-- Счетчик отфильтрованных -->
+      <div class="filter-result">
+        <mat-chip-set>
+          <mat-chip>
+            <mat-icon>filter_alt</mat-icon>
+            Показано: {{ filteredSessions().length }} из {{ allSessions().length }}
+          </mat-chip>
+        </mat-chip-set>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Загрузка -->
+  @if (isLoading()) {
+    <div class="loading">
+      <mat-spinner></mat-spinner>
+      <p>Загрузка сессий...</p>
+    </div>
+  }
+
+  <!-- Ошибка -->
+  @if (errorMessage()) {
+    <mat-card class="error-card">
+      <mat-icon color="warn">error</mat-icon>
+      <p>{{ errorMessage() }}</p>
+      <button mat-button (click)="loadSessions()">Повторить</button>
+    </mat-card>
+  }
+
+  <!-- Таблица сессий -->
+  @if (!isLoading() && filteredSessions().length > 0) {
+    <mat-card>
+      <table mat-table [dataSource]="filteredSessions()" class="sessions-table">
+
+        <!-- ID -->
+        <ng-container matColumnDef="id">
+          <th mat-header-cell *matHeaderCellDef (click)="changeSort('id')">
+            ID
+            @if (sortBy() === 'id') {
+              <mat-icon>
+                {{ sortDirection() === 'asc' ? 'arrow_upward' : 'arrow_downward' }}
+              </mat-icon>
+            }
+          </th>
+          <td mat-cell *matCellDef="let session">#{{ session.id }}</td>
+        </ng-container>
+
+        <!-- Session Name -->
+        <ng-container matColumnDef="sessionName">
+          <th mat-header-cell *matHeaderCellDef (click)="changeSort('sessionName')">
+            Название сессии
+          </th>
+          <td mat-cell *matCellDef="let session">
+            <div class="session-name">
+              <strong>{{ session.sessionName }}</strong>
+              @if (session.description) {
+                <small>{{ session.description }}</small>
+              }
+            </div>
+          </td>
+        </ng-container>
+
+        <!-- Start Time -->
+        <ng-container matColumnDef="startTime">
+          <th mat-header-cell *matHeaderCellDef (click)="changeSort('startTime')">
+            Начало
+          </th>
+          <td mat-cell *matCellDef="let session">
+            {{ formatDate(session.startTime) }}
+          </td>
+        </ng-container>
+
+        <!-- End Time -->
+        <ng-container matColumnDef="endTime">
+          <th mat-header-cell *matHeaderCellDef (click)="changeSort('endTime')">
+            Окончание
+          </th>
+          <td mat-cell *matCellDef="let session">
+            @if (session.endTime) {
+              <span>{{ formatDate(session.endTime) }}</span>
+            } @else {
+              <mat-chip class="active-chip">
+                <mat-icon>timelapse</mat-icon>
+                В процессе
+              </mat-chip>
+            }
+          </td>
+        </ng-container>
+
+        <!-- Total Packets -->
+        <ng-container matColumnDef="totalPackets">
+          <th mat-header-cell *matHeaderCellDef (click)="changeSort('totalPackets')">
+            Пакетов
+          </th>
+          <td mat-cell *matCellDef="let session">
+            <mat-chip [matBadge]="session.totalPackets" matBadgeOverlap="false">
+              <mat-icon>network_check</mat-icon>
+              {{ session.totalPackets }}
+            </mat-chip>
+          </td>
+        </ng-container>
+
+        <!-- Status -->
+        <ng-container matColumnDef="status">
+          <th mat-header-cell *matHeaderCellDef>Длительность</th>
+          <td mat-cell *matCellDef="let session">
+            <div class="duration">
+              <mat-icon>schedule</mat-icon>
+              <span>{{ getDuration(session) }}</span>
+            </div>
+          </td>
+        </ng-container>
+
+        <!-- Actions -->
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef>Действия</th>
+          <td mat-cell *matCellDef="let session">
+            <button
+              mat-icon-button
+              [routerLink]="['/sessions', session.id]"
+              matTooltip="Просмотр">
+              <mat-icon>visibility</mat-icon>
+            </button>
+
+            @if (isAdmin && session.isActive) {
+              <button
+                mat-icon-button
+                (click)="closeSession(session.id)"
+                matTooltip="Завершить сессию"
+                color="accent">
+                <mat-icon>stop_circle</mat-icon>
+              </button>
+            }
+
+            @if (isAdmin) {
+              <button
+                mat-icon-button
+                [routerLink]="['/sessions', session.id, 'edit']"
+                matTooltip="Редактировать">
+                <mat-icon>edit</mat-icon>
+              </button>
+            }
+
+            @if (isAdmin) {
+              <button
+                mat-icon-button
+                color="warn"
+                (click)="deleteSession(session.id)"
+                matTooltip="Удалить">
+                <mat-icon>delete</mat-icon>
+              </button>
+            }
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;" [class.active-row]="row.isActive"></tr>
+      </table>
+    </mat-card>
+  }
+
+  <!-- Пустой результат -->
+  @if (!isLoading() && filteredSessions().length === 0) {
+    <mat-card class="empty-state">
+      <mat-icon>inbox</mat-icon>
+      <h3>Сессии не найдены</h3>
+      <p>Попробуйте изменить фильтры или создайте новую сессию</p>
+      @if (isAdmin) {
+        <button mat-raised-button color="primary" routerLink="/sessions/new">
+          Создать первую сессию
+        </button>
+      }
+    </mat-card>
+  }
+</div>
+

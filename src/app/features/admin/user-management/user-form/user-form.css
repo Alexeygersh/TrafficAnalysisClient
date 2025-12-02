@@ -1,0 +1,97 @@
+.user-form-dialog {
+  min-width: 400px;
+}
+
+.user-form-dialog h2 {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 0;
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--border-color);
+  font-size: 20px;
+  font-weight: 500;
+}
+
+mat-dialog-content {
+  padding: 24px !important;
+  min-height: 300px;
+}
+
+.user-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.full-width {
+  width: 100%;
+}
+
+.role-option {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.role-option mat-icon {
+  font-size: 20px;
+  width: 20px;
+  height: 20px;
+}
+
+.error-message {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px;
+  background-color: #ffebee;
+  border-left: 4px solid var(--status-error);
+  border-radius: 4px;
+  color: #c62828;
+  margin-top: 8px;
+}
+
+.error-message mat-icon {
+  font-size: 20px;
+  width: 20px;
+  height: 20px;
+}
+
+mat-dialog-actions {
+  padding: 16px 24px;
+  border-top: 1px solid var(--border-color);
+  gap: 12px;
+}
+
+mat-dialog-actions button {
+  min-width: 100px;
+}
+
+mat-dialog-actions button mat-spinner {
+  margin-right: 8px;
+}
+
+mat-dialog-actions button span {
+  margin-left: 4px;
+}
+
+/* Анимация спиннера */
+mat-spinner {
+  display: inline-block;
+}
+
+/* Адаптивность */
+@media (max-width: 500px) {
+  .user-form-dialog {
+    min-width: 100%;
+  }
+
+  mat-dialog-actions {
+    flex-direction: column;
+  }
+
+  mat-dialog-actions button {
+    width: 100%;
+  }
+}

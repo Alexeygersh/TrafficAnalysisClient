@@ -1,0 +1,114 @@
+.user-management-container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.header h1 {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 28px;
+  font-weight: 500;
+  margin: 0;
+  color: var(--text-primary);
+}
+
+.current-user-card {
+  margin-bottom: 24px;
+  background: var(--bg-gradient-accent);
+  color: white;
+}
+
+.current-user-info {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.current-user-info mat-icon {
+  font-size: 48px;
+  width: 48px;
+  height: 48px;
+}
+
+.user-details {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.user-details strong {
+  font-size: 14px;
+  opacity: 0.9;
+}
+
+.user-details span {
+  font-size: 18px;
+  font-weight: 500;
+}
+
+.loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px;
+  gap: 16px;
+}
+
+.error-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 20px;
+  background-color: #ffebee;
+  color: var(--status-error);
+  margin-bottom: 24px;
+}
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 60px;
+  text-align: center;
+  gap: 16px;
+}
+
+.empty-state mat-icon {
+  font-size: 64px;
+  width: 64px;
+  height: 64px;
+  color: var(--status-completed);
+}
+
+.empty-state h3 {
+  margin: 0;
+  font-size: 24px;
+  color: var(--text-secondary);
+}
+
+.empty-state p {
+  margin: 0;
+  color: var(--text-muted);
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+
+  .header button {
+    width: 100%;
+  }
+}

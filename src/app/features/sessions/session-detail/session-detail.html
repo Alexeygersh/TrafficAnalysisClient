@@ -1,0 +1,230 @@
+<div class="session-detail-container">
+  <!-- Загрузка -->
+  @if (isLoading()) {
+    <div class="loading">
+      <mat-spinner></mat-spinner>
+      <p>Загрузка сессии...</p>
+    </div>
+  }
+
+  <!-- Ошибка -->
+  @if (errorMessage()) {
+    <mat-card class="error-card">
+      <mat-icon color="warn">error</mat-icon>
+      <div>
+        <h3>Ошибка загрузки</h3>
+        <p>{{ errorMessage() }}</p>
+      </div>
+      <button mat-button routerLink="/sessions">Вернуться к списку</button>
+    </mat-card>
+  }
+
+  <!-- Детальная информация -->
+  @if (!isLoading() && session()) {
+    <!-- Заголовок -->
+    <div class="header">
+      <h1>
+        <mat-icon>schedule</mat-icon>
+        {{ session()!.sessionName }}
+      </h1>
+      <div class="header-actions">
+        <button mat-stroked-button routerLink="/sessions">
+          <mat-icon>arrow_back</mat-icon>
+          Назад к списку
+        </button>
+        @if (isAdmin && session()!.isActive) {
+          <button mat-stroked-button color="accent" (click)="closeSession()">
+            <mat-icon>stop_circle</mat-icon>
+            Завершить сессию
+          </button>
+        }
+        @if (isAdmin) {
+          <button mat-stroked-button [routerLink]="['/sessions', session()!.id, 'edit']">
+            <mat-icon>edit</mat-icon>
+            Редактировать
+          </button>
+          <button mat-stroked-button color="warn" (click)="deleteSession()">
+            <mat-icon>delete</mat-icon>
+            Удалить
+          </button>
+        }
+      </div>
+    </div>
+
+    <!-- Статус сессии -->
+    <mat-card class="status-card">
+      <div class="status-info">
+        @if (session()!.isActive) {
+          <mat-chip class="status-active">
+            <mat-icon>play_circle</mat-icon>
+            Активная
+          </mat-chip>
+        } @else {
+          <mat-chip class="status-closed">
+            <mat-icon>check_circle</mat-icon>
+            Завершена
+          </mat-chip>
+        }
+        <div class="status-details">
+          <p><strong>Начало:</strong> {{ formatDate(session()!.startTime) }}</p>
+          @if (session()!.endTime) {
+            <p><strong>Окончание:</strong> {{ formatDate(session()!.endTime) }}</p>
+          }
+          <p><strong>Длительность:</strong> {{ getDuration(session()!) }}</p>
+        </div>
+      </div>
+    </mat-card>
+
+    <!-- Описание -->
+    @if (session()!.description) {
+      <mat-card class="description-card">
+        <mat-card-header>
+          <mat-card-title>
+            <mat-icon>description</mat-icon>
+            Описание
+          </mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <p>{{ session()!.description }}</p>
+        </mat-card-content>
+      </mat-card>
+    }
+
+    <!-- Статистика -->
+    @if (statistics()) {
+      <mat-card class="statistics-card">
+        <mat-card-header>
+          <mat-card-title>
+            <mat-icon>analytics</mat-icon>
+            Статистика сессии
+          </mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="stats-grid">
+            <div class="stat-item">
+              <mat-icon class="stat-icon">network_check</mat-icon>
+              <div class="stat-info">
+                <div class="stat-value">{{ statistics()!.totalPackets }}</div>
+                <div class="stat-label">Всего пакетов</div>
+              </div>
+            </div>
+
+            <div class="stat-item">
+              <mat-icon class="stat-icon">computer</mat-icon>
+              <div class="stat-info">
+                <div class="stat-value">{{ statistics()!.uniqueSourceIPs }}</div>
+                <div class="stat-label">Уникальных источников</div>
+              </div>
+            </div>
+
+            <div class="stat-item">
+              <mat-icon class="stat-icon">dns</mat-icon>
+              <div class="stat-info">
+                <div class="stat-value">{{ statistics()!.uniqueDestinationIPs }}</div>
+                <div class="stat-label">Уникальных назначений</div>
+              </div>
+            </div>
+
+            <div class="stat-item">
+              <mat-icon class="stat-icon">data_usage</mat-icon>
+              <div class="stat-info">
+                <div class="stat-value">{{ statistics()!.averagePacketSize.toFixed(0) }} B</div>
+                <div class="stat-label">Средний размер</div>
+              </div>
+            </div>
+
+            <div class="stat-item">
+              <mat-icon class="stat-icon">transform</mat-icon>
+              <div class="stat-info">
+                <div class="stat-value">{{ statistics()!.mostUsedProtocol }}</div>
+                <div class="stat-label">Основной протокол</div>
+              </div>
+            </div>
+
+            <div class="stat-item">
+              <mat-icon class="stat-icon">warning</mat-icon>
+              <div class="stat-info">
+                <div class="stat-value">{{ statistics()!.anomalousPacketsCount }}</div>
+                <div class="stat-label">Аномальных пакетов</div>
+              </div>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    }
+
+    <!-- Аномальные пакеты -->
+    @if (anomalousPackets().length > 0) {
+      <mat-card class="anomalous-card">
+        <mat-card-header>
+          <mat-card-title>
+            <mat-icon>report_problem</mat-icon>
+            Аномальные пакеты ({{ anomalousPackets().length }})
+          </mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <table mat-table [dataSource]="anomalousPackets()" class="mat-elevation-z0">
+
+            <!-- ID -->
+            <ng-container matColumnDef="id">
+              <th mat-header-cell *matHeaderCellDef>ID</th>
+              <td mat-cell *matCellDef="let packet">
+                <a [routerLink]="['/packets', packet.id]">#{{ packet.id }}</a>
+              </td>
+            </ng-container>
+
+            <!-- Source IP -->
+            <ng-container matColumnDef="sourceIP">
+              <th mat-header-cell *matHeaderCellDef>Источник</th>
+              <td mat-cell *matCellDef="let packet">
+                <code>{{ packet.sourceIP }}</code>
+              </td>
+            </ng-container>
+
+            <!-- Destination IP -->
+            <ng-container matColumnDef="destinationIP">
+              <th mat-header-cell *matHeaderCellDef>Назначение</th>
+              <td mat-cell *matCellDef="let packet">
+                <code>{{ packet.destinationIP }}</code>
+              </td>
+            </ng-container>
+
+            <!-- Port -->
+            <ng-container matColumnDef="port">
+              <th mat-header-cell *matHeaderCellDef>Порт</th>
+              <td mat-cell *matCellDef="let packet">{{ packet.port }}</td>
+            </ng-container>
+
+            <!-- Protocol -->
+            <ng-container matColumnDef="protocol">
+              <th mat-header-cell *matHeaderCellDef>Протокол</th>
+              <td mat-cell *matCellDef="let packet">
+                <mat-chip>{{ packet.protocol }}</mat-chip>
+              </td>
+            </ng-container>
+
+            <!-- Timestamp -->
+            <ng-container matColumnDef="timestamp">
+              <th mat-header-cell *matHeaderCellDef>Время</th>
+              <td mat-cell *matCellDef="let packet">
+                {{ formatDate(packet.timestamp) }}
+              </td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+          </table>
+        </mat-card-content>
+      </mat-card>
+    }
+
+    <!-- Нет аномальных пакетов -->
+    @if (anomalousPackets().length === 0 && !isLoading()) {
+      <mat-card class="no-anomalies-card">
+        <mat-icon>check_circle</mat-icon>
+        <h3>Аномальных пакетов не обнаружено</h3>
+        <p>Во время этой сессии все пакеты соответствуют нормальным параметрам</p>
+      </mat-card>
+    }
+  }
+</div>

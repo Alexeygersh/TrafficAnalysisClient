@@ -1,0 +1,100 @@
+<div class="session-form-container">
+  <mat-card>
+    <mat-card-header>
+      <mat-card-title>
+        <h1>
+          <mat-icon>{{ isEditMode() ? 'edit' : 'add' }}</mat-icon>
+          {{ isEditMode() ? 'Редактирование сессии' : 'Новая сессия' }}
+        </h1>
+      </mat-card-title>
+    </mat-card-header>
+
+    <mat-card-content>
+      <!-- Загрузка -->
+      @if (isLoading()) {
+        <div class="loading">
+          <mat-spinner></mat-spinner>
+          <p>Загрузка данных...</p>
+        </div>
+      }
+
+      <!-- Форма -->
+      @if (!isLoading()) {
+        <form [formGroup]="sessionForm" (ngSubmit)="onSubmit()">
+
+          <!-- Название сессии -->
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Название сессии</mat-label>
+            <input
+              matInput
+              formControlName="sessionName"
+              placeholder="Мониторинг сети 2025-01-15">
+            <mat-icon matPrefix>label</mat-icon>
+            <mat-hint>Уникальное название для идентификации</mat-hint>
+            @if (sessionForm.get('sessionName')?.invalid && sessionForm.get('sessionName')?.touched) {
+              <mat-error>{{ getErrorMessage('sessionName') }}</mat-error>
+            }
+          </mat-form-field>
+
+          <!-- Описание -->
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Описание (необязательно)</mat-label>
+            <textarea
+              matInput
+              formControlName="description"
+              rows="4"
+              placeholder="Краткое описание цели мониторинга...">
+            </textarea>
+            <mat-icon matPrefix>description</mat-icon>
+            <mat-hint>Дополнительная информация о сессии</mat-hint>
+          </mat-form-field>
+
+          <!-- Ошибка -->
+          @if (errorMessage()) {
+            <div class="error-message">
+              <mat-icon color="warn">error</mat-icon>
+              <span>{{ errorMessage() }}</span>
+            </div>
+          }
+
+          <!-- Кнопки -->
+          <div class="form-actions">
+            <button
+              mat-stroked-button
+              type="button"
+              (click)="cancel()"
+              [disabled]="isSaving()">
+              Отмена
+            </button>
+
+            <button
+              mat-raised-button
+              color="primary"
+              type="submit"
+              [disabled]="isSaving() || sessionForm.invalid">
+              @if (isSaving()) {
+                <mat-spinner diameter="20" class="button-spinner"></mat-spinner>
+              }
+              @if (!isSaving()) {
+                <span>{{ isEditMode() ? 'Сохранить' : 'Создать' }}</span>
+              }
+            </button>
+          </div>
+        </form>
+      }
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Подсказка -->
+  <mat-card class="hint-card">
+    <mat-card-content>
+      <h3><mat-icon>info</mat-icon> О сессиях мониторинга</h3>
+      <ul>
+        <li>Сессия — это период активного мониторинга сетевого трафика</li>
+        <li>К сессии автоматически привязываются перехваченные пакеты</li>
+        <li>Вы можете завершить сессию вручную или она завершится автоматически</li>
+        <li>После завершения сессии доступна полная статистика</li>
+      </ul>
+    </mat-card-content>
+  </mat-card>
+</div>

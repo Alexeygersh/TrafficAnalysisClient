@@ -1,0 +1,273 @@
+<!--<app-main-layout>-->
+  <div class="analysis-list-container">
+    <!-- Заголовок -->
+    <div class="header">
+      <h1>
+        <mat-icon>analytics</mat-icon>
+        Результаты анализа
+      </h1>
+      <div class="header-actions">
+        @if (isAdmin) {
+          <button
+            mat-raised-button
+            color="primary"
+            routerLink="/analysis/new">
+            <mat-icon>add</mat-icon>
+            Новый анализ
+          </button>
+        }
+      </div>
+    </div>
+
+    <!-- Статистика -->
+    <div class="stats-grid">
+      <mat-card class="stat-card">
+        <mat-icon class="stat-icon">analytics</mat-icon>
+        <div class="stat-info">
+          <div class="stat-value">{{ statistics().total }}</div>
+          <div class="stat-label">Всего анализов</div>
+        </div>
+      </mat-card>
+
+      <mat-card class="stat-card danger">
+        <mat-icon class="stat-icon">warning</mat-icon>
+        <div class="stat-info">
+          <div class="stat-value">{{ statistics().malicious }}</div>
+          <div class="stat-label">Вредоносных</div>
+        </div>
+      </mat-card>
+
+      <mat-card class="stat-card critical">
+        <mat-icon class="stat-icon">error</mat-icon>
+        <div class="stat-info">
+          <div class="stat-value">{{ statistics().critical }}</div>
+          <div class="stat-label">Критичных</div>
+        </div>
+      </mat-card>
+
+      <mat-card class="stat-card high">
+        <mat-icon class="stat-icon">report_problem</mat-icon>
+        <div class="stat-info">
+          <div class="stat-value">{{ statistics().high }}</div>
+          <div class="stat-label">Высоких</div>
+        </div>
+      </mat-card>
+    </div>
+
+    <!-- Фильтры -->
+    <mat-card class="filters-card">
+      <mat-card-content>
+        <div class="filters">
+          <!-- Уровень угрозы -->
+          <mat-form-field appearance="outline" class="filter-field">
+            <mat-label>Уровень угрозы</mat-label>
+            <mat-select
+              [ngModel]="filters().threatLevel"
+              (ngModelChange)="applyFilters({ threatLevel: $event })">
+              <mat-option [value]="undefined">Все</mat-option>
+              @for (level of threatLevels; track level) {
+                <mat-option [value]="level">
+                  {{ level }}
+                </mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+
+          <!-- Статус -->
+          <mat-form-field appearance="outline" class="filter-field">
+            <mat-label>Статус</mat-label>
+            <mat-select
+              [ngModel]="filters().isMalicious"
+              (ngModelChange)="applyFilters({ isMalicious: $event })">
+              @for (opt of maliciousOptions; track opt.value) {
+                <mat-option [value]="opt.value">
+                  {{ opt.label }}
+                </mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+
+          <!-- ML Score диапазон -->
+          <div class="ml-score-filter">
+            <label>ML Score: {{ (filters().minMLScore || 0) * 100 | number:'1.0-0' }}% - {{ (filters().maxMLScore || 1) * 100 | number:'1.0-0' }}%</label>
+            <mat-slider
+              min="0"
+              max="1"
+              step="0.1"
+              discrete
+              [displayWith]="formatMLScore"
+              aria-label="Диапазон ML Score"
+              aria-labelledby="ml-score-label">
+              <input
+                matSliderStartThumb
+                id="ml-score-min"
+                [value]="filters().minMLScore || 0"
+                (valueChange)="applyFilters({ minMLScore: $event })"
+                aria-label="Минимальный ML Score">
+              <input
+                matSliderEndThumb
+                id="ml-score-max"
+                [value]="filters().maxMLScore || 1"
+                (valueChange)="applyFilters({ maxMLScore: $event })"
+                aria-label="Максимальный ML Score">
+            </mat-slider>
+          </div>
+
+          <!-- Кнопка сброса -->
+          <button
+            mat-stroked-button
+            (click)="clearFilters()">
+            <mat-icon>clear</mat-icon>
+            Сбросить
+          </button>
+        </div>
+
+        <!-- Счетчик отфильтрованных -->
+        <div class="filter-result">
+          <mat-chip-set>
+            <mat-chip>
+              <mat-icon>filter_alt</mat-icon>
+              Показано: {{ filteredAnalyses().length }} из {{ allAnalyses().length }}
+            </mat-chip>
+          </mat-chip-set>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Загрузка -->
+    @if (isLoading()) {
+      <div class="loading">
+        <mat-spinner></mat-spinner>
+        <p>Загрузка анализов...</p>
+      </div>
+    }
+
+    <!-- Ошибка -->
+    @if (errorMessage()) {
+      <mat-card class="error-card">
+        <mat-icon color="warn">error</mat-icon>
+        <p>{{ errorMessage() }}</p>
+        <button mat-button (click)="loadAnalyses()">Повторить</button>
+      </mat-card>
+    }
+
+    <!-- Таблица анализов -->
+    @if (!isLoading() && filteredAnalyses().length > 0) {
+      <mat-card>
+        <table mat-table [dataSource]="filteredAnalyses()" class="analyses-table">
+
+          <!-- ID -->
+          <ng-container matColumnDef="id">
+            <th mat-header-cell *matHeaderCellDef (click)="changeSort('id')">
+              ID
+              @if (sortBy() === 'id') {
+                <mat-icon>
+                  {{ sortDirection() === 'asc' ? 'arrow_upward' : 'arrow_downward' }}
+                </mat-icon>
+              }
+            </th>
+            <td mat-cell *matCellDef="let analysis">#{{ analysis.id }}</td>
+          </ng-container>
+
+          <!-- Packet ID -->
+          <ng-container matColumnDef="packetId">
+            <th mat-header-cell *matHeaderCellDef (click)="changeSort('packetId')">
+              ID Пакета
+            </th>
+            <td mat-cell *matCellDef="let analysis">
+              <a [routerLink]="['/packets', analysis.packetId]" class="packet-link">
+                #{{ analysis.packetId }}
+              </a>
+            </td>
+          </ng-container>
+
+          <!-- Threat Level -->
+          <ng-container matColumnDef="threatLevel">
+            <th mat-header-cell *matHeaderCellDef (click)="changeSort('threatLevel')">
+              Уровень угрозы
+            </th>
+            <td mat-cell *matCellDef="let analysis">
+              <mat-chip [class]="getThreatClass(analysis.threatLevel)">
+                {{ analysis.threatLevel }}
+              </mat-chip>
+            </td>
+          </ng-container>
+
+          <!-- Is Malicious -->
+          <ng-container matColumnDef="isMalicious">
+            <th mat-header-cell *matHeaderCellDef (click)="changeSort('isMalicious')">
+              Статус
+            </th>
+            <td mat-cell *matCellDef="let analysis">
+              <mat-chip [class]="analysis.isMalicious ? 'malicious' : 'safe'">
+                <mat-icon>{{ analysis.isMalicious ? 'dangerous' : 'check_circle' }}</mat-icon>
+                {{ analysis.isMalicious ? 'Вредоносный' : 'Безопасный' }}
+              </mat-chip>
+            </td>
+          </ng-container>
+
+          <!-- ML Score -->
+          <ng-container matColumnDef="mlModelScore">
+            <th mat-header-cell *matHeaderCellDef (click)="changeSort('mlModelScore')">
+              ML Score
+            </th>
+            <td mat-cell *matCellDef="let analysis">
+              <div class="ml-score-cell">
+                <div class="ml-bar">
+                  <div
+                    class="ml-fill"
+                    [style.width.%]="analysis.mlModelScore * 100"
+                    [class]="getThreatClass(analysis.threatLevel)">
+                  </div>
+                </div>
+                <span class="ml-value">{{ (analysis.mlModelScore * 100).toFixed(0) }}%</span>
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- Detected At -->
+          <ng-container matColumnDef="detectedAt">
+            <th mat-header-cell *matHeaderCellDef (click)="changeSort('detectedAt')">
+              Обнаружено
+            </th>
+            <td mat-cell *matCellDef="let analysis">{{ formatDate(analysis.detectedAt) }}</td>
+          </ng-container>
+
+          <!-- Actions -->
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef>Действия</th>
+            <td mat-cell *matCellDef="let analysis">
+              <button
+                mat-icon-button
+                [routerLink]="['/analysis', analysis.id]"
+                matTooltip="Просмотр">
+                <mat-icon>visibility</mat-icon>
+              </button>
+              @if (isAdmin) {
+                <button
+                  mat-icon-button
+                  color="warn"
+                  (click)="deleteAnalysis(analysis.id)"
+                  matTooltip="Удалить">
+                  <mat-icon>delete</mat-icon>
+                </button>
+              }
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+        </table>
+      </mat-card>
+    }
+
+    <!-- Пустой результат -->
+    @if (!isLoading() && filteredAnalyses().length === 0) {
+      <mat-card class="empty-state">
+        <mat-icon>inbox</mat-icon>
+        <h3>Анализы не найдены</h3>
+        <p>Попробуйте изменить фильтры или добавьте новые анализы</p>
+      </mat-card>
+    }
+  </div>
+<!--</app-main-layout>-->

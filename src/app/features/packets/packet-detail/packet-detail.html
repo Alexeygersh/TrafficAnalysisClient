@@ -1,0 +1,220 @@
+<!--<app-main-layout>-->
+  <div class="packet-detail-container">
+    <!-- Загрузка -->
+    @if (isLoading()) {
+      <div class="loading">
+        <mat-spinner></mat-spinner>
+        <p>Загрузка пакета...</p>
+      </div>
+    }
+
+    <!-- Ошибка -->
+    @if (errorMessage()) {
+      <mat-card class="error-card">
+        <mat-icon color="warn">error</mat-icon>
+        <div>
+          <h3>Ошибка загрузки</h3>
+          <p>{{ errorMessage() }}</p>
+        </div>
+        <button mat-button routerLink="/packets">Вернуться к списку</button>
+      </mat-card>
+    }
+
+    <!-- Детальная информация -->
+    @if (!isLoading() && packet()) {
+      <!-- Заголовок -->
+      <div class="header">
+        <h1>
+          <mat-icon>network_check</mat-icon>
+          Пакет #{{ packet()!.id }}
+        </h1>
+        <div class="header-actions">
+          <button
+            mat-stroked-button
+            routerLink="/packets">
+            <mat-icon>arrow_back</mat-icon>
+            Назад к списку
+          </button>
+          @if (isAdmin) {
+            <button
+              mat-stroked-button
+              [routerLink]="['/packets', packet()!.id, 'edit']">
+              <mat-icon>edit</mat-icon>
+              Редактировать
+            </button>
+          }
+          @if (isAdmin) {
+            <button
+              mat-stroked-button
+              color="warn"
+              (click)="deletePacket()">
+              <mat-icon>delete</mat-icon>
+              Удалить
+            </button>
+          }
+        </div>
+      </div>
+
+      <!-- Основная информация -->
+      <mat-card class="info-card">
+        <mat-card-header>
+          <mat-card-title>Основная информация</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="info-grid">
+            <div class="info-item">
+              <span class="label">Источник:</span>
+              <code class="value">{{ packet()!.sourceIP }}</code>
+            </div>
+
+            <div class="info-item">
+              <span class="label">Назначение:</span>
+              <code class="value">{{ packet()!.destinationIP }}</code>
+            </div>
+
+            <div class="info-item">
+              <span class="label">Порт:</span>
+              <span class="value">{{ packet()!.port }}</span>
+            </div>
+
+            <div class="info-item">
+              <span class="label">Протокол:</span>
+              <mat-chip>{{ packet()!.protocol }}</mat-chip>
+            </div>
+
+            <div class="info-item">
+              <span class="label">Размер:</span>
+              <span class="value">{{ formatSize(packet()!.packetSize) }}</span>
+            </div>
+
+            <div class="info-item">
+              <span class="label">Время:</span>
+              <span class="value">{{ formatDate(packet()!.timestamp) }}</span>
+            </div>
+
+            @if (packet()!.sessionName) {
+              <div class="info-item">
+                <span class="label">Сессия:</span>
+                <a [routerLink]="['/sessions', packet()!.sessionId]" class="value link">
+                  {{ packet()!.sessionName }}
+                </a>
+              </div>
+            }
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Анализ угроз -->
+      @if (packet()!.analysis) {
+        <mat-card class="analysis-card">
+          <mat-card-header>
+            <mat-card-title>
+              <mat-icon>security</mat-icon>
+              Результаты анализа
+            </mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <div class="analysis-grid">
+              <div class="analysis-item">
+                <span class="label">Уровень угрозы:</span>
+                <mat-chip [class]="getThreatClass(packet()!.analysis!.threatLevel)">
+                  {{ packet()!.analysis!.threatLevel }}
+                </mat-chip>
+              </div>
+
+              <div class="analysis-item">
+                <span class="label">Вредоносный:</span>
+                <mat-chip [class]="packet()!.analysis!.isMalicious ? 'malicious' : 'safe'">
+                  {{ packet()!.analysis!.isMalicious ? 'Да' : 'Нет' }}
+                </mat-chip>
+              </div>
+
+              <div class="analysis-item">
+                <span class="label">ML Score:</span>
+                <div class="ml-score">
+                  <div class="ml-score-bar">
+                    <div
+                      class="ml-score-fill"
+                      [style.width.%]="packet()!.analysis!.mlModelScore * 100"
+                      [class]="getThreatClass(packet()!.analysis!.threatLevel)">
+                    </div>
+                  </div>
+                  <span class="ml-score-value">
+                    {{ (packet()!.analysis!.mlModelScore * 100).toFixed(1) }}%
+                  </span>
+                </div>
+              </div>
+
+              @if (packet()!.analysis!.description) {
+                <div class="analysis-item full-width">
+                  <span class="label">Описание:</span>
+                  <p class="description">{{ packet()!.analysis!.description }}</p>
+                </div>
+              }
+
+              <div class="analysis-item">
+                <span class="label">Обнаружено:</span>
+                <span class="value">{{ formatDate(packet()!.analysis!.detectedAt) }}</span>
+              </div>
+
+              <div class="analysis-actions">
+                <button
+                  mat-raised-button
+                  color="accent"
+                  [routerLink]="['/analysis', packet()!.analysis!.id]">
+                  <mat-icon>analytics</mat-icon>
+                  Полный отчет
+                </button>
+              </div>
+            </div>
+          </mat-card-content>
+        </mat-card>
+      }
+
+      <!-- Балл угрозы -->
+      @if (threatScore()) {
+        <mat-card class="threat-score-card">
+          <mat-card-header>
+            <mat-card-title>
+              <mat-icon>calculate</mat-icon>
+              Базовый балл угрозы
+            </mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <div class="threat-score-info">
+              <div class="score-value">
+                <span class="score-number">{{ threatScore()!.threatScore }}</span>
+                <span class="score-max">/100</span>
+              </div>
+              <div class="score-details">
+                <p><strong>Категория:</strong> {{ threatScore()!.category }}</p>
+                <p><strong>Объяснение:</strong> {{ threatScore()!.explanation }}</p>
+              </div>
+            </div>
+          </mat-card-content>
+        </mat-card>
+      }
+
+      <!-- Нет анализа -->
+      @if (!packet()!.analysis) {
+        <mat-card class="no-analysis-card">
+          <mat-icon>info</mat-icon>
+          <div>
+            <h3>Анализ не выполнен</h3>
+            <p>Для этого пакета пока нет результатов анализа угроз</p>
+          </div>
+          @if (isAdmin) {
+            <button
+              mat-raised-button
+              color="primary"
+              [routerLink]="['/analysis/new']"
+              [queryParams]="{ packetId: packet()!.id }">
+              <mat-icon>play_arrow</mat-icon>
+              Запустить анализ
+            </button>
+          }
+        </mat-card>
+      }
+    }
+  </div>
+<!--</app-main-layout>-->

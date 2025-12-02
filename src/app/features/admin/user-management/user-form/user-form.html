@@ -1,0 +1,101 @@
+<div class="user-form-dialog">
+  <h2 mat-dialog-title>
+    <mat-icon>person_add</mat-icon>
+    {{ dialogTitle }}
+  </h2>
+
+  <mat-dialog-content>
+    <form [formGroup]="userForm" class="user-form">
+
+      <!-- Имя пользователя -->
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Имя пользователя</mat-label>
+        <mat-icon matPrefix>account_circle</mat-icon>
+        <input
+          matInput
+          type="text"
+          formControlName="username"
+          placeholder="john_doe"
+          autocomplete="off">
+        @if (userForm.get('username')?.invalid && userForm.get('username')?.touched) {
+          <mat-error>{{ getErrorMessage('username') }}</mat-error>
+        }
+      </mat-form-field>
+
+      <!-- Пароль -->
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Пароль</mat-label>
+        <mat-icon matPrefix>lock</mat-icon>
+        <input
+          matInput
+          [type]="hidePassword() ? 'password' : 'text'"
+          formControlName="password"
+          placeholder="••••••"
+          autocomplete="new-password">
+        <button
+          mat-icon-button
+          matSuffix
+          type="button"
+          (click)="togglePasswordVisibility()"
+          [attr.aria-label]="'Показать пароль'"
+          [attr.aria-pressed]="!hidePassword()">
+          <mat-icon>{{ hidePassword() ? 'visibility' : 'visibility_off' }}</mat-icon>
+        </button>
+        @if (userForm.get('password')?.invalid && userForm.get('password')?.touched) {
+          <mat-error>{{ getErrorMessage('password') }}</mat-error>
+        }
+        <mat-hint>Минимум 6 символов</mat-hint>
+      </mat-form-field>
+
+      <!-- Роль -->
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Роль</mat-label>
+        <mat-icon matPrefix>badge</mat-icon>
+        <mat-select formControlName="role">
+          @for (role of roles; track role.value) {
+            <mat-option [value]="role.value">
+              <div class="role-option">
+                <mat-icon>{{ role.value === 'Admin' ? 'admin_panel_settings' : 'person' }}</mat-icon>
+                <span>{{ role.label }}</span>
+              </div>
+            </mat-option>
+          }
+        </mat-select>
+        @if (userForm.get('role')?.invalid && userForm.get('role')?.touched) {
+          <mat-error>{{ getErrorMessage('role') }}</mat-error>
+        }
+      </mat-form-field>
+
+      <!-- Сообщение об ошибке -->
+      @if (errorMessage()) {
+        <div class="error-message">
+          <mat-icon color="warn">error</mat-icon>
+          <span>{{ errorMessage() }}</span>
+        </div>
+      }
+    </form>
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end">
+    <button
+      mat-button
+      type="button"
+      (click)="onCancel()"
+      [disabled]="isSubmitting()">
+      Отмена
+    </button>
+    <button
+      mat-raised-button
+      color="primary"
+      type="submit"
+      (click)="onSubmit()"
+      [disabled]="userForm.invalid || isSubmitting()">
+      @if (isSubmitting()) {
+        <mat-spinner diameter="20"></mat-spinner>
+      } @else {
+        <mat-icon>save</mat-icon>
+      }
+      <span>{{ submitButtonText }}</span>
+    </button>
+  </mat-dialog-actions>
+</div>

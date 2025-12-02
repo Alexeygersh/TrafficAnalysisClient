@@ -1,0 +1,161 @@
+<!--<app-main-layout>-->
+  <div class="packet-form-container">
+    <mat-card>
+      <mat-card-header>
+        <mat-card-title>
+          <h1>
+            <mat-icon>{{ isEditMode() ? 'edit' : 'add' }}</mat-icon>
+            {{ isEditMode() ? 'Редактирование пакета' : 'Новый пакет' }}
+          </h1>
+        </mat-card-title>
+      </mat-card-header>
+
+      <mat-card-content>
+        <!-- Загрузка -->
+        @if (isLoading()) {
+          <div class="loading">
+            <mat-spinner></mat-spinner>
+            <p>Загрузка данных...</p>
+          </div>
+        }
+
+        <!-- Форма -->
+        @if (!isLoading()) {
+          <form [formGroup]="packetForm" (ngSubmit)="onSubmit()">
+
+            <!-- Источник -->
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>IP-адрес источника</mat-label>
+              <input
+                matInput
+                formControlName="sourceIP"
+                placeholder="192.168.1.1">
+              <mat-icon matPrefix>computer</mat-icon>
+              <mat-hint>Формат: xxx.xxx.xxx.xxx</mat-hint>
+              @if (packetForm.get('sourceIP')?.invalid) {
+                <mat-error>{{ getErrorMessage('sourceIP') }}</mat-error>
+              }
+            </mat-form-field>
+
+            <!-- Назначение -->
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>IP-адрес назначения</mat-label>
+              <input
+                matInput
+                formControlName="destinationIP"
+                placeholder="10.0.0.1">
+              <mat-icon matPrefix>dns</mat-icon>
+              <mat-hint>Формат: xxx.xxx.xxx.xxx</mat-hint>
+              @if (packetForm.get('destinationIP')?.invalid) {
+                <mat-error>{{ getErrorMessage('destinationIP') }}</mat-error>
+              }
+            </mat-form-field>
+
+            <!-- Порт и Протокол -->
+            <div class="form-row">
+              <mat-form-field appearance="outline" class="half-width">
+                <mat-label>Порт</mat-label>
+                <input
+                  matInput
+                  type="number"
+                  formControlName="port"
+                  placeholder="80">
+                <mat-icon matPrefix>settings_ethernet</mat-icon>
+                <mat-hint>0-65535</mat-hint>
+                @if (packetForm.get('port')?.invalid) {
+                  <mat-error>{{ getErrorMessage('port') }}</mat-error>
+                }
+              </mat-form-field>
+
+              <mat-form-field appearance="outline" class="half-width">
+                <mat-label>Протокол</mat-label>
+                <mat-select formControlName="protocol">
+                  @for (protocol of protocols; track protocol) {
+                    <mat-option [value]="protocol">
+                      {{ protocol }}
+                    </mat-option>
+                  }
+                </mat-select>
+                <mat-icon matPrefix>transform</mat-icon>
+                @if (packetForm.get('protocol')?.invalid) {
+                  <mat-error>{{ getErrorMessage('protocol') }}</mat-error>
+                }
+              </mat-form-field>
+            </div>
+
+            <!-- Размер пакета -->
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Размер пакета (байт)</mat-label>
+              <input
+                matInput
+                type="number"
+                formControlName="packetSize"
+                placeholder="1500">
+              <mat-icon matPrefix>data_usage</mat-icon>
+              <mat-hint>1-65535 байт</mat-hint>
+              @if (packetForm.get('packetSize')?.invalid) {
+                <mat-error>{{ getErrorMessage('packetSize') }}</mat-error>
+              }
+            </mat-form-field>
+
+            <!-- ID Сессии (опционально) -->
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>ID Сессии (необязательно)</mat-label>
+              <input
+                matInput
+                type="number"
+                formControlName="sessionId"
+                placeholder="1">
+              <mat-icon matPrefix>schedule</mat-icon>
+              <mat-hint>Оставьте пустым для автоматического назначения</mat-hint>
+            </mat-form-field>
+
+            <!-- Сообщение об ошибке -->
+            @if (errorMessage()) {
+              <div class="error-message">
+                <mat-icon color="warn">error</mat-icon>
+                <span>{{ errorMessage() }}</span>
+              </div>
+            }
+
+            <!-- Кнопки действий -->
+            <div class="form-actions">
+              <button
+                mat-stroked-button
+                type="button"
+                (click)="cancel()"
+                [disabled]="isSaving()">
+                Отмена
+              </button>
+
+              <button
+                mat-raised-button
+                color="primary"
+                type="submit"
+                [disabled]="isSaving()">
+                @if (isSaving()) {
+                  <mat-spinner diameter="20" class="button-spinner"></mat-spinner>
+                } @else {
+                  <span>{{ isEditMode() ? 'Сохранить' : 'Создать' }}</span>
+                }
+              </button>
+            </div>
+          </form>
+        }
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Подсказка -->
+    <mat-card class="hint-card">
+      <mat-card-content>
+        <h3><mat-icon>info</mat-icon> Подсказка</h3>
+        <ul>
+          <li>IP-адреса должны быть в формате IPv4 (например: 192.168.1.1)</li>
+          <li>Порт должен быть в диапазоне 0-65535</li>
+          <li>Размер пакета обычно не превышает 1500 байт (стандартный MTU)</li>
+          <li>После создания пакета можно запустить анализ ML-модели</li>
+        </ul>
+      </mat-card-content>
+    </mat-card>
+  </div>
+<!--</app-main-layout>-->

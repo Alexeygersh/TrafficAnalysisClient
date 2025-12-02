@@ -1,0 +1,93 @@
+<div class="login-container">
+
+  <button
+    mat-icon-button
+    class="theme-toggle"
+    (click)="themeService.toggleTheme()"
+    [matTooltip]="themeService.isDarkTheme() ? 'Светлая тема' : 'Тёмная тема'">
+    <mat-icon>{{ themeService.isDarkTheme() ? 'light_mode' : 'dark_mode' }}</mat-icon>
+  </button>
+
+  <mat-card class="login-card">
+    <mat-card-header>
+      <mat-card-title>
+        <h1>Traffic Analysis System</h1>
+        <p>Вход в систему</p>
+      </mat-card-title>
+    </mat-card-header>
+
+    <mat-card-content>
+      <!-- Форма входа -->
+      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+
+        <!-- Поле логина -->
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Логин</mat-label>
+          <input
+            matInput
+            type="text"
+            formControlName="username"
+            placeholder="Введите логин"
+            autocomplete="username">
+          <mat-icon matPrefix>person</mat-icon>
+          @if (loginForm.get('username')?.invalid) {
+            <mat-error>{{ getErrorMessage('username') }}</mat-error>
+          }
+        </mat-form-field>
+
+        <!-- Поле пароля -->
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Пароль</mat-label>
+          <input
+            matInput
+            [type]="hidePassword ? 'password' : 'text'"
+            formControlName="password"
+            placeholder="Введите пароль"
+            autocomplete="current-password">
+          <mat-icon matPrefix>lock</mat-icon>
+          <button
+            mat-icon-button
+            matSuffix
+            type="button"
+            (click)="hidePassword = !hidePassword"
+            [attr.aria-label]="'Показать пароль'">
+            <mat-icon>{{ hidePassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+          </button>
+          @if (loginForm.get('password')?.invalid) {
+            <mat-error>{{ getErrorMessage('password') }}</mat-error>
+          }
+        </mat-form-field>
+
+        <!-- Сообщение об ошибке -->
+        @if (errorMessage) {
+          <div class="error-message">
+            <mat-icon color="warn">error</mat-icon>
+            <span>{{ errorMessage }}</span>
+          </div>
+        }
+
+        <!-- Кнопка входа -->
+        <button
+          mat-raised-button
+          color="primary"
+          type="submit"
+          class="full-width"
+          [disabled]="isLoading">
+
+          @if (isLoading) {
+            <mat-spinner diameter="20"></mat-spinner>
+          } @else {
+            <span>Войти</span>
+          }
+        </button>
+      </form>
+
+      <!-- Тестовые учетные данные (для разработки) -->
+      <div class="test-credentials">
+        <p><strong>Тестовые данные:</strong></p>
+        <p>Админ: <code>admin</code> / <code>Admin123!</code></p>
+        <p>Аналитик: <code>analyst</code> / <code>Analyst123!</code></p>
+      </div>
+    </mat-card-content>
+  </mat-card>
+</div>

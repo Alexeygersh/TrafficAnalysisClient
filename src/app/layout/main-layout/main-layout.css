@@ -1,0 +1,176 @@
+.sidenav-container {
+  height: 100vh;
+}
+
+.sidenav {
+  width: 250px;
+  background-color: var(--bg-card);
+  color: var(--text-primary);
+  border-right: 1px solid var(--border-color);
+}
+
+.sidenav-header {
+  padding: 20px;
+  text-align: center;
+  background: var(--bg-gradient-accent);
+  color: white;
+}
+
+.logo-icon {
+  font-size: 48px;
+  width: 48px;
+  height: 48px;
+  color: white;
+}
+
+.sidenav-header h2 {
+  margin: 10px 0 0 0;
+  font-size: 18px;
+  font-weight: 500;
+  color: white;
+}
+
+/* ========================================
+   НАВИГАЦИОННОЕ МЕНЮ
+   ======================================== */
+
+mat-nav-list {
+  padding-top: 16px;
+}
+
+mat-nav-list a {
+  color: var(--text-primary) !important;
+  transition: all 0.3s ease;
+  opacity: 0.8;
+}
+
+mat-nav-list a:hover {
+  background-color: var(--hover-color) !important;
+  opacity: 1;
+}
+
+mat-nav-list a.active-link {
+  background-color: rgba(102, 126, 234, 0.2) !important;
+  border-left: 4px solid #667eea;
+  opacity: 1;
+  font-weight: 500;
+}
+
+/* Иконки в меню */
+mat-nav-list a mat-icon {
+  color: var(--text-primary) !important;
+}
+
+mat-nav-list a.active-link mat-icon {
+  color: #667eea !important;
+}
+
+.sidenav-footer {
+  position: absolute;
+  bottom: 16px;
+  left: 0;
+  right: 0;
+  text-align: center;
+  color: var(--text-secondary);
+  font-size: 12px;
+}
+
+/* ========================================
+   TOOLBAR
+   ======================================== */
+
+.toolbar {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  box-shadow: 0 2px 4px var(--shadow-color);
+  background-color: var(--bg-card) !important;
+  color: var(--text-primary) !important;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.toolbar-spacer {
+  flex: 1 1 auto;
+}
+
+.user-button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--text-primary) !important;
+}
+
+.user-name {
+  font-weight: 500;
+}
+
+.user-role {
+  font-size: 12px;
+  opacity: 0.8;
+}
+
+/* ========================================
+   КОНТЕНТ
+   ======================================== */
+
+.content {
+  padding: 24px;
+  min-height: calc(100vh - 64px);
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+}
+
+/* ========================================
+   ТЁМНАЯ ТЕМА - СПЕЦИФИЧНЫЕ СТИЛИ
+   ======================================== */
+
+html.dark-theme .sidenav-header {
+  background: var(--bg-gradient-accent);
+}
+
+html.dark-theme mat-nav-list a {
+  color: var(--text-primary) !important;
+}
+
+html.dark-theme mat-nav-list a:hover {
+  background-color: var(--hover-color) !important;
+}
+
+html.dark-theme mat-nav-list a.active-link {
+  background-color: rgba(102, 126, 234, 0.3) !important;
+  color: white !important;
+}
+
+html.dark-theme mat-nav-list a.active-link mat-icon {
+  color: #a0b4ff !important;
+}
+
+/* ========================================
+   АДАПТИВНОСТЬ
+   ======================================== */
+
+@media (max-width: 768px) {
+  .sidenav {
+    width: 200px;
+  }
+
+  .user-name,
+  .user-role {
+    display: none;
+  }
+
+  .content {
+    padding: 16px;
+  }
+}
+
+/* ========================================
+   TRANSITIONS
+   ======================================== */
+
+.sidenav,
+.toolbar,
+.content,
+mat-nav-list a {
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}

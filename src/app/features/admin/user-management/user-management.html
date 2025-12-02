@@ -1,0 +1,73 @@
+<div class="user-management-container">
+  <!-- Заголовок -->
+  <div class="header">
+    <h1>
+      <mat-icon>admin_panel_settings</mat-icon>
+      Управление пользователями
+    </h1>
+    <button
+      mat-raised-button
+      color="primary"
+      (click)="openCreateUserDialog()">
+      <mat-icon>person_add</mat-icon>
+      Создать пользователя
+    </button>
+  </div>
+
+  <!-- Информация о текущем пользователе -->
+  <mat-card class="current-user-card">
+    <mat-card-content>
+      <div class="current-user-info">
+        <mat-icon>account_circle</mat-icon>
+        <div class="user-details">
+          <strong>Вы вошли как:</strong>
+          <span>{{ currentUser?.username }} ({{ currentUser?.role }})</span>
+        </div>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Загрузка -->
+  @if (isLoading()) {
+    <div class="loading">
+      <mat-spinner></mat-spinner>
+      <p>Загрузка пользователей...</p>
+    </div>
+  }
+
+  <!-- Ошибка -->
+  @if (errorMessage()) {
+    <mat-card class="error-card">
+      <mat-icon color="warn">error</mat-icon>
+      <div>
+        <p>{{ errorMessage() }}</p>
+        <button mat-button (click)="loadUsers()">Повторить</button>
+      </div>
+    </mat-card>
+  }
+
+  <!-- Список пользователей -->
+  @if (!isLoading() && users().length > 0) {
+    <app-user-list
+      [users]="users()"
+      [currentUserId]="currentUser?.id || 0"
+      (deleteUser)="onUserDeleted()">
+    </app-user-list>
+  }
+
+  <!-- Пустой список -->
+  @if (!isLoading() && users().length === 0 && !errorMessage()) {
+    <mat-card class="empty-state">
+      <mat-icon>people_outline</mat-icon>
+      <h3>Пользователей нет</h3>
+      <p>Создайте первого пользователя</p>
+      <button
+        mat-raised-button
+        color="primary"
+        (click)="openCreateUserDialog()">
+        <mat-icon>person_add</mat-icon>
+        Создать пользователя
+      </button>
+    </mat-card>
+  }
+</div>

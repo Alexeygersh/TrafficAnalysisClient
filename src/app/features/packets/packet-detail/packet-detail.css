@@ -1,0 +1,340 @@
+.packet-detail-container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px;
+  gap: 16px;
+}
+
+.error-card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 24px;
+  background-color: #ffebee;
+  color: var(--status-error);
+}
+
+.error-card mat-icon {
+  font-size: 48px;
+  width: 48px;
+  height: 48px;
+}
+
+.error-card h3 {
+  margin: 0 0 8px 0;
+  color: var(--status-error);
+}
+
+.error-card p {
+  margin: 0;
+  color: var(--text-secondary);
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.header h1 {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 28px;
+  font-weight: 500;
+  margin: 0;
+  color: var(--text-primary);
+}
+
+.header-actions {
+  display: flex;
+  gap: 12px;
+}
+
+.info-card {
+  margin-bottom: 24px;
+}
+
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+  padding: 16px 0;
+}
+
+.info-item {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.info-item .label {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.info-item .value {
+  font-size: 16px;
+  color: var(--text-primary);
+}
+
+.info-item code.value {
+  background-color: var(--bg-secondary);
+  padding: 6px 12px;
+  border-radius: 4px;
+  font-family: 'Courier New', monospace;
+  font-size: 14px;
+  color: var(--text-primary);
+}
+
+.info-item .link {
+  color: var(--button-primary);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.info-item .link:hover {
+  color: #1565c0;
+  text-decoration: underline;
+}
+
+/* Анализ */
+.analysis-card {
+  margin-bottom: 24px;
+  border-left: 4px solid var(--threat-high);
+}
+
+.analysis-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+  padding: 16px 0;
+}
+
+.analysis-item {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.analysis-item.full-width {
+  grid-column: 1 / -1;
+}
+
+.description {
+  margin: 0;
+  padding: 12px;
+  background-color: var(--bg-secondary);
+  border-radius: 4px;
+  color: var(--text-secondary);
+}
+
+/* ML Score визуализация */
+.ml-score {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.ml-score-bar {
+  flex: 1;
+  height: 24px;
+  background-color: var(--bg-secondary);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.ml-score-fill {
+  height: 100%;
+  transition: width 0.3s ease;
+  border-radius: 12px;
+}
+
+.ml-score-fill.threat-critical {
+  background: linear-gradient(90deg, var(--threat-critical) 0%, #f44336 100%);
+}
+
+.ml-score-fill.threat-high {
+  background: linear-gradient(90deg, var(--threat-high) 0%, #ff9800 100%);
+}
+
+.ml-score-fill.threat-medium {
+  background: linear-gradient(90deg, var(--threat-medium) 0%, #ffeb3b 100%);
+}
+
+.ml-score-fill.threat-low {
+  background: linear-gradient(90deg, var(--threat-low) 0%, #81c784 100%);
+}
+
+.ml-score-value {
+  font-weight: 600;
+  font-size: 16px;
+  min-width: 50px;
+  text-align: right;
+  color: var(--text-primary);
+}
+
+.analysis-actions {
+  grid-column: 1 / -1;
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 8px;
+}
+
+/* Цвета чипов угроз */
+.threat-critical {
+  background-color: var(--threat-critical) !important;
+  color: white !important;
+}
+
+.threat-high {
+  background-color: var(--threat-high) !important;
+  color: white !important;
+}
+
+.threat-medium {
+  background-color: var(--threat-medium) !important;
+  color: #333 !important;
+}
+
+.threat-low {
+  background-color: var(--threat-low) !important;
+  color: white !important;
+}
+
+.threat-none {
+  background-color: var(--threat-none) !important;
+  color: #666 !important;
+}
+
+.malicious {
+  background-color: var(--threat-critical) !important;
+  color: white !important;
+}
+
+.safe {
+  background-color: var(--status-safe) !important;
+  color: white !important;
+}
+
+/* Балл угрозы */
+.threat-score-card {
+  margin-bottom: 24px;
+  background: var(--bg-gradient-accent);
+  color: white;
+}
+
+.threat-score-card mat-card-title {
+  color: white;
+}
+
+.threat-score-info {
+  display: flex;
+  align-items: center;
+  gap: 32px;
+  padding: 16px 0;
+}
+
+.score-value {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+}
+
+.score-number {
+  font-size: 48px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.score-max {
+  font-size: 24px;
+  font-weight: 400;
+  opacity: 0.8;
+}
+
+.score-details {
+  flex: 1;
+}
+
+.score-details p {
+  margin: 8px 0;
+  font-size: 15px;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.score-details strong {
+  font-weight: 600;
+}
+
+/* Нет анализа */
+.no-analysis-card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 32px;
+  background-color: #fff3e0;
+  border-left: 4px solid var(--status-warning);
+}
+
+.no-analysis-card mat-icon {
+  font-size: 48px;
+  width: 48px;
+  height: 48px;
+  color: var(--status-warning);
+}
+
+.no-analysis-card h3 {
+  margin: 0 0 8px 0;
+  color: #e65100;
+}
+
+.no-analysis-card p {
+  margin: 0;
+  color: var(--text-secondary);
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+
+  .header-actions {
+    width: 100%;
+    flex-wrap: wrap;
+  }
+
+  .header-actions button {
+    flex: 1;
+    min-width: 120px;
+  }
+
+  .info-grid,
+  .analysis-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .threat-score-info {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .no-analysis-card {
+    flex-direction: column;
+    text-align: center;
+  }
+}

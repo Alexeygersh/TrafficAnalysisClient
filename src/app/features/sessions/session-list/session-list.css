@@ -1,0 +1,326 @@
+.session-list-container {
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.header h1 {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 28px;
+  font-weight: 500;
+  margin: 0;
+  color: var(--text-primary);
+}
+
+.header-actions {
+  display: flex;
+  gap: 12px;
+}
+
+/* Статистика */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.stat-card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 20px !important;
+  transition: transform 0.2s;
+  color: var(--text-primary);
+}
+
+.stat-card:hover {
+  transform: translateY(-2px);
+}
+
+.stat-card.active {
+  background: var(--gradient-success);
+  color: white;
+}
+
+.stat-card.closed {
+  background: var(--gradient-primary);
+  color: white;
+}
+
+.stat-card.packets {
+  background: var(--gradient-purple);
+  color: white;
+}
+
+.stat-icon {
+  font-size: 48px;
+  width: 48px;
+  height: 48px;
+  opacity: 0.9;
+}
+
+.stat-info {
+  flex: 1;
+}
+
+.stat-value {
+  font-size: 32px;
+  font-weight: 700;
+  line-height: 1;
+  margin-bottom: 4px;
+}
+
+.stat-label {
+  font-size: 13px;
+  opacity: 0.9;
+}
+
+/* Фильтры */
+.filters-card {
+  margin-bottom: 24px;
+}
+
+.filters {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.filter-field {
+  min-width: 200px;
+  flex: 1;
+}
+
+.filter-result {
+  margin-top: 8px;
+}
+
+mat-chip-set {
+  display: flex;
+  gap: 8px;
+}
+
+mat-chip {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px;
+  gap: 16px;
+}
+
+.error-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 20px;
+  background-color: #ffebee;
+  color: var(--status-error);
+}
+
+/* Таблица */
+.sessions-table {
+  width: 100%;
+}
+
+.sessions-table th {
+  cursor: pointer;
+  -webkit-user-select: none;
+  user-select: none;
+  font-weight: 600;
+}
+
+.sessions-table th mat-icon {
+  font-size: 16px;
+  width: 16px;
+  height: 16px;
+  vertical-align: middle;
+  margin-left: 4px;
+}
+
+.sessions-table tr.active-row {
+  background-color: #f1f8e9;
+}
+
+.session-name {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.session-name strong {
+  font-size: 15px;
+  color: var(--text-primary);
+}
+
+.session-name small {
+  font-size: 12px;
+  color: var(--text-secondary);
+  font-style: italic;
+}
+
+.active-chip {
+  background-color: var(--status-active) !important;
+  color: white !important;
+  animation: pulse 2s infinite;
+}
+
+.active-chip mat-icon {
+  font-size: 16px;
+  width: 16px;
+  height: 16px;
+  animation: spin 2s linear infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.duration {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--text-secondary);
+}
+
+.duration mat-icon {
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+}
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 60px;
+  text-align: center;
+}
+
+.empty-state mat-icon {
+  font-size: 72px;
+  width: 72px;
+  height: 72px;
+  color: var(--status-completed);
+  margin-bottom: 16px;
+}
+
+.empty-state h3 {
+  margin: 0 0 8px 0;
+  font-size: 20px;
+  color: var(--text-secondary);
+}
+
+.empty-state p {
+  margin: 0 0 24px 0;
+  color: var(--text-muted);
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .filters {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .filter-field {
+    min-width: 100%;
+  }
+
+  .sessions-table {
+    font-size: 12px;
+  }
+
+  .session-name small {
+    display: none;
+  }
+}
+
+/* ========================================
+   СТАТУСЫ СЕССИЙ
+   ======================================== */
+
+/* Активная сессия - СВЕТЛАЯ ТЕМА */
+.session-active,
+.active-session {
+  background-color: #e8f5e9 !important;  /* Светло-зеленый */
+  border-left: 4px solid var(--status-active) !important;
+}
+
+.session-active .session-name,
+.active-session .session-name {
+  color: #1b5e20 !important;  /* Темно-зеленый текст */
+  font-weight: 600;
+}
+
+/* Завершенная сессия */
+.session-completed,
+.completed-session {
+  background-color: var(--bg-secondary);
+  border-left: 4px solid var(--status-completed);
+  opacity: 0.8;
+}
+
+/* ========================================
+   ТЁМНАЯ ТЕМА - АКТИВНЫЕ СЕССИИ
+   ======================================== */
+
+html.dark-theme .session-active,
+html.dark-theme .active-session {
+  background: linear-gradient(90deg, rgba(33, 150, 243, 0.15) 0%, rgba(33, 150, 243, 0.05) 100%) !important;
+  border-left: 4px solid var(--status-active) !important;
+}
+
+html.dark-theme .session-active .session-name,
+html.dark-theme .active-session .session-name {
+  color: #90caf9 !important;  /* Светло-синий текст */
+  font-weight: 600;
+}
+
+html.dark-theme .session-completed,
+html.dark-theme .completed-session {
+  background-color: var(--bg-secondary);
+  border-left: 4px solid var(--status-completed);
+  opacity: 0.7;
+}

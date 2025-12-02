@@ -1,0 +1,327 @@
+.analysis-list-container {
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.header h1 {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 28px;
+  font-weight: 500;
+  margin: 0;
+  color: var(--text-primary);
+}
+
+.header-actions {
+  display: flex;
+  gap: 12px;
+}
+
+/* Статистика */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.stat-card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 20px !important;
+  transition: transform 0.2s;
+  color: var(--text-primary);
+}
+
+.stat-card:hover {
+  transform: translateY(-2px);
+}
+
+.stat-card.danger {
+  background: var(--gradient-danger);
+  color: white;
+}
+
+.stat-card.critical {
+  background: var(--gradient-critical);
+  color: white;
+}
+
+.stat-card.high {
+  background: var(--gradient-warning);
+  color: white;
+}
+
+.stat-icon {
+  font-size: 48px;
+  width: 48px;
+  height: 48px;
+  opacity: 0.9;
+}
+
+.stat-info {
+  flex: 1;
+}
+
+.stat-value {
+  font-size: 32px;
+  font-weight: 700;
+  line-height: 1;
+  margin-bottom: 4px;
+}
+
+.stat-label {
+  font-size: 13px;
+  opacity: 0.9;
+}
+
+/* Фильтры */
+.filters-card {
+  margin-bottom: 24px;
+}
+
+.filters {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.filter-field {
+  min-width: 200px;
+  flex: 1;
+}
+
+.ml-score-filter {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 300px;
+  flex: 1;
+}
+
+.ml-score-filter label {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+
+.filter-result {
+  margin-top: 8px;
+}
+
+mat-chip-set {
+  display: flex;
+  gap: 8px;
+}
+
+mat-chip {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px;
+  gap: 16px;
+}
+
+.error-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 20px;
+  background-color: #ffebee;
+  color: var(--status-error);
+}
+
+/* Таблица */
+.analyses-table {
+  width: 100%;
+}
+
+.analyses-table th {
+  cursor: pointer;
+  -webkit-user-select: none;
+  user-select: none;
+  font-weight: 600;
+}
+
+.analyses-table th mat-icon {
+  font-size: 16px;
+  width: 16px;
+  height: 16px;
+  vertical-align: middle;
+  margin-left: 4px;
+}
+
+.packet-link {
+  color: var(--button-primary);
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.packet-link:hover {
+  text-decoration: underline;
+}
+
+/* ML Score в таблице */
+.ml-score-cell {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.ml-bar {
+  flex: 1;
+  height: 16px;
+  background-color: var(--bg-secondary);
+  border-radius: 8px;
+  overflow: hidden;
+  min-width: 80px;
+}
+
+.ml-fill {
+  height: 100%;
+  transition: width 0.3s ease;
+}
+
+.ml-fill.threat-critical {
+  background: linear-gradient(90deg, var(--threat-critical) 0%, #f44336 100%);
+}
+
+.ml-fill.threat-high {
+  background: linear-gradient(90deg, var(--threat-high) 0%, #ff9800 100%);
+}
+
+.ml-fill.threat-medium {
+  background: linear-gradient(90deg, var(--threat-medium) 0%, #ffeb3b 100%);
+}
+
+.ml-fill.threat-low {
+  background: linear-gradient(90deg, var(--threat-low) 0%, #81c784 100%);
+}
+
+.ml-value {
+  font-size: 13px;
+  font-weight: 600;
+  min-width: 40px;
+  text-align: right;
+  color: var(--text-primary);
+}
+
+/* Цвета чипов угроз */
+.threat-critical {
+  background-color: var(--threat-critical) !important;
+  color: white !important;
+}
+
+.threat-high {
+  background-color: var(--threat-high) !important;
+  color: white !important;
+}
+
+.threat-medium {
+  background-color: var(--threat-medium) !important;
+  color: #333 !important;
+}
+
+.threat-low {
+  background-color: var(--threat-low) !important;
+  color: white !important;
+}
+
+.threat-none {
+  background-color: var(--threat-none) !important;
+  color: #666 !important;
+}
+
+.malicious {
+  background-color: var(--threat-critical) !important;
+  color: white !important;
+}
+
+.safe {
+  background-color: var(--status-safe) !important;
+  color: white !important;
+}
+
+.malicious mat-icon,
+.safe mat-icon {
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+}
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 60px;
+  text-align: center;
+}
+
+.empty-state mat-icon {
+  font-size: 72px;
+  width: 72px;
+  height: 72px;
+  color: var(--status-completed);
+  margin-bottom: 16px;
+}
+
+.empty-state h3 {
+  margin: 0 0 8px 0;
+  font-size: 20px;
+  color: var(--text-secondary);
+}
+
+.empty-state p {
+  margin: 0;
+  color: var(--text-muted);
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .filters {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .filter-field,
+  .ml-score-filter {
+    min-width: 100%;
+  }
+
+  .analyses-table {
+    font-size: 12px;
+  }
+
+  .ml-score-cell {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}

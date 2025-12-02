@@ -1,0 +1,120 @@
+<div class="analysis-form-container">
+  <mat-card>
+    <mat-card-header>
+      <mat-card-title>
+        <h1>
+          <mat-icon>add_chart</mat-icon>
+          Новый анализ пакета
+        </h1>
+      </mat-card-title>
+    </mat-card-header>
+
+    <mat-card-content>
+      <form [formGroup]="analysisForm" (ngSubmit)="onSubmit()">
+
+        <!-- ID Пакета -->
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>ID Пакета</mat-label>
+          <input
+            matInput
+            type="number"
+            formControlName="packetId"
+            placeholder="1">
+          <mat-icon matPrefix>network_check</mat-icon>
+          @if (suggestedPacketId()) {
+            <mat-hint>Предложен пакет #{{ suggestedPacketId() }}</mat-hint>
+          } @else {
+            <mat-hint>Введите ID существующего пакета</mat-hint>
+          }
+          @if (analysisForm.get('packetId')?.invalid && analysisForm.get('packetId')?.touched) {
+            <mat-error>{{ getErrorMessage('packetId') }}</mat-error>
+          }
+        </mat-form-field>
+
+        <!-- ML Model Score -->
+        <div class="ml-score-section">
+          <label class="ml-score-label">
+            ML Model Score: {{ formatMLScore(mlScoreValue) }}
+          </label>
+          <mat-slider
+            min="0"
+            max="1"
+            step="0.01"
+            discrete
+            [displayWith]="formatMLScore">
+            <input matSliderThumb formControlName="mlModelScore">
+          </mat-slider>
+          <div class="ml-score-hint">
+            <span>0% (Безопасный)</span>
+            <span>100% (Критичный)</span>
+          </div>
+        </div>
+
+        <!-- Описание -->
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Описание (необязательно)</mat-label>
+          <textarea
+            matInput
+            formControlName="description"
+            rows="4"
+            placeholder="Дополнительные комментарии к анализу...">
+          </textarea>
+          <mat-icon matPrefix>description</mat-icon>
+          <mat-hint>Дополнительная информация об анализе</mat-hint>
+        </mat-form-field>
+
+        <!-- Ошибка -->
+        @if (errorMessage()) {
+          <div class="error-message">
+            <mat-icon color="warn">error</mat-icon>
+            <span>{{ errorMessage() }}</span>
+          </div>
+        }
+
+        <!-- Кнопки -->
+        <div class="form-actions">
+          <button
+            mat-stroked-button
+            type="button"
+            (click)="cancel()"
+            [disabled]="isSaving()">
+            Отмена
+          </button>
+
+          <button
+            mat-raised-button
+            color="primary"
+            type="submit"
+            [disabled]="isSaving() || analysisForm.invalid">
+            @if (isSaving()) {
+              <mat-spinner diameter="20" class="button-spinner"></mat-spinner>
+            }
+            @if (!isSaving()) {
+              <span>Создать анализ</span>
+            }
+          </button>
+        </div>
+      </form>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Подсказка -->
+  <mat-card class="hint-card">
+    <mat-card-content>
+      <h3><mat-icon>info</mat-icon> О создании анализа</h3>
+      <ul>
+        <li><strong>ML Model Score</strong> — вероятность угрозы от 0 до 1 (0% - 100%)</li>
+        <li>На основе score автоматически определяется уровень угрозы:
+          <ul>
+            <li>0-40% → Low (Низкий)</li>
+            <li>40-60% → Medium (Средний)</li>
+            <li>60-80% → High (Высокий)</li>
+            <li>80-100% → Critical (Критичный)</li>
+          </ul>
+        </li>
+        <li>В реальном приложении score будет получаться из ML-модели автоматически</li>
+        <li>Для каждого пакета может быть только один анализ</li>
+      </ul>
+    </mat-card-content>
+  </mat-card>
+</div>

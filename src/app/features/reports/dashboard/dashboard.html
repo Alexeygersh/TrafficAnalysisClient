@@ -1,0 +1,264 @@
+<div class="dashboard-container">
+  <!-- Заголовок -->
+  <div class="header">
+    <h1>
+      <mat-icon>dashboard</mat-icon>
+      Дашборд аналитики
+    </h1>
+
+    <!-- Выбор периода -->
+    <mat-form-field appearance="outline" class="period-select">
+      <mat-label>Период</mat-label>
+      <mat-select
+        [(ngModel)]="selectedPeriod"
+        (ngModelChange)="onPeriodChange()">
+        @for (opt of periodOptions; track opt.value) {
+          <mat-option [value]="opt.value">
+            {{ opt.label }}
+          </mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+  </div>
+
+  <!-- Загрузка -->
+  @if (isLoading()) {
+    <div class="loading">
+      <mat-spinner></mat-spinner>
+      <p>Загрузка данных...</p>
+    </div>
+  }
+
+  <!-- Ошибка -->
+  @if (errorMessage()) {
+    <mat-card class="error-card">
+      <mat-icon color="warn">error</mat-icon>
+      <p>{{ errorMessage() }}</p>
+      <button mat-button (click)="loadDashboardData()">Повторить</button>
+    </mat-card>
+  }
+
+  <!-- Дашборд -->
+  @if (!isLoading() && timeBasedSummary()) {
+    <div class="dashboard-content">
+
+      <!-- Статистика (карточки) -->
+      <div class="stats-grid">
+        <mat-card class="stat-card primary">
+          <mat-icon class="stat-icon">network_check</mat-icon>
+          <div class="stat-info">
+            <div class="stat-value">{{ timeBasedSummary()!.totalPackets }}</div>
+            <div class="stat-label">Всего пакетов</div>
+          </div>
+        </mat-card>
+
+        <mat-card class="stat-card success">
+          <mat-icon class="stat-icon">verified</mat-icon>
+          <div class="stat-info">
+            <div class="stat-value">{{ timeBasedSummary()!.analyzedPackets }}</div>
+            <div class="stat-label">Проанализировано</div>
+          </div>
+        </mat-card>
+
+        <mat-card class="stat-card danger">
+          <mat-icon class="stat-icon">dangerous</mat-icon>
+          <div class="stat-info">
+            <div class="stat-value">{{ timeBasedSummary()!.maliciousPackets }}</div>
+            <div class="stat-label">Вредоносных</div>
+          </div>
+        </mat-card>
+
+        <mat-card class="stat-card warning">
+          <mat-icon class="stat-icon">percent</mat-icon>
+          <div class="stat-info">
+            <div class="stat-value">
+<!--              {{ ((timeBasedSummary()!.maliciousPackets / timeBasedSummary()!.totalPackets) * 100 || 0).toFixed(1) }}%-->
+              {{ (timeBasedSummary() && timeBasedSummary()!.totalPackets > 0 ?
+                ((timeBasedSummary()!.maliciousPackets / timeBasedSummary()!.totalPackets) * 100) : 0
+            ).toFixed(1) }}%
+            </div>
+            <div class="stat-label">Процент угроз</div>
+          </div>
+        </mat-card>
+      </div>
+
+      <!-- Графики -->
+      <div class="charts-grid">
+
+        <!-- График 1: Временная шкала -->
+        <mat-card class="chart-card large">
+          <mat-card-content>
+            <div class="chart-container">
+              <canvas #threatTimelineCanvas></canvas>
+            </div>
+          </mat-card-content>
+        </mat-card>
+
+        <!-- График 2: Круговая диаграмма протоколов -->
+        <mat-card class="chart-card">
+          <mat-card-content>
+            <div class="chart-container">
+              <canvas #protocolPieCanvas></canvas>
+            </div>
+          </mat-card-content>
+        </mat-card>
+
+        <!-- График 3: Распределение угроз -->
+        <mat-card class="chart-card">
+          <mat-card-content>
+            <div class="chart-container">
+              <canvas #threatDistCanvas></canvas>
+            </div>
+          </mat-card-content>
+        </mat-card>
+
+<!--        &lt;!&ndash; График 3: Распределение угроз &ndash;&gt;-->
+<!--        <mat-card class="chart-card">-->
+<!--          <mat-card-content>-->
+<!--            <div class="chart-container threat-distribution">-->
+<!--              <h3 class="chart-title">Распределение по уровням угроз</h3>-->
+<!--              <div class="threat-bars">-->
+<!--                @for (item of threatDistributionData(); track item.level) {-->
+<!--                  <div class="threat-bar-item">-->
+<!--                    <div class="threat-bar-header">-->
+<!--                      <mat-chip [class]="getThreatClass(item.level)">-->
+<!--                        {{ item.level }}-->
+<!--                      </mat-chip>-->
+<!--                      <strong>{{ item.count }}</strong>-->
+<!--                    </div>-->
+<!--                    <div class="threat-bar-progress">-->
+<!--                      <div-->
+<!--                        class="threat-bar-fill"-->
+<!--                        [class]="getThreatClass(item.level)"-->
+<!--                        [style.width.%]="item.percentage">-->
+<!--                      </div>-->
+<!--                    </div>-->
+<!--                  </div>-->
+<!--                }-->
+<!--              </div>-->
+<!--            </div>-->
+<!--          </mat-card-content>-->
+<!--        </mat-card>-->
+
+        <!-- График 4: Топ IP-адресов -->
+        <mat-card class="chart-card large">
+          <mat-card-content>
+            <div class="chart-container">
+              <canvas #topIPsCanvas></canvas>
+            </div>
+          </mat-card-content>
+        </mat-card>
+      </div>
+
+      <!-- Таблица топ IP-адресов -->
+      <mat-card class="top-ips-table">
+        <mat-card-header>
+          <mat-card-title>
+            <mat-icon>warning</mat-icon>
+            Топ вредоносных IP-адресов
+          </mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="ip-list">
+            @for (ip of topMaliciousIPs(); track ip.sourceIP; let i = $index) {
+              <div class="ip-item" [class]="getThreatClass(ip.highestThreatLevel)">
+
+                <div class="ip-rank">{{ i + 1 }}</div>
+
+                <div class="ip-details">
+                  <div class="ip-address">
+                    <code>{{ ip.sourceIP }}</code>
+                  </div>
+                  <div class="ip-info">
+                    <mat-chip [class]="getThreatClass(ip.highestThreatLevel)">
+                      {{ ip.highestThreatLevel }}
+                    </mat-chip>
+                    <span class="ip-protocols">
+                      {{ ip.protocols.join(', ') }}
+                    </span>
+                  </div>
+                </div>
+
+                <div class="ip-stats">
+                  <div class="stat-item">
+                    <span class="label">Угроз:</span>
+                    <strong>{{ ip.threatCount }}</strong>
+                  </div>
+                  <div class="stat-item">
+                    <span class="label">ML Score:</span>
+                    <strong>{{ (ip.averageMLScore * 100).toFixed(0) }}%</strong>
+                  </div>
+                </div>
+
+                <button
+                  mat-icon-button
+                  [routerLink]="['/packets']"
+                  [queryParams]="{ sourceIP: ip.sourceIP }"
+                  matTooltip="Просмотреть пакеты">
+                  <mat-icon>arrow_forward</mat-icon>
+                </button>
+              </div>
+            }
+
+            @if (topMaliciousIPs().length === 0) {
+              <div class="no-data">
+                <mat-icon>check_circle</mat-icon>
+                <p>Вредоносных IP-адресов не обнаружено</p>
+              </div>
+            }
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Угрозы по протоколам -->
+      <mat-card class="protocols-table">
+        <mat-card-header>
+          <mat-card-title>
+            <mat-icon>transform</mat-icon>
+            Угрозы по протоколам
+          </mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="protocol-list">
+            @for (protocol of threatsByProtocol(); track protocol.protocol) {
+              <div class="protocol-item">
+
+                <div class="protocol-name">
+                  <mat-icon>network_check</mat-icon>
+                  <strong>{{ protocol.protocol }}</strong>
+                </div>
+
+                <div class="protocol-stats">
+                  <div class="stat">
+                    <span>Всего:</span>
+                    <mat-chip>{{ protocol.totalThreats }}</mat-chip>
+                  </div>
+                  <div class="stat">
+                    <span>Critical:</span>
+                    <mat-chip class="threat-critical">{{ protocol.criticalThreats }}</mat-chip>
+                  </div>
+                  <div class="stat">
+                    <span>High:</span>
+                    <mat-chip class="threat-high">{{ protocol.highThreats }}</mat-chip>
+                  </div>
+                  <div class="stat">
+                    <span>Avg ML:</span>
+                    <mat-chip>{{ (protocol.averageMLScore * 100).toFixed(0) }}%</mat-chip>
+                  </div>
+                </div>
+              </div>
+            }
+
+            @if (threatsByProtocol().length === 0) {
+              <div class="no-data">
+                <mat-icon>check_circle</mat-icon>
+                <p>Нет данных об угрозах</p>
+              </div>
+            }
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+  }
+</div>
+

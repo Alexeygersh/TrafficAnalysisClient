@@ -1,0 +1,496 @@
+.dashboard-container {
+  max-width: 1600px;
+  margin: 0 auto;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.header h1 {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 28px;
+  font-weight: 500;
+  margin: 0;
+  color: var(--text-primary);
+}
+
+.period-select {
+  min-width: 200px;
+}
+
+.loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px;
+  gap: 16px;
+}
+
+.error-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 20px;
+  background-color: #ffebee;
+  color: var(--status-error);
+}
+
+.dashboard-content {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* Статистика */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 16px;
+}
+
+.stat-card {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 24px !important;
+  transition: transform 0.2s, box-shadow 0.2s;
+  color: white;
+}
+
+.stat-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px var(--shadow-color);
+}
+
+.stat-card.primary {
+  background: var(--gradient-primary);
+}
+
+.stat-card.success {
+  background: var(--gradient-success);
+}
+
+.stat-card.danger {
+  background: var(--gradient-danger);
+}
+
+.stat-card.warning {
+  background: var(--gradient-warning);
+}
+
+.stat-icon {
+  font-size: 56px;
+  width: 56px;
+  height: 56px;
+  opacity: 0.9;
+}
+
+.stat-info {
+  flex: 1;
+}
+
+.stat-value {
+  font-size: 36px;
+  font-weight: 700;
+  line-height: 1;
+  margin-bottom: 8px;
+}
+
+.stat-label {
+  font-size: 14px;
+  opacity: 0.9;
+  font-weight: 500;
+}
+
+/* Графики */
+.charts-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 24px;
+}
+
+.chart-card {
+  padding: 0 !important;
+}
+
+.chart-card.large {
+  grid-column: span 2;
+}
+
+.chart-card mat-card-content {
+  padding: 20px !important;
+}
+
+.chart-container {
+  position: relative;
+  height: 350px;
+  width: 100%;
+}
+
+/* Топ IP-адресов */
+.top-ips-table {
+  margin-top: 8px;
+}
+
+.top-ips-table mat-card-header {
+  padding: 20px 20px 0 20px;
+}
+
+.top-ips-table mat-card-title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.ip-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 20px;
+}
+
+.ip-item {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px;
+  background-color: var(--bg-secondary);
+  border-radius: 8px;
+  border-left: 4px solid var(--border-color);
+  transition: all 0.2s;
+}
+
+.ip-item:hover {
+  background-color: var(--hover-color);
+  box-shadow: 0 2px 8px var(--shadow-color);
+}
+
+.ip-item.threat-critical {
+  border-left-color: var(--threat-critical);
+}
+
+.ip-item.threat-high {
+  border-left-color: var(--threat-high);
+}
+
+.ip-item.threat-medium {
+  border-left-color: var(--threat-medium);
+}
+
+.ip-item.threat-low {
+  border-left-color: var(--threat-low);
+}
+
+.ip-rank {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  background: var(--bg-gradient-accent);
+  color: white;
+  border-radius: 50%;
+  font-size: 18px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.ip-details {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.ip-address code {
+  font-size: 16px;
+  font-weight: 600;
+  background-color: var(--bg-card);
+  padding: 4px 12px;
+  border-radius: 4px;
+  font-family: 'Courier New', monospace;
+  color: var(--text-primary);
+}
+
+.ip-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.ip-protocols {
+  font-size: 13px;
+  color: var(--text-secondary);
+  font-style: italic;
+}
+
+.ip-stats {
+  display: flex;
+  gap: 24px;
+}
+
+.ip-stats .stat-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.ip-stats .label {
+  font-size: 11px;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  font-weight: 500;
+}
+
+.ip-stats strong {
+  font-size: 18px;
+  color: var(--text-secondary);
+}
+
+/* Угрозы по протоколам */
+.protocols-table {
+  margin-top: 8px;
+}
+
+.protocols-table mat-card-header {
+  padding: 20px 20px 0 20px;
+}
+
+.protocols-table mat-card-title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.protocols-table .mat-card-title {
+  color: var(--text-secondary);
+}
+
+.protocol-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 20px;
+}
+
+.protocol-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px;
+  background-color: var(--bg-secondary);
+  border-radius: 8px;
+  transition: all 0.2s;
+  box-shadow: 0 2px 8px var(--shadow-color);
+}
+
+.protocol-item:hover {
+  background-color: var(--hover-color);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+}
+
+.protocol-name {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.protocol-name mat-icon {
+  color: var(--button-primary);
+}
+
+.protocol-name strong {
+  font-size: 16px;
+  color: var(--text-secondary);
+}
+
+.protocol-stats {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+}
+
+.protocol-stats .stat {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.protocol-stats .stat span {
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.protocol-stats mat-chip {
+  font-size: 13px !important;
+  min-height: 24px !important;
+  padding: 0 8px !important;
+}
+
+/* Цвета угроз */
+.threat-critical {
+  background-color: var(--threat-critical) !important;
+  color: white !important;
+}
+
+.threat-high {
+  background-color: var(--threat-high) !important;
+  color: white !important;
+}
+
+.threat-medium {
+  background-color: var(--threat-medium) !important;
+  color: #333 !important;
+}
+
+.threat-low {
+  background-color: var(--threat-low) !important;
+  color: white !important;
+}
+
+.threat-none {
+  background-color: var(--threat-none) !important;
+  color: #666 !important;
+}
+
+/* Нет данных */
+.no-data {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 40px;
+  color: var(--text-muted);
+  text-align: center;
+}
+
+.no-data mat-icon {
+  font-size: 48px;
+  width: 48px;
+  height: 48px;
+  margin-bottom: 12px;
+  color: var(--status-safe);
+}
+
+.no-data p {
+  margin: 0;
+  font-size: 14px;
+}
+
+/* Тёмная тема для графиков */
+.dark-theme .chart-card {
+  background-color: var(--bg-card) !important;
+}
+
+.dark-theme .chart-title {
+  color: var(--text-secondary);
+}
+
+.dark-theme .protocol-list{
+  background-color: var(--bg-secondary);
+}
+
+.dark-theme .ip-item,
+.dark-theme .protocol-item {
+  background-color: var(--bg-secondary);
+  color: var(--text-secondary);
+}
+
+.dark-theme .ip-item:hover,
+.dark-theme .protocol-item:hover {
+  background-color: var(--hover-color);
+}
+
+.dark-theme code {
+  background-color: var(--bg-secondary);
+  color: var(--text-primary);
+}
+
+.dark-theme .threat-bar-progress {
+  background-color: var(--bg-secondary);
+}
+
+/* Адаптивность */
+@media (max-width: 1200px) {
+  .charts-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .chart-card.large {
+    grid-column: span 1;
+  }
+}
+
+@media (max-width: 768px) {
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+
+  .period-select {
+    width: 100%;
+  }
+
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .ip-item {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .ip-stats {
+    width: 100%;
+    justify-content: space-around;
+  }
+
+  .protocol-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .protocol-stats {
+    width: 100%;
+    flex-wrap: wrap;
+  }
+
+  .chart-container {
+    height: 300px;
+  }
+}
+
+/* Анимации */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.dashboard-content > * {
+  animation: fadeIn 0.5s ease-out;
+}
+
+.stat-card:nth-child(1) { animation-delay: 0.1s; }
+.stat-card:nth-child(2) { animation-delay: 0.2s; }
+.stat-card:nth-child(3) { animation-delay: 0.3s; }
+.stat-card:nth-child(4) { animation-delay: 0.4s; }

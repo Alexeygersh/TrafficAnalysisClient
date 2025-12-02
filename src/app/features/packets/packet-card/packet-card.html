@@ -1,0 +1,124 @@
+<mat-card class="packet-card">
+  <mat-card-header>
+    <div class="card-header">
+      <div class="packet-id">
+        <mat-icon>network_check</mat-icon>
+        <span>#{{ packet.id }}</span>
+      </div>
+
+      @if (packet.analysis) {
+        <mat-chip
+          [class]="getThreatClass(packet.analysis.threatLevel)"
+          class="threat-chip">
+          {{ packet.analysis.threatLevel }}
+        </mat-chip>
+      }
+    </div>
+  </mat-card-header>
+
+  <mat-card-content>
+    <!-- IP информация -->
+    <div class="ip-info">
+      <div class="ip-item">
+        <span class="label">
+          <mat-icon>computer</mat-icon>
+          Источник
+        </span>
+        <code>{{ packet.sourceIP }}</code>
+      </div>
+
+      <mat-icon class="arrow-icon">arrow_forward</mat-icon>
+
+      <div class="ip-item">
+        <span class="label">
+          <mat-icon>dns</mat-icon>
+          Назначение
+        </span>
+        <code>{{ packet.destinationIP }}</code>
+      </div>
+    </div>
+
+    <mat-divider></mat-divider>
+
+    <!-- Детали -->
+    <div class="details">
+      <div class="detail-item">
+        <mat-icon class="detail-icon">settings_ethernet</mat-icon>
+        <span class="detail-label">Порт:</span>
+        <strong>{{ packet.port }}</strong>
+      </div>
+
+      <div class="detail-item">
+        <mat-icon class="detail-icon">transform</mat-icon>
+        <span class="detail-label">Протокол:</span>
+        <mat-chip class="protocol-chip">{{ packet.protocol }}</mat-chip>
+      </div>
+
+      <div class="detail-item">
+        <mat-icon class="detail-icon">data_usage</mat-icon>
+        <span class="detail-label">Размер:</span>
+        <strong>{{ formatSize(packet.packetSize) }}</strong>
+      </div>
+
+      <div class="detail-item">
+        <mat-icon class="detail-icon">schedule</mat-icon>
+        <span class="detail-label">Время:</span>
+        <span>{{ formatDate(packet.timestamp) }}</span>
+      </div>
+    </div>
+
+    <!-- ML Score (если есть анализ) -->
+    @if (packet.analysis) {
+      <div class="ml-score-section">
+        <div class="ml-label">ML Score:</div>
+        <div class="ml-bar">
+          <div
+            class="ml-fill"
+            [style.width.%]="packet.analysis.mlModelScore * 100"
+            [class]="getThreatClass(packet.analysis.threatLevel)">
+          </div>
+        </div>
+        <div class="ml-value">
+          {{ (packet.analysis.mlModelScore * 100).toFixed(0) }}%
+        </div>
+      </div>
+    }
+
+    <!-- Нет анализа -->
+    @if (!packet.analysis) {
+      <div class="no-analysis">
+        <mat-icon>info_outline</mat-icon>
+        <span>Анализ не выполнен</span>
+      </div>
+    }
+  </mat-card-content>
+
+  <mat-card-actions>
+    <button
+      mat-button
+      color="primary"
+      [routerLink]="['/packets', packet.id]">
+      <mat-icon>visibility</mat-icon>
+      Просмотр
+    </button>
+
+    @if (isAdmin) {
+      <button
+        mat-button
+        [routerLink]="['/packets', packet.id, 'edit']">
+        <mat-icon>edit</mat-icon>
+        Изменить
+      </button>
+    }
+
+    @if (isAdmin) {
+      <button
+        mat-icon-button
+        color="warn"
+        (click)="onDelete()"
+        matTooltip="Удалить">
+        <mat-icon>delete</mat-icon>
+      </button>
+    }
+  </mat-card-actions>
+</mat-card>

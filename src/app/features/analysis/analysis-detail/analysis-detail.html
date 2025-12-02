@@ -1,0 +1,215 @@
+<div class="analysis-detail-container">
+  <!-- Загрузка -->
+  @if (isLoading()) {
+    <div class="loading">
+      <mat-spinner></mat-spinner>
+      <p>Загрузка анализа...</p>
+    </div>
+  }
+
+  <!-- Ошибка -->
+  @if (errorMessage()) {
+    <mat-card class="error-card">
+      <mat-icon color="warn">error</mat-icon>
+      <div>
+        <h3>Ошибка загрузки</h3>
+        <p>{{ errorMessage() }}</p>
+      </div>
+      <button mat-button routerLink="/analysis">Вернуться к списку</button>
+    </mat-card>
+  }
+
+  <!-- Детальная информация -->
+  @if (!isLoading() && analysis()) {
+    <!-- Заголовок -->
+    <div class="header">
+      <h1>
+        <mat-icon>analytics</mat-icon>
+        Анализ #{{ analysis()!.id }}
+      </h1>
+      <div class="header-actions">
+        <button mat-stroked-button routerLink="/analysis">
+          <mat-icon>arrow_back</mat-icon>
+          Назад к списку
+        </button>
+        @if (isAdmin) {
+          <button mat-stroked-button color="warn" (click)="deleteAnalysis()">
+            <mat-icon>delete</mat-icon>
+            Удалить
+          </button>
+        }
+      </div>
+    </div>
+
+    <!-- Главная карточка с результатами -->
+    <mat-card class="main-result-card">
+      <mat-card-content>
+        <div class="result-grid">
+          <!-- Уровень угрозы -->
+          <div class="result-item">
+            <span class="label">Уровень угрозы:</span>
+            <mat-chip [class]="getThreatClass(analysis()!.threatLevel)" class="large-chip">
+              <mat-icon>{{ analysis()!.isMalicious ? 'dangerous' : 'verified_user' }}</mat-icon>
+              {{ analysis()!.threatLevel }}
+            </mat-chip>
+          </div>
+
+          <!-- Статус -->
+          <div class="result-item">
+            <span class="label">Статус:</span>
+            <mat-chip [class]="analysis()!.isMalicious ? 'malicious-chip' : 'safe-chip'" class="large-chip">
+              <mat-icon>{{ analysis()!.isMalicious ? 'block' : 'check_circle' }}</mat-icon>
+              {{ analysis()!.isMalicious ? 'Вредоносный' : 'Безопасный' }}
+            </mat-chip>
+          </div>
+
+          <!-- ML Score -->
+          <div class="result-item full-width">
+            <span class="label">ML Model Score:</span>
+            <div class="ml-score-display">
+              <div class="ml-score-bar">
+                <div
+                  class="ml-score-fill"
+                  [style.width.%]="analysis()!.mlModelScore * 100"
+                  [class]="getThreatClass(analysis()!.threatLevel)">
+                </div>
+              </div>
+              <div class="ml-score-info">
+                <span class="ml-score-value">{{ (analysis()!.mlModelScore * 100).toFixed(1) }}%</span>
+                <span class="ml-score-confidence">Уверенность модели</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Дата обнаружения -->
+          <div class="result-item">
+            <span class="label">Дата обнаружения:</span>
+            <span class="value">{{ formatDate(analysis()!.detectedAt) }}</span>
+          </div>
+
+          <!-- Пакет -->
+          <div class="result-item">
+            <span class="label">Связанный пакет:</span>
+            <a [routerLink]="['/packets', analysis()!.packetId]" class="packet-link">
+              <mat-icon>network_check</mat-icon>
+              Пакет #{{ analysis()!.packetId }}
+            </a>
+          </div>
+        </div>
+
+        <!-- Описание -->
+        @if (analysis()!.description) {
+          <mat-divider></mat-divider>
+          <div class="description-section">
+            <h3><mat-icon>description</mat-icon> Описание</h3>
+            <p>{{ analysis()!.description }}</p>
+          </div>
+        }
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Полный отчет -->
+    @if (report()) {
+      <mat-card class="report-card">
+        <mat-card-header>
+          <mat-card-title>
+            <mat-icon>article</mat-icon>
+            Подробный отчет
+          </mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <!-- Информация о пакете -->
+          <div class="report-section">
+            <h3>Информация о пакете</h3>
+            <div class="info-grid">
+              <div class="info-item">
+                <span class="label">Источник:</span>
+                <code>{{ report()!.sourceIP }}:{{ report()!.port }}</code>
+              </div>
+              <div class="info-item">
+                <span class="label">Назначение:</span>
+                <code>{{ report()!.destinationIP }}</code>
+              </div>
+            </div>
+          </div>
+
+          <mat-divider></mat-divider>
+
+          <!-- Текстовый отчет -->
+          <div class="report-section">
+            <h3>Текстовый отчет</h3>
+            <pre class="report-text">{{ report()!.reportText }}</pre>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    }
+
+    <!-- Интерпретация результатов -->
+    <mat-card class="interpretation-card">
+      <mat-card-header>
+        <mat-card-title>
+          <mat-icon>psychology</mat-icon>
+          Интерпретация результатов
+        </mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        @if (analysis()!.threatLevel === 'Critical') {
+          <div class="interpretation critical">
+            <mat-icon>report</mat-icon>
+            <div>
+              <h4>Критическая угроза!</h4>
+              <p>Пакет с высокой вероятностью является вредоносным. Рекомендуется немедленная блокировка и детальное расследование.</p>
+            </div>
+          </div>
+        }
+
+        @if (analysis()!.threatLevel === 'High') {
+          <div class="interpretation high">
+            <mat-icon>warning</mat-icon>
+            <div>
+              <h4>Высокая угроза</h4>
+              <p>Обнаружены подозрительные признаки. Необходим дополнительный анализ и мониторинг источника.</p>
+            </div>
+          </div>
+        }
+
+        @if (analysis()!.threatLevel === 'Medium') {
+          <div class="interpretation medium">
+            <mat-icon>info</mat-icon>
+            <div>
+              <h4>Средний уровень риска</h4>
+              <p>Пакет содержит некоторые аномальные признаки, но не является критичной угрозой. Рекомендуется наблюдение.</p>
+            </div>
+          </div>
+        }
+
+        @if (analysis()!.threatLevel === 'Low') {
+          <div class="interpretation low">
+            <mat-icon>check_circle</mat-icon>
+            <div>
+              <h4>Низкий уровень риска</h4>
+              <p>Пакет соответствует нормальным параметрам трафика. Дополнительные действия не требуются.</p>
+            </div>
+          </div>
+        }
+
+        <!-- Рекомендации -->
+        <div class="recommendations">
+          <h4>Рекомендуемые действия:</h4>
+          <ul>
+            @if (analysis()!.isMalicious) {
+              <li>Заблокировать IP-адрес источника: {{ report()?.sourceIP }}</li>
+              <li>Проверить другие пакеты от этого источника</li>
+              <li>Обновить правила firewall</li>
+              <li>Уведомить администратора безопасности</li>
+            } @else {
+              <li>Продолжить мониторинг трафика</li>
+              <li>Включить пакет в базу нормального поведения</li>
+              <li>Регулярно обновлять ML-модель</li>
+            }
+          </ul>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  }
+</div>

@@ -1,0 +1,262 @@
+.login-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background: var(--bg-gradient-primary);
+  padding: 20px;
+  position: relative;
+  transition: background 0.5s ease;
+}
+
+.theme-toggle {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  z-index: 1000;
+  background-color: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(10px);
+  transition: all 0.3s ease;
+}
+
+.theme-toggle:hover {
+  background-color: rgba(255, 255, 255, 0.3);
+  transform: scale(1.1);
+}
+
+.theme-toggle mat-icon {
+  color: white;
+}
+
+html.light-theme .theme-toggle {
+  background-color: rgba(0, 0, 0, 0.15);
+}
+
+html.light-theme .theme-toggle:hover {
+  background-color: rgba(0, 0, 0, 0.25);
+}
+
+html.light-theme .theme-toggle mat-icon {
+  color: var(--text-primary) !important;
+}
+
+html.light-theme .mat-form-field {
+  background-color: var(--bg-card);
+}
+
+.login-card {
+  max-width: 450px;
+  width: 100%;
+  padding: 20px;
+  box-shadow: 0 8px 32px var(--shadow-color);
+  background: var(--bg-gradient-card);
+  transition: all 0.3s ease;
+  border: 1px solid var(--border-color);
+}
+
+/* Исправление карточки для светлой темы */
+html.light-theme .login-card {
+  background: var(--bg-gradient-card);
+  box-shadow: 0 8px 32px var(--shadow-color);
+}
+
+mat-card-header {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+mat-card-title h1 {
+  font-size: 24px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0 0 8px 0;
+}
+
+mat-card-title p {
+  font-size: 16px;
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+/* Убедитесь, что кнопка primary хорошо видна в светлой теме */
+html.light-theme .mat-mdc-raised-button.mat-primary {
+  background-color: var(--button-primary) !important;
+  color: white !important;
+}
+
+.full-width {
+  width: 100%;
+  margin-bottom: 16px;
+}
+
+.error-message {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px;
+  margin-bottom: 16px;
+  background-color: #ffebee;
+  border-radius: 4px;
+  color: var(--status-error);
+  border-left: 4px solid var(--status-error);
+}
+
+.error-message mat-icon {
+  font-size: 20px;
+  width: 20px;
+  height: 20px;
+}
+
+html.dark-theme .error-message {
+  background-color: rgba(244, 67, 54, 0.15);
+  color: var(--status-error);
+  border-left-color: var(--status-error);
+}
+
+html.dark-theme .error-message mat-icon {
+  color: var(--status-error);
+}
+
+button[type="submit"] {
+  height: 48px;
+  font-size: 16px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+button mat-spinner {
+  display: inline-block;
+  margin-right: 8px;
+}
+
+.test-credentials {
+  margin-top: 24px;
+  padding: 16px;
+  background-color: var(--bg-secondary);
+  border: 1px solid #64b5f6;
+  border-radius: 4px;
+  border-left: 4px solid var(--button-primary);
+}
+
+.test-credentials p {
+  margin: 4px 0;
+  font-size: 14px;
+  color: var(--text-secondary);
+}
+
+.test-credentials strong {
+  color: var(--text-primary);
+}
+
+/* Светлая тема */
+html.light-theme .test-credentials code {
+  background-color: #e3f2fd;
+  color: #1565c0;
+}
+
+.test-credentials code {
+  background-color: var(--bg-secondary);
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-family: 'Courier New', monospace;
+  font-size: 13px;
+  color: var(--text-primary);
+}
+
+html.dark-theme .login-container {
+  background: var(--bg-gradient-primary);
+}
+
+html.dark-theme .login-card {
+  background-color: var(--bg-card);
+  box-shadow: 0 8px 32px var(--shadow-color);
+}
+
+html.dark-theme mat-card-title h1 {
+  color: var(--text-primary);
+}
+
+html.dark-theme mat-card-title p {
+  color: var(--text-secondary);
+}
+
+html.dark-theme .error-message {
+  background-color: rgba(244, 67, 54, 0.15);
+  color: var(--status-error);
+  border-left-color: var(--status-error);
+}
+
+/* Тёмная тема */
+html.dark-theme .test-credentials {
+  background-color: var(--bg-secondary);
+  border-color: var(--button-primary);
+  border-left-color: var(--button-primary);
+}
+
+html.dark-theme .test-credentials p {
+  color: var(--text-secondary);
+}
+
+html.dark-theme .test-credentials strong {
+  color: var(--text-primary);
+}
+
+html.dark-theme .test-credentials code {
+  background-color: rgba(255, 255, 255, 0.08);
+  color: #90caf9;
+}
+
+/* ========================================
+   АДАПТИВНОСТЬ
+   ======================================== */
+
+@media (max-width: 500px) {
+  .login-card {
+    padding: 16px;
+  }
+
+  mat-card-title h1 {
+    font-size: 20px;
+  }
+
+  mat-card-title p {
+    font-size: 14px;
+  }
+
+  .theme-toggle {
+    top: 10px;
+    right: 10px;
+  }
+}
+
+/* ========================================
+   АНИМАЦИЯ ПОЯВЛЕНИЯ
+   ======================================== */
+
+.login-card {
+  animation: fadeInUp 0.6s ease-out;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.theme-toggle {
+  animation: fadeIn 0.8s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
