@@ -3,10 +3,10 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { map } from 'rxjs/operators';
-import { 
-  TrafficAnalysis, 
-  CreateAnalysisDto, 
-  AnalysisReport 
+import {
+  TrafficAnalysis,
+  CreateAnalysisDto,
+  AnalysisReport
 } from '../models/traffic-analysis.model';
 
 @Injectable({
@@ -23,8 +23,8 @@ export class AnalysisService {
   getAllAnalyses(): Observable<TrafficAnalysis[]> {
     return this.http.get<TrafficAnalysis[]>(this.apiUrl).pipe(
       map(analyses => {
-        console.log('📊 Raw analyses from API:', analyses); // ✅ Логирование
-        
+        console.log('📊 Raw analyses from API:', analyses); // Логирование
+
         return analyses.map(a => ({
           ...a,
           detectedAt: new Date(a.detectedAt)
@@ -65,7 +65,7 @@ export class AnalysisService {
 
   // Фильтрация анализов (клиентская сторона)
   filterAnalyses(
-    analyses: TrafficAnalysis[], 
+    analyses: TrafficAnalysis[],
     filters: AnalysisFilters
   ): TrafficAnalysis[] {
     let filtered = [...analyses];
@@ -91,13 +91,13 @@ export class AnalysisService {
 
     // Фильтр по дате
     if (filters.dateFrom) {
-      filtered = filtered.filter(a => 
+      filtered = filtered.filter(a =>
         new Date(a.detectedAt) >= new Date(filters.dateFrom!)
       );
     }
 
     if (filters.dateTo) {
-      filtered = filtered.filter(a => 
+      filtered = filtered.filter(a =>
         new Date(a.detectedAt) <= new Date(filters.dateTo!)
       );
     }
@@ -107,8 +107,8 @@ export class AnalysisService {
 
   // Сортировка
   sortAnalyses(
-    analyses: TrafficAnalysis[], 
-    sortBy: keyof TrafficAnalysis, 
+    analyses: TrafficAnalysis[],
+    sortBy: keyof TrafficAnalysis,
     sortDirection: 'asc' | 'desc'
   ): TrafficAnalysis[] {
     return [...analyses].sort((a, b) => {
@@ -118,7 +118,7 @@ export class AnalysisService {
       if (aValue === undefined || bValue === undefined) return 0;
 
       let comparison = 0;
-      
+
       if (typeof aValue === 'string' && typeof bValue === 'string') {
         comparison = aValue.localeCompare(bValue);
       } else if (aValue instanceof Date && bValue instanceof Date) {

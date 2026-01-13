@@ -10,10 +10,9 @@ export const routes: Routes = [
     loadComponent: () => import('./features/auth/login/login').then(m => m.Login)
   },
 
-  // ✅ ВСЕ защищенные маршруты внутри MainLayout
   {
     path: '',
-    component: MainLayout, // ✅ Layout оборачивает всё
+    component: MainLayout,
     canActivate: [authGuard],
     children: [
       // Редирект на packets
@@ -109,7 +108,44 @@ export const routes: Routes = [
             loadComponent: () => import('./features/admin/user-management/user-management').then(m => m.UserManagement)
           }
         ]
+      },
+
+      // Импорт
+      {
+        path: 'import',
+        canActivate: [adminGuard],
+        children: [
+          {
+            path: 'csv',
+            loadComponent: () =>
+              import('./features/import/csv-import/csv-import')
+                .then(m => m.CsvImportComponent)
+          }
+        ]
+      },
+
+      // Кластеризация
+      // {
+      //   path: 'clustering',
+      //   canActivate: [authGuard],
+      //   loadComponent: () =>
+      //     import('./features/clustering/clustering-dashboard/clustering-dashboard')
+      //       .then(m => m.ClusteringDashboard)
+      // },
+      //
+      // {
+      //   path: 'clustering',
+      //   canActivate: [authGuard],
+      //   loadComponent: () => import('./features/clustering/cluster-visualization/cluster-visualization')
+      //     .then(m => m.ClusterVisualization)
+      // }
+      {
+        path: 'clustering',
+        loadChildren: () =>
+          import('./features/clustering/clustering.routes')
+            .then(m => m.CLUSTERING_ROUTES)
       }
+
     ]
   },
 

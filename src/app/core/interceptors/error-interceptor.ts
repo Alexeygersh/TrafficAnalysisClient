@@ -13,10 +13,10 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
       let errorMessage = 'Произошла ошибка';
 
       if (error.error instanceof ErrorEvent) {
-        // ❌ Ошибка на стороне клиента
+        // Ошибка на стороне клиента
         errorMessage = `Ошибка: ${error.error.message}`;
       } else {
-        // ❌ Ошибка на стороне сервера
+        // Ошибка на стороне сервера
         switch (error.status) {
           case 400:
             errorMessage = error.error?.message || 'Неверные данные';
@@ -41,7 +41,7 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
       }
 
       console.error('HTTP Error:', errorMessage, error);
-      
+
       // Возвращаем ошибку для обработки в компонентах
       return throwError(() => ({ message: errorMessage, originalError: error }));
     })

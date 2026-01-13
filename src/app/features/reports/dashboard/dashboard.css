@@ -494,3 +494,111 @@
 .stat-card:nth-child(2) { animation-delay: 0.2s; }
 .stat-card:nth-child(3) { animation-delay: 0.3s; }
 .stat-card:nth-child(4) { animation-delay: 0.4s; }
+
+
+
+/* ========================================
+   DASHBOARD - ТЁМНАЯ ТЕМА УЛУЧШЕНИЯ
+   ======================================== */
+
+html.dark-theme .dashboard-container {
+  background: linear-gradient(135deg, #0a0e27 0%, #1a1f3a 50%, #0f172a 100%);
+}
+
+/* Stat cards */
+html.dark-theme .stat-card {
+  filter: brightness(0.85);
+  border: 1px solid #374151;
+  transition: all 0.3s ease;
+}
+
+html.dark-theme .stat-card:hover {
+  filter: brightness(1);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+  border-color: #4b5563;
+}
+
+html.dark-theme .stat-icon {
+  filter: brightness(0.9);
+}
+
+html.dark-theme .stat-info {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+html.dark-theme .stat-label {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+html.dark-theme .stat-value {
+  color: rgba(255, 255, 255, 0.95);
+}
+
+/* Chart cards */
+html.dark-theme .chart-card {
+  border: 1px solid #374151;
+  background-color: #1f2937;
+}
+
+html.dark-theme .chart-card:hover {
+  border-color: #4b5563;
+}
+
+/* Header */
+html.dark-theme .header {
+  border-bottom: 1px solid #374151;
+}
+
+html.dark-theme .header h1 {
+  color: rgba(255, 255, 255, 0.95);
+}
+
+html.dark-theme .mat-mdc-select {
+  color: rgba(255, 255, 255, 0.9) !important;
+}
+
+html.dark-theme .mat-mdc-select-arrow {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+/* Period select */
+html.dark-theme .period-select {
+  --mat-select-enabled-arrow-color: rgba(255, 255, 255, 0.7);
+}
+
+/* Error card */
+html.dark-theme .error-card {
+  background-color: rgba(239, 68, 68, 0.1);
+  border: 1px solid #dc2626;
+  color: #ef4444;
+}
+
+/* Top IPs table */
+html.dark-theme .top-ips-table {
+  border: 1px solid #374151;
+  background-color: #1f2937;
+}
+
+html.dark-theme .top-ips-table mat-card-header {
+  background-color: #1f2937;
+  border-bottom: 1px solid #374151;
+}
+
+html.dark-theme .top-ips-table mat-card-title {
+  color: rgba(255, 255, 255, 0.95);
+}
+
+/* Charts */
+html.dark-theme canvas {
+  filter: brightness(0.95);
+}
+
+/* ========================================
+   SMOOTH TRANSITIONS
+   ======================================== */
+
+.stat-card,
+.chart-card {
+  transition: all 0.3s ease;
+}

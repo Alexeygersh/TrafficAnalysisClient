@@ -2,6 +2,10 @@
   box-shadow: 0 2px 8px var(--shadow-color);
 }
 
+html.dark-theme .user-list-card {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+}
+
 .user-list-card mat-card-header {
   padding: 20px 20px 0 20px;
 }
@@ -44,11 +48,16 @@
   margin-left: 8px;
 }
 
+/* Темная тема - current user chip */
+html.dark-theme .current-user-chip {
+  background-color: #3b82f6 !important;
+  color: white !important;
+}
+
 .role-admin {
   background-color: var(--role-admin) !important;
   color: white !important;
   --mat-chip-label-text-color: var(--text-secondary);
-
 }
 
 .role-analyst {
@@ -71,49 +80,3 @@ mat-chip {
     display: none;
   }
 }
-
-/*!* ========================================*/
-/*   СВЕТЛАЯ ТЕМА - БОЛЕЕ КОНТРАСТНЫЕ ЦВЕТА*/
-/*   ======================================== *!*/
-
-
-/*html.light-theme .users-table {*/
-/*  color: var(--text-primary) !important;*/
-/*}*/
-
-/*html.light-theme .mat-mdc-icon-button {*/
-/*  color: var(--text-primary) !important;*/
-/*}*/
-
-/*html.light-theme .mat-mdc-icon-button.mat-warn {*/
-/*  color: var(--button-warn) !important;*/
-/*}*/
-
-/*html.light-theme .mat-mdc-raised-button.mat-primary {*/
-/*  background-color: var(--button-primary) !important;*/
-/*  color: white !important;*/
-/*}*/
-
-/*!* ========================================*/
-/*   ТЁМНАЯ ТЕМА - БОЛЕЕ СВЕТЛЫЕ ЦВЕТА*/
-/*   ======================================== *!*/
-
-/*html.dark-theme .users-table {*/
-/*  color: var(--text-primary) !important;*/
-/*}*/
-
-/*html.dark-theme .mat-mdc-header-cell {*/
-/*  color: var(--text-primary) !important;*/
-/*}*/
-
-/*html.dark-theme .mat-mdc-cell {*/
-/*  color: var(--text-primary) !important;*/
-/*}*/
-
-/*html.dark-theme .mat-mdc-icon-button {*/
-/*  color: var(--text-primary) !important;*/
-/*}*/
-
-/*html.dark-theme .mat-mdc-icon-button.mat-warn {*/
-/*  color: var(--button-warn) !important;*/
-/*}*/

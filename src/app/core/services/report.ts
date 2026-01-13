@@ -38,8 +38,8 @@ export class ReportService {
     const params = new HttpParams().set('top', top.toString());
     return this.http.get<TopMaliciousIP[]>(`${this.apiUrl}/top-malicious-ips`, { params }).pipe(
       map(ips => {
-        console.log('🚨 Raw IPs from API:', ips); // ✅ Логирование
-        
+        console.log('🚨 Raw IPs from API:', ips); // Логирование
+
         return ips.map(ip => ({
           ...ip,
           lastDetected: new Date(ip.lastDetected)
@@ -62,8 +62,8 @@ export class ReportService {
     const params = new HttpParams().set('hours', hours.toString());
     return this.http.get<TimeBasedSummary>(`${this.apiUrl}/time-based-summary`, { params }).pipe(
       map(summary => {
-        console.log('📈 Raw summary from API:', summary); // ✅ Логирование
-        
+        console.log('📈 Raw summary from API:', summary); // Логирование
+
         return {
           ...summary,
           startTime: new Date(summary.startTime),

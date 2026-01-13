@@ -21,7 +21,7 @@ export class PacketService {
   getAllPackets(): Observable<NetworkPacket[]> {
     return this.http.get<NetworkPacket[]>(this.apiUrl).pipe(
       map(packets => {
-        console.log('📦 Raw packets from API:', packets); // ✅ Логирование
+        console.log('Raw packets from API:', packets); // Логирование
 
         // Преобразуем строки дат в Date объекты
         return packets.map(p => ({

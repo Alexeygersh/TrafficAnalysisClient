@@ -24,7 +24,7 @@ export class SessionService {
   getAllSessions(): Observable<TrafficSession[]> {
     return this.http.get<TrafficSession[]>(this.apiUrl).pipe(
       map(sessions => {
-        console.log('📅 Raw sessions from API:', sessions); // Логирование
+        console.log('Raw sessions from API:', sessions); // Логирование
 
         return sessions.map(s => ({
           ...s,

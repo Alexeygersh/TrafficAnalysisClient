@@ -174,3 +174,105 @@ html.dark-theme mat-nav-list a.active-link mat-icon {
 mat-nav-list a {
   transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
 }
+
+
+/* ========================================
+   MAIN LAYOUT - ТЁМНАЯ ТЕМА УЛУЧШЕНИЯ
+   ======================================== */
+
+html.dark-theme .toolbar {
+  background-color: #1f2937 !important;
+  border-bottom: 1px solid #374151;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+html.dark-theme .sidenav {
+  background-color: #1f2937 !important;
+  border-right: 1px solid #374151;
+}
+
+html.dark-theme .content {
+  background-color: #0f172a;
+  background: linear-gradient(135deg, #0a0e27 0%, #1a1f3a 50%, #0f172a 100%);
+}
+
+html.dark-theme .sidenav-header {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+}
+
+html.dark-theme .logo-icon {
+  color: white;
+}
+
+html.dark-theme .sidenav-header h2 {
+  color: white;
+}
+
+/* Navigation items */
+html.dark-theme mat-nav-list a {
+  color: rgba(255, 255, 255, 0.8) !important;
+  opacity: 1;
+}
+
+html.dark-theme mat-nav-list a:hover {
+  background-color: rgba(255, 255, 255, 0.1) !important;
+  opacity: 1;
+}
+
+html.dark-theme mat-nav-list a.active-link {
+  background-color: rgba(59, 130, 246, 0.2) !important;
+  border-left: 4px solid #3b82f6;
+  color: white !important;
+  font-weight: 500;
+}
+
+html.dark-theme mat-nav-list a.active-link mat-icon {
+  color: #3b82f6 !important;
+}
+
+html.dark-theme mat-nav-list a mat-icon {
+  color: rgba(255, 255, 255, 0.8) !important;
+}
+
+/* User menu */
+html.dark-theme .user-button {
+  color: rgba(255, 255, 255, 0.9) !important;
+}
+
+html.dark-theme .user-name {
+  color: rgba(255, 255, 255, 0.9) !important;
+}
+
+html.dark-theme .user-role {
+  color: rgba(255, 255, 255, 0.6) !important;
+}
+
+html.dark-theme .mat-mdc-menu-panel {
+  background-color: #1f2937 !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+}
+
+html.dark-theme .mat-mdc-menu-item {
+  color: rgba(255, 255, 255, 0.9) !important;
+}
+
+html.dark-theme .mat-mdc-menu-item:hover {
+  background-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+/* Sidenav footer */
+html.dark-theme .sidenav-footer {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+/* ========================================
+   SMOOTH TRANSITIONS
+   ======================================== */
+
+.sidenav,
+.toolbar,
+.content,
+mat-nav-list a {
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}

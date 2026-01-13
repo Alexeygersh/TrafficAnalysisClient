@@ -11,6 +11,7 @@
   border-bottom: 1px solid var(--border-color);
   font-size: 20px;
   font-weight: 500;
+  color: var(--text-primary);
 }
 
 mat-dialog-content {
@@ -45,11 +46,29 @@ mat-dialog-content {
   align-items: center;
   gap: 8px;
   padding: 12px;
-  background-color: #ffebee;
   border-left: 4px solid var(--status-error);
   border-radius: 4px;
-  color: #c62828;
   margin-top: 8px;
+}
+
+/* Светлая тема - error message */
+html.light-theme .error-message {
+  background-color: #ffebee;
+  color: #c62828;
+}
+
+html.light-theme .error-message mat-icon {
+  color: #c62828;
+}
+
+/* Темная тема - error message */
+html.dark-theme .error-message {
+  background-color: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
+}
+
+html.dark-theme .error-message mat-icon {
+  color: #ef4444;
 }
 
 .error-message mat-icon {

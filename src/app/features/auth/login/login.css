@@ -260,3 +260,106 @@ html.dark-theme .test-credentials code {
     opacity: 1;
   }
 }
+
+
+
+/* ========================================
+   LOGIN - ТЁМНАЯ ТЕМА УЛУЧШЕНИЯ
+   ======================================== */
+
+html.dark-theme .login-container {
+  background: linear-gradient(135deg, #0a0e27 0%, #1a1f3a 50%, #0f172a 100%);
+}
+
+html.dark-theme .login-card {
+  background-color: #1f2937;
+  border: 1px solid #374151;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+}
+
+html.dark-theme .login-card mat-card-header {
+  border-bottom: 1px solid #374151;
+}
+
+html.dark-theme .login-card h1 {
+  color: rgba(255, 255, 255, 0.95);
+}
+
+html.dark-theme .login-card p {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+/* Form fields */
+html.dark-theme .login-card .mat-mdc-form-field {
+  color: rgba(255, 255, 255, 0.9) !important;
+}
+
+html.dark-theme .login-card .mat-mdc-input-element {
+  color: rgba(255, 255, 255, 0.9) !important;
+}
+
+html.dark-theme .login-card .mat-mdc-form-field-label {
+  color: rgba(255, 255, 255, 0.6) !important;
+}
+
+html.dark-theme .login-card mat-icon.matPrefix {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+html.dark-theme .login-card mat-icon.matSuffix {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+/* Buttons */
+html.dark-theme .login-card .mat-mdc-raised-button {
+  transition: all 0.3s ease;
+}
+
+html.dark-theme .login-card .mat-mdc-raised-button:disabled {
+  background-color: #374151 !important;
+  color: #6b7280;
+}
+
+/* Error message */
+html.dark-theme .login-card .error-message {
+  background-color: rgba(239, 68, 68, 0.1);
+  border-left-color: #dc2626;
+  color: #ef4444;
+}
+
+html.dark-theme .login-card .error-message mat-icon {
+  color: #ef4444;
+}
+
+/* Test credentials */
+html.dark-theme .test-credentials {
+  background-color: rgba(0, 0, 0, 0.2);
+  border: 1px solid #374151;
+  padding: 12px;
+  border-radius: 8px;
+  margin-top: 16px;
+}
+
+html.dark-theme .test-credentials p {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+html.dark-theme .test-credentials code {
+  background-color: #1f2937;
+  color: rgba(255, 255, 255, 0.9);
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+html.dark-theme .test-credentials strong {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+/* ========================================
+   SMOOTH TRANSITIONS
+   ======================================== */
+
+.login-card,
+.login-card .mat-mdc-raised-button {
+  transition: all 0.3s ease;
+}

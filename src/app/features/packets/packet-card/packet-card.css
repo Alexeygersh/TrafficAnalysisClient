@@ -224,3 +224,109 @@ mat-card-actions {
   background-color: var(--threat-none) !important;
   color: #666 !important;
 }
+
+
+
+/* ========================================
+   PACKET CARD - ТЁМНАЯ ТЕМА УЛУЧШЕНИЯ
+   ======================================== */
+
+html.dark-theme .packet-card {
+  border: 1px solid #374151;
+  transition: all 0.3s ease;
+}
+
+html.dark-theme .packet-card:hover {
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
+  border-color: #4b5563;
+}
+
+/* IP info */
+html.dark-theme .ip-info {
+  border-bottom: 1px solid #374151;
+}
+
+html.dark-theme .ip-item .label {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+html.dark-theme .ip-item code {
+  background-color: #1f2937;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+/* Details */
+html.dark-theme .detail-label {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+html.dark-theme .detail-icon {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+/* Protocol chips */
+html.dark-theme .protocol-chip {
+  background-color: #374151;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+/* ML Score */
+html.dark-theme .ml-label {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+html.dark-theme .ml-bar {
+  background-color: #1f2937;
+}
+
+/* Threat chips */
+html.dark-theme .threat-chip.threat-critical {
+  background: linear-gradient(135deg, #dc2626 0%, #7f1d1d 100%) !important;
+}
+
+html.dark-theme .threat-chip.threat-high {
+  background: linear-gradient(135deg, #ea580c 0%, #92400e 100%) !important;
+}
+
+html.dark-theme .threat-chip.threat-medium {
+  background: linear-gradient(135deg, #ca8a04 0%, #713f12 100%) !important;
+}
+
+html.dark-theme .threat-chip.threat-low {
+  background: linear-gradient(135deg, #16a34a 0%, #14532d 100%) !important;
+}
+
+html.dark-theme .threat-chip.threat-none {
+  background-color: #4b5563 !important;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+/* No analysis */
+html.dark-theme .no-analysis {
+  background-color: rgba(107, 114, 128, 0.1);
+  color: rgba(255, 255, 255, 0.6);
+}
+
+/* ========================================
+   THREAT LEVEL CLASSES
+   ======================================== */
+
+.threat-critical {
+  color: var(--threat-critical) !important;
+}
+
+.threat-high {
+  color: var(--threat-high) !important;
+}
+
+.threat-medium {
+  color: var(--threat-medium) !important;
+}
+
+.threat-low {
+  color: var(--threat-low) !important;
+}
+
+.threat-none {
+  color: var(--threat-none) !important;
+}

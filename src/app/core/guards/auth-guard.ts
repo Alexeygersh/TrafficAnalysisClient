@@ -7,9 +7,9 @@ export const authGuard: CanActivateFn = (route, state) => {
   const router = inject(Router);
 
   if (authService.isAuthenticated()) {
-    return true; // ✅ Пользователь авторизован
+    return true; // Пользователь авторизован
   } else {
-    // ❌ Редирект на страницу входа
+    // Редирект на страницу входа
     router.navigate(['/login'], {
       queryParams: { returnUrl: state.url } // Сохраняем URL для возврата
     });

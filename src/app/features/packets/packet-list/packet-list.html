@@ -30,6 +30,19 @@
     <mat-card class="filters-card">
       <mat-card-content>
         <div class="filters">
+
+          <mat-form-field appearance="outline" class="filter-field">
+            <mat-label>Сессия</mat-label>
+            <mat-select [(ngModel)]="selectedSessionId">
+              <mat-option [value]="null">Все сессии</mat-option>
+              @for (session of sessions(); track session.id) {
+                <mat-option [value]="session.id">
+                  {{ session.sessionName }}
+                </mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+
           <!-- Поиск -->
           <mat-form-field appearance="outline" class="filter-field">
             <mat-label>Поиск по IP или протоколу</mat-label>

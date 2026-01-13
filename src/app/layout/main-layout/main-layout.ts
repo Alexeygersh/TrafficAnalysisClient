@@ -62,6 +62,12 @@ export class MainLayout {
       roles: ['Admin', 'Analyst']
     },
     {
+      icon: 'scatter_plot',
+      label: 'Кластеризация',
+      route: '/clustering',
+      roles: ['Admin', 'Analyst']
+    },
+    {
       icon: 'network_check',
       label: 'Пакеты',
       route: '/packets',
@@ -83,6 +89,12 @@ export class MainLayout {
       icon: 'admin_panel_settings',
       label: 'Админ панель',
       route: '/admin/users',
+      roles: ['Admin']
+    },
+    {
+      icon: 'upload_file',
+      label: 'Импорт CSV',
+      route: '/import/csv',
       roles: ['Admin']
     }
   ];

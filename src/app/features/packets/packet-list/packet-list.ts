@@ -19,10 +19,12 @@ import { MatNativeDateModule } from '@angular/material/core';
 import { MatDividerModule } from '@angular/material/divider';
 
 import { PacketService, PacketFilters } from '../../../core/services/packet';
+import {SessionService} from '../../../core/services/session';
 import { AuthService } from '../../../core/services/auth';
 import { NetworkPacket } from '../../../core/models/network-packet.model';
 import { MainLayout } from '../../../layout/main-layout/main-layout';
 import { PacketCard } from '../packet-card/packet-card';
+import {TrafficSession} from '../../../core/models/traffic-session.model';
 
 @Component({
   selector: 'app-packet-list',
@@ -53,6 +55,7 @@ import { PacketCard } from '../packet-card/packet-card';
 export class PacketList implements OnInit {
   private packetService = inject(PacketService);
   authService = inject(AuthService);
+  sessionService = inject(SessionService);
 
   // Данные
   allPackets = signal<NetworkPacket[]>([]);
@@ -70,13 +73,35 @@ export class PacketList implements OnInit {
   viewMode = signal<'table' | 'cards'>('table');
 
   // Вычисляемый список отфильтрованных пакетов
+  // filteredPackets = computed(() => {
+  //   let packets = this.allPackets();
+  //
+  //   // Применяем фильтры
+  //   packets = this.packetService.filterPackets(packets, this.filters());
+  //
+  //   // Применяем сортировку
+  //   packets = this.packetService.sortPackets(
+  //     packets,
+  //     this.sortBy(),
+  //     this.sortDirection()
+  //   );
+  //
+  //   return packets;
+  // });
+
+  // Обновить фильтрацию
   filteredPackets = computed(() => {
     let packets = this.allPackets();
 
-    // Применяем фильтры
+    // Применяем существующие фильтры
     packets = this.packetService.filterPackets(packets, this.filters());
 
-    // Применяем сортировку
+    // ✅ НОВЫЙ ФИЛЬТР: По сессии
+    if (this.selectedSessionId() !== null) {
+      packets = packets.filter(p => p.sessionId === this.selectedSessionId());
+    }
+
+    // Сортировка
     packets = this.packetService.sortPackets(
       packets,
       this.sortBy(),
@@ -100,11 +125,26 @@ export class PacketList implements OnInit {
   ];
 
   // Опции для фильтров
-  protocols = ['TCP', 'UDP', 'ICMP', 'HTTP', 'HTTPS'];
+  protocols = ['ARP', 'DNS', 'ICMP', 'HTTP', 'HTTPS', 'TCP', 'TLS', 'UDP'];
   threatLevels = ['Low', 'Medium', 'High', 'Critical'];
+
+  sessions = signal<TrafficSession[]>([]);
+  selectedSessionId = signal<number | null>(null);
 
   ngOnInit(): void {
     this.loadPackets();
+    this.loadSessions();
+  }
+
+  loadSessions() {
+    this.sessionService.getAllSessions().subscribe({
+      next: (sessions) => this.sessions.set(sessions),
+      error: (err) => console.error('Error loading sessions:', err)
+    });
+  }
+
+  selectSession(sessionId: number | null) {
+    this.selectedSessionId.set(sessionId);
   }
 
   loadPackets(): void {

@@ -16,7 +16,7 @@ html, body {
 
 body {
   font-family: Roboto, "Helvetica Neue", sans-serif;
-  transition: background-color 0.5s ease, color 0.3s ease;
+  transition: background-color 0.3s ease, color 0.3s ease;
   min-height: 100vh;
   background: inherit !important;
   color: var(--text-primary);
@@ -142,6 +142,11 @@ body {
   color: var(--text-primary) !important;
 }
 
+.mat-mdc-dialog-surface {
+  background-color: var(--bg-card) !important;
+  color: var(--text-primary) !important;
+}
+
 /* Chips */
 .mat-mdc-chip {
   color: var(--text-primary) !important;
@@ -189,6 +194,34 @@ html.light-theme .mat-mdc-icon-button:hover {
 }
 
 /* ========================================
+   КНОПКИ - ТЁМНАЯ ТЕМА
+   ======================================== */
+
+html.dark-theme .mat-mdc-raised-button.mat-primary,
+html.dark-theme .mat-mdc-unelevated-button.mat-primary {
+  background-color: var(--button-primary) !important;
+  color: white !important;
+}
+
+html.dark-theme .mat-mdc-raised-button.mat-primary:hover,
+html.dark-theme .mat-mdc-unelevated-button.mat-primary:hover {
+  background-color: #1565c0 !important;
+}
+
+html.dark-theme .mat-mdc-icon-button {
+  color: rgba(255, 255, 255, 0.7) !important;
+}
+
+html.dark-theme .mat-mdc-icon-button:hover {
+  background-color: rgba(255, 255, 255, 0.1) !important;
+  color: rgba(255, 255, 255, 0.9) !important;
+}
+
+html.dark-theme .mat-mdc-icon-button.mat-warn {
+  color: var(--button-warn) !important;
+}
+
+/* ========================================
    УТИЛИТЫ
    ======================================== */
 
@@ -207,7 +240,7 @@ html.light-theme .mat-mdc-icon-button:hover {
 }
 
 /* ========================================
-   СВЕТЛАЯ ТЕМА - БОЛЕЕ КОНТРАСТНЫЕ ЦВАТА
+   СВЕТЛАЯ ТЕМА - БОЛЕЕ КОНТРАСТНЫЕ ЦВЕТА
    ======================================== */
 
 html.light-theme {
@@ -251,13 +284,76 @@ html.light-theme {
 }
 
 /* ========================================
-   SCROLLBAR (опционально)
+   ТЁМНАЯ ТЕМА - МАТЕРИАЛ КОМПОНЕНТЫ
    ======================================== */
 
-/* Светлая тема */
+html.dark-theme {
+  /* Form fields */
+  .mat-mdc-form-field {
+    --mdc-outlined-text-field-focus-label-color: #3b82f6;
+    --mdc-outlined-text-field-hover-outline-color: #4b5563;
+  }
+
+  /* Inputs */
+  .mat-mdc-text-field-wrapper {
+    background-color: #1f2937 !important;
+  }
+
+  .mat-mdc-input-element {
+    color: rgba(255, 255, 255, 0.9) !important;
+  }
+
+  /* Form field icons */
+  .mat-mdc-form-field-icon-prefix mat-icon,
+  .mat-mdc-form-field-icon-suffix mat-icon {
+    color: rgba(255, 255, 255, 0.7) !important;
+  }
+
+  /* Form field labels */
+  .mat-mdc-form-field-label {
+    color: rgba(255, 255, 255, 0.6) !important;
+  }
+
+  /* Select dropdown */
+  .mat-mdc-select-panel {
+    background-color: #1f2937 !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+  }
+
+  /* Chips */
+  .mat-mdc-chip {
+    background-color: #374151 !important;
+    color: rgba(255, 255, 255, 0.9) !important;
+  }
+
+  /* Tabs */
+  .mat-mdc-tab {
+    color: rgba(255, 255, 255, 0.6) !important;
+  }
+
+  .mat-mdc-tab.mat-mdc-tab-active {
+    color: #3b82f6 !important;
+  }
+
+  .mat-mdc-tab-group.mat-primary .mat-ink-bar {
+    background-color: #3b82f6 !important;
+  }
+
+  /* Slider */
+  .mat-mdc-slider {
+    --mdc-slider-active-track-color: #3b82f6;
+    --mdc-slider-inactive-track-color: #374151;
+    --mdc-slider-handle-color: #3b82f6;
+  }
+}
+
+/* ========================================
+   SCROLLBAR (ОБЩИЙ)
+   ======================================== */
+
 ::-webkit-scrollbar {
-  width: 12px;
-  height: 12px;
+  width: 10px;
+  height: 10px;
 }
 
 ::-webkit-scrollbar-track {
@@ -266,24 +362,25 @@ html.light-theme {
 
 ::-webkit-scrollbar-thumb {
   background: var(--border-color);
-  border-radius: 6px;
+  border-radius: 5px;
+  transition: background 0.2s ease;
 }
 
 ::-webkit-scrollbar-thumb:hover {
   background: var(--text-muted);
 }
 
-/* Тёмная тема */
+/* Тёмная тема - scrollbar */
 html.dark-theme ::-webkit-scrollbar-track {
-  background: var(--bg-secondary);
+  background: #1f2937;
 }
 
 html.dark-theme ::-webkit-scrollbar-thumb {
-  background: var(--border-color);
+  background: #374151;
 }
 
 html.dark-theme ::-webkit-scrollbar-thumb:hover {
-  background: var(--text-muted);
+  background: #4b5563;
 }
 
 /* ========================================
@@ -313,7 +410,7 @@ html.dark-theme .session-status-active {
 
 html.dark-theme .session-status-completed {
   background-color: var(--status-completed) !important;
-  color: var(--text-primary) !important;
+  color: rgba(255, 255, 255, 0.9) !important;
 }
 
 /* ========================================
@@ -343,7 +440,7 @@ html.dark-theme {
 
   /* Приглушение градиентов в карточках статистики */
   .stat-card {
-    filter: brightness(0.9); /* Слегка темнее */
+    filter: brightness(0.85); /* Слегка темнее */
   }
 
   .stat-card:hover {
