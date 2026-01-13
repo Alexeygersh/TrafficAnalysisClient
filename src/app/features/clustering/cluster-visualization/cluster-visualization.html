@@ -1,0 +1,65 @@
+<div class="visualization-container">
+  <div class="header">
+    <button mat-icon-button (click)="goBack()" matTooltip="Назад к кластерам">
+      <mat-icon>arrow_back</mat-icon>
+    </button>
+    <h1>
+      <mat-icon>insights</mat-icon>
+      Визуализация кластеров (2D PCA)
+    </h1>
+  </div>
+
+  <!-- Выбор сессии -->
+  <mat-card class="session-selector">
+    <mat-card-content>
+      <mat-form-field appearance="outline">
+        <mat-label>Выберите сессию</mat-label>
+        <mat-select
+          [(ngModel)]="selectedSessionId"
+          (ngModelChange)="onSessionChange()">
+          @for (session of sessions(); track session.id) {
+            <mat-option [value]="session.id">
+              {{ session.sessionName }} ({{ session.packetCount }} пакетов)
+            </mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Загрузка -->
+  @if (isLoading()) {
+    <div class="loading">
+      <mat-spinner></mat-spinner>
+      <p>Создание визуализации...</p>
+    </div>
+  }
+
+  <!-- Ошибка -->
+  @if (errorMessage()) {
+    <mat-card class="error-card">
+      <p>{{ errorMessage() }}</p>
+    </mat-card>
+  }
+
+  <!-- График -->
+  @if (!isLoading() && selectedSessionId() && scatterPlot(); as plot) {
+    <mat-card>
+      <mat-card-content>
+        @if (!plot.error) {
+          <img [src]="plot.image" alt="Cluster Scatter Plot" class="viz-image">
+          @if (plot.explainedVariance) {
+            <div class="variance-info">
+              <p><strong>Объяснённая дисперсия:</strong></p>
+              <p>PC1: {{ (plot.explainedVariance[0] * 100).toFixed(1) }}%</p>
+              <p>PC2: {{ (plot.explainedVariance[1] * 100).toFixed(1) }}%</p>
+              <p>Всего: {{ (plot.totalVarianceExplained! * 100).toFixed(1) }}%</p>
+            </div>
+          }
+        } @else {
+          <p class="error">{{ plot.error }}</p>
+        }
+      </mat-card-content>
+    </mat-card>
+  }
+</div>

@@ -1,0 +1,127 @@
+<div class="import-container">
+  <mat-card>
+    <mat-card-header>
+      <mat-card-title>
+        <mat-icon>upload_file</mat-icon>
+        Импорт Wireshark CSV
+      </mat-card-title>
+    </mat-card-header>
+
+    <mat-card-content>
+      <!-- Результаты импорта -->
+      @if (importResult()) {
+        <div class="import-success">
+          <mat-icon color="primary">check_circle</mat-icon>
+          <h3>Импорт успешно завершён!</h3>
+
+          <div class="result-stats">
+            <div class="stat">
+              <span class="label">Импортировано пакетов:</span>
+              <span class="value">{{ importResult()!.importedPackets }}</span>
+            </div>
+            <div class="stat">
+              <span class="label">Проанализировано источников:</span>
+              <span class="value">{{ importResult()!.sourcesAnalyzed }}</span>
+            </div>
+            <div class="stat danger">
+              <span class="label">Опасных источников:</span>
+              <span class="value">{{ importResult()!.dangerousSources }}</span>
+            </div>
+            <div class="stat">
+              <span class="label">Кластеров:</span>
+              <span class="value">{{ importResult()!.clusters }}</span>
+            </div>
+          </div>
+
+          <div class="actions">
+            <button mat-raised-button color="primary" (click)="viewSession()">
+              <mat-icon>analytics</mat-icon>
+              Просмотреть сессию
+            </button>
+            <button mat-raised-button color="accent" (click)="viewClusters()">
+              <mat-icon>scatter_plot</mat-icon>
+              Просмотреть кластеры
+            </button>
+            <button mat-stroked-button (click)="reset()">
+              <mat-icon>refresh</mat-icon>
+              Новый импорт
+            </button>
+          </div>
+        </div>
+      } @else {
+        <!-- Форма загрузки -->
+        <div class="upload-form">
+          <!-- Выбор сессии -->
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Сессия (опционально)</mat-label>
+            <mat-select
+              [(ngModel)]="selectedSessionId"
+              placeholder="Создать новую сессию">
+              <mat-option [value]="undefined">Создать новую сессию</mat-option>
+              @for (session of sessions(); track session.id) {
+                <mat-option [value]="session.id">
+                  {{ session.sessionName }}
+                </mat-option>
+              }
+            </mat-select>
+            <mat-hint>Если не выбрано, будет создана новая сессия</mat-hint>
+          </mat-form-field>
+
+          <!-- Выбор файла -->
+          <div class="file-input">
+            <input
+              type="file"
+              accept=".csv"
+              (change)="onFileSelected($event)"
+              #fileInput
+              hidden>
+
+            <button
+              mat-stroked-button
+              (click)="fileInput.click()"
+              [disabled]="isUploading()">
+              <mat-icon>attach_file</mat-icon>
+              Выбрать CSV файл
+            </button>
+
+            @if (selectedFile()) {
+              <div class="selected-file">
+                <mat-icon>description</mat-icon>
+                <span>{{ selectedFile()!.name }}</span>
+                <span class="file-size">
+                  ({{ (selectedFile()!.size / 1024).toFixed(2) }} KB)
+                </span>
+              </div>
+            }
+          </div>
+
+          <!-- Инструкция -->
+          <div class="instruction">
+            <mat-icon>info</mat-icon>
+            <div>
+              <strong>Формат файла:</strong>
+              <p>Экспортируйте данные из Wireshark: <code>File → Export Packet Dissections → As CSV</code></p>
+              <p>Формат: No., Time, Source, Destination, Protocol, Length, Info</p>
+            </div>
+          </div>
+
+          <!-- Кнопка загрузки -->
+          <button
+            mat-raised-button
+            color="primary"
+            [disabled]="!selectedFile() || isUploading()"
+            (click)="uploadFile()"
+            class="upload-button">
+            @if (isUploading()) {
+              <mat-spinner diameter="20"></mat-spinner>
+              <span>Загрузка...</span>
+            } @else {
+              <mat-icon>cloud_upload</mat-icon>
+            }
+            <span>Загрузить и проанализировать</span>
+          </button>
+        </div>
+      }
+    </mat-card-content>
+  </mat-card>
+</div>

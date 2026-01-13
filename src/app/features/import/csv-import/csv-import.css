@@ -1,0 +1,150 @@
+
+.import-container {
+  max-width: 800px;
+  margin: 2rem auto;
+  padding: 1rem;
+}
+
+mat-card-header {
+  margin-bottom: 1.5rem;
+}
+
+mat-card-title {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1.5rem;
+  /*color: var(--text-primary);*/
+}
+
+
+
+.upload-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.full-width {
+  width: 100%;
+}
+
+.file-input {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.selected-file {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1rem;
+  background: var(--bg-secondary);
+  /*  background: #f5f5f5;*/
+  border-radius: 4px;
+}
+
+.file-size {
+  font-size: 0.9rem;
+  /*opacity: 0.7;*/
+  color: var(--text-primary);
+  /*  color: #666;*/
+}
+
+.instruction {
+  display: flex;
+  gap: 1rem;
+  padding: 1rem;
+  background: var(--gradient-primary);
+  border-left: 4px solid var(--button-primary);
+  /*  background: #e3f2fd;*/
+  /*  border-left: 4px solid #2196f3;*/
+  border-radius: 4px;
+}
+
+.instruction mat-icon {
+  color: var(--button-primary);
+  /*  color: #2196f3;*/
+}
+
+.instruction code {
+  background: var(--bg-secondary);
+  /*  background: rgba(0, 0, 0, 0.1);*/
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-family: monospace;
+}
+
+.upload-button {
+  height: 48px;
+  font-size: 1rem;
+}
+
+.upload-button mat-spinner {
+  display: inline-block;
+  margin-right: 0.5rem;
+}
+
+
+/*!* Результаты *!*/
+
+.import-success {
+  text-align: center;
+  padding: 2rem;
+}
+
+.import-success mat-icon {
+  font-size: 64px;
+  width: 64px;
+  height: 64px;
+  margin-bottom: 1rem;
+}
+
+.result-stats {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+  margin: 2rem 0;
+}
+
+.stat {
+  padding: 1rem;
+  background: var(--bg-secondary);
+  /*  background: #f5f5f5;*/
+  border-radius: 8px;
+  text-align: left;
+}
+
+.stat.danger {
+  background: var(--gradient-danger);
+  border-left: 4px solid var(--status-error);
+  /*  background: #ffebee;*/
+  /*  border-left: 4px solid #f44336;*/
+}
+
+.stat .label {
+  display: block;
+  font-size: 0.9rem;
+  /*opacity: 0.7;*/
+  color: var(--text-primary);
+  /*  color: #666;*/
+  margin-bottom: 0.5rem;
+}
+
+.stat .value {
+  display: block;
+  font-size: 2rem;
+  font-weight: 500;
+  color: var(--text-primary);
+  /*  color: #333;*/
+}
+
+.actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-top: 2rem;
+}
+

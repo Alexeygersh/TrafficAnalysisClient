@@ -1,0 +1,336 @@
+<div class="clustering-container">
+  <!-- Заголовок -->
+  <div class="header">
+    <h1>
+      <mat-icon>scatter_plot</mat-icon>
+      Кластеризация источников трафика
+    </h1>
+
+    <!-- НОВАЯ КНОПКА -->
+    @if (selectedSessionId()) {
+      <button
+        mat-raised-button
+        color="accent"
+        (click)="openVisualization()"
+        class="visualize-button">
+        <mat-icon>insights</mat-icon>
+        Визуализация
+      </button>
+    }
+  </div>
+
+  <!-- Загрузка -->
+  @if (isLoading()) {
+    <div class="loading">
+      <mat-spinner></mat-spinner>
+      <p>Загрузка данных...</p>
+    </div>
+  } @else {
+    <!-- Статистика -->
+    <div class="stats-grid">
+      <mat-card class="stat-card">
+        <mat-icon class="stat-icon">devices</mat-icon>
+        <div class="stat-info">
+          <div class="stat-value">{{ statistics().totalSources }}</div>
+          <div class="stat-label">Всего источников</div>
+        </div>
+      </mat-card>
+
+      <mat-card class="stat-card danger">
+        <mat-icon class="stat-icon">warning</mat-icon>
+        <div class="stat-info">
+          <div class="stat-value">{{ statistics().dangerousSources }}</div>
+          <div class="stat-label">Опасных</div>
+        </div>
+      </mat-card>
+
+      <mat-card class="stat-card">
+        <mat-icon class="stat-icon">category</mat-icon>
+        <div class="stat-info">
+          <div class="stat-value">{{ statistics().totalClusters }}</div>
+          <div class="stat-label">Кластеров</div>
+        </div>
+      </mat-card>
+
+      <mat-card class="stat-card">
+        <mat-icon class="stat-icon">speed</mat-icon>
+        <div class="stat-info">
+          <div class="stat-value">{{ formatSpeed(statistics().maxSpeed) }}</div>
+          <div class="stat-label">Макс. скорость</div>
+        </div>
+      </mat-card>
+    </div>
+
+    <!-- Параметры кластеризации -->
+    <mat-card class="controls-card">
+      <mat-card-content>
+        <div class="controls">
+          <!-- НОВОЕ: Выбор сессии -->
+          <mat-form-field appearance="outline">
+            <mat-label>Сессия</mat-label>
+            <mat-select [(ngModel)]="selectedSessionId">
+              <mat-option [value]="null">Все сессии</mat-option>
+              @for (session of sessions(); track session.id) {
+                <mat-option [value]="session.id">
+                  {{ session.sessionName }} ({{ session.packetCount }} пакетов)
+                </mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Метод кластеризации</mat-label>
+            <mat-select [(ngModel)]="clusteringMethod">
+              <mat-option value="kmeans">K-Means</mat-option>
+              <mat-option value="dbscan">DBSCAN</mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Число кластеров</mat-label>
+            <mat-select [(ngModel)]="numberOfClusters">
+              <mat-option [value]="2">2</mat-option>
+              <mat-option [value]="3">3</mat-option>
+              <mat-option [value]="4">4</mat-option>
+              <mat-option [value]="5">5</mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <!-- НОВАЯ КНОПКА -->
+          <button
+            mat-raised-button
+            color="primary"
+            [disabled]="isRecalculating()"
+            (click)="recalculateFromDatabase()">
+            @if (isRecalculating()) {
+              <mat-spinner diameter="20"></mat-spinner>
+              <span>Пересчёт...</span>
+            } @else {
+              <mat-icon>analytics</mat-icon>
+            }
+            <span>Пересчитать из БД</span>
+          </button>
+        </div>
+
+        <!-- Подсказка -->
+        <div class="hint">
+          <mat-icon>info</mat-icon>
+          <span>
+        Эта кнопка анализирует существующие пакеты в базе данных
+            {{ selectedSessionId() ? '(выбранная сессия)' : '(все сессии)' }}
+      </span>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Tabs: Кластеры / Источники -->
+    <mat-tab-group>
+      <!-- Tab 1: Информация о кластерах -->
+      <mat-tab label="Кластеры">
+        <div class="tab-content">
+          <div class="cluster-cards">
+            @for (cluster of clusterInfo(); track cluster.clusterId) {
+              <mat-card
+                class="cluster-card"
+                [class.selected]="selectedClusterId() === cluster.clusterId"
+                [class.dangerous]="cluster.isDangerous"
+                (click)="selectCluster(cluster.clusterId)">
+
+                <div class="cluster-header">
+                  <div
+                    class="cluster-badge"
+                    [style.background-color]="getClusterColor(cluster.clusterId)">
+                    {{ cluster.clusterId }}
+                  </div>
+                  <h3>{{ cluster.clusterName }}</h3>
+                  @if (cluster.isDangerous) {
+                    <mat-icon class="danger-icon" matTooltip="Опасный кластер">
+                      warning
+                    </mat-icon>
+                  }
+                </div>
+
+                <div class="cluster-stats">
+                  <div class="cluster-stat">
+                    <span class="label">Источников:</span>
+                    <span class="value">{{ cluster.sourceCount }}</span>
+                  </div>
+                  <div class="cluster-stat">
+                    <span class="label">Средняя скорость:</span>
+                    <span class="value">{{ formatSpeed(cluster.averageSpeed) }}</span>
+                  </div>
+                  <div class="cluster-stat">
+                    <span class="label">Макс. скорость:</span>
+                    <span class="value">{{ formatSpeed(cluster.maxSpeed) }}</span>
+                  </div>
+                  <div class="cluster-stat">
+                    <span class="label">Уровень опасности:</span>
+                    <span class="value">{{ (cluster.dangerScore * 100).toFixed(0) }}%</span>
+                  </div>
+                </div>
+
+                <!-- Прогресс-бар опасности -->
+                <div class="danger-bar">
+                  <div
+                    class="danger-fill"
+                    [class]="getDangerClass(cluster.dangerScore)"
+                    [style.width.%]="cluster.dangerScore * 100">
+                  </div>
+                </div>
+              </mat-card>
+            }
+          </div>
+
+          @if (selectedClusterId() !== null) {
+            <div class="cluster-actions">
+              <button mat-stroked-button (click)="selectCluster(null)">
+                <mat-icon>clear</mat-icon>
+                Сбросить фильтр
+              </button>
+            </div>
+          }
+        </div>
+      </mat-tab>
+
+      <!-- Tab 2: Таблица источников -->
+      <mat-tab label="Источники">
+        <div class="tab-content">
+          <!-- Фильтры -->
+          <div class="filters">
+            <button
+              mat-stroked-button
+              [color]="showOnlyDangerous() ? 'warn' : 'primary'"
+              (click)="toggleDangerousFilter()">
+              <mat-icon>{{ showOnlyDangerous() ? 'check_box' : 'check_box_outline_blank' }}</mat-icon>
+              Только опасные
+            </button>
+
+            @if (selectedClusterId() !== null) {
+              <mat-chip class="filter-chip">
+                <mat-icon>filter_alt</mat-icon>
+                Кластер {{ selectedClusterId() }}
+                <button matChipRemove (click)="selectCluster(null)">
+                  <mat-icon>cancel</mat-icon>
+                </button>
+              </mat-chip>
+            }
+
+            <span class="filter-result">
+              Показано: {{ filteredSources().length }} / {{ sourceMetrics().length }}
+            </span>
+          </div>
+
+          <!-- Таблица -->
+          @if (filteredSources().length > 0) {
+            <mat-card>
+              <table mat-table [dataSource]="filteredSources()" class="sources-table">
+
+                <!-- IP -->
+                <ng-container matColumnDef="sourceIP">
+                  <th mat-header-cell *matHeaderCellDef>IP-адрес</th>
+                  <td mat-cell *matCellDef="let source">
+                    <code>{{ source.sourceIP }}</code>
+                  </td>
+                </ng-container>
+
+                <!-- Cluster -->
+                <ng-container matColumnDef="clusterId">
+                  <th mat-header-cell *matHeaderCellDef>Кластер</th>
+                  <td mat-cell *matCellDef="let source">
+                    <div
+                      class="cluster-badge small"
+                      [style.background-color]="getClusterColor(source.clusterId)">
+                      {{ source.clusterId }}
+                    </div>
+                  </td>
+                </ng-container>
+
+                <!-- Packets/sec -->
+                <ng-container matColumnDef="packetsPerSecond">
+                  <th mat-header-cell *matHeaderCellDef>Скорость</th>
+                  <td mat-cell *matCellDef="let source">
+                    {{ formatSpeed(source.packetsPerSecond) }}
+                  </td>
+                </ng-container>
+
+                <!-- Packet Count -->
+                <ng-container matColumnDef="packetCount">
+                  <th mat-header-cell *matHeaderCellDef>Пакетов</th>
+                  <td mat-cell *matCellDef="let source">
+                    {{ source.packetCount }}
+                  </td>
+                </ng-container>
+
+                <!-- Avg Size -->
+                <ng-container matColumnDef="averagePacketSize">
+                  <th mat-header-cell *matHeaderCellDef>Средний размер</th>
+                  <td mat-cell *matCellDef="let source">
+                    {{ formatBytes(source.averagePacketSize) }}
+                  </td>
+                </ng-container>
+
+                <!-- Unique Ports -->
+                <ng-container matColumnDef="uniquePorts">
+                  <th mat-header-cell *matHeaderCellDef>Портов</th>
+                  <td mat-cell *matCellDef="let source">
+                    <mat-chip
+                      [class.high-diversity]="source.uniquePorts > 20"
+                      matTooltip="Количество уникальных портов">
+                      {{ source.uniquePorts }}
+                    </mat-chip>
+                  </td>
+                </ng-container>
+
+                <!-- Danger Score -->
+                <ng-container matColumnDef="dangerScore">
+                  <th mat-header-cell *matHeaderCellDef>Уровень опасности</th>
+                  <td mat-cell *matCellDef="let source">
+                    <div class="danger-score">
+                      <div class="danger-bar-small">
+                        <div
+                          class="danger-fill"
+                          [class]="getDangerClass(source.dangerScore)"
+                          [style.width.%]="source.dangerScore * 100">
+                        </div>
+                      </div>
+                      <span>{{ (source.dangerScore * 100).toFixed(0) }}%</span>
+                    </div>
+                  </td>
+                </ng-container>
+
+                <!-- Status -->
+                <ng-container matColumnDef="status">
+                  <th mat-header-cell *matHeaderCellDef>Статус</th>
+                  <td mat-cell *matCellDef="let source">
+                    <mat-chip
+                      [class.dangerous-chip]="source.isDangerous"
+                      [class.safe-chip]="!source.isDangerous">
+                      <mat-icon>
+                        {{ source.isDangerous ? 'dangerous' : 'check_circle' }}
+                      </mat-icon>
+                      {{ source.isDangerous ? 'Опасный' : 'Безопасный' }}
+                    </mat-chip>
+                  </td>
+                </ng-container>
+
+                <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                <tr
+                  mat-row
+                  *matRowDef="let row; columns: displayedColumns;"
+                  (click)="viewSourceDetails(row.sourceIP)"
+                  class="clickable-row">
+                </tr>
+              </table>
+            </mat-card>
+          } @else {
+            <mat-card class="empty-state">
+              <mat-icon>inbox</mat-icon>
+              <h3>Источники не найдены</h3>
+              <p>Попробуйте изменить фильтры</p>
+            </mat-card>
+          }
+        </div>
+      </mat-tab>
+    </mat-tab-group>
+  }
+</div>
