@@ -2,7 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
-import { SourceMetrics, ClusterInfo } from '../models/source-metrics.model';
+import { SourceMetrics, ClusterInfo, MLAnalyzeResult } from '../models/source-metrics.model';
 
 export interface SessionFilter {
   id: number;
@@ -29,7 +29,6 @@ export class ClusteringService {
     return this.http.post(`${this.apiUrl}/recalculate`, null, { params });
   }
 
-  // НОВЫЙ МЕТОД: Пересчёт из существующих пакетов
   recalculateFromDatabase(
     sessionId: number | null = null,
     method: string = 'kmeans',
@@ -46,7 +45,6 @@ export class ClusteringService {
     return this.http.post(`${this.apiUrl}/recalculate-from-database`, null, { params });
   }
 
-  // НОВЫЙ МЕТОД: Получить список сессий
   getSessions(): Observable<SessionFilter[]> {
     return this.http.get<SessionFilter[]>(`${this.apiUrl}/sessions`);
   }
@@ -57,5 +55,17 @@ export class ClusteringService {
 
   getClusterSources(clusterId: number): Observable<SourceMetrics[]> {
     return this.http.get<SourceMetrics[]>(`${this.apiUrl}/cluster/${clusterId}/sources`);
+  }
+
+  // --- ML IDS ---
+
+  /**
+   * Запускает гибридную ML-модель (Random Forest + Isolation Forest)
+   * для всех источников указанной сессии.
+   * POST /api/clustering/ml-analyze?sessionId=X
+   */
+  runMLAnalysis(sessionId: number): Observable<MLAnalyzeResult> {
+    const params = new HttpParams().set('sessionId', sessionId.toString());
+    return this.http.post<MLAnalyzeResult>(`${this.apiUrl}/ml-analyze`, null, { params });
   }
 }

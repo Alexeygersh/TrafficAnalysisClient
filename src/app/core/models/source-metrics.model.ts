@@ -33,3 +33,24 @@ export interface ImportResult {
   dangerousSources: number;
   clusters: number;
 }
+
+// --- ML IDS ---
+
+export interface SourceMLPrediction {
+  sourceIP: string;
+  isAttack: boolean;
+  confidence: number;
+  threatLevel: 'Low' | 'Medium' | 'High' | 'Critical';
+  /** supervised | unsupervised | both | none */
+  method: string;
+  rfPrediction: number;
+  isAnomaly: boolean;
+}
+
+export interface MLAnalyzeResult {
+  sessionId: number;
+  totalSources: number;
+  attackSources: number;
+  anomalySources: number;
+  predictions: SourceMLPrediction[];
+}
