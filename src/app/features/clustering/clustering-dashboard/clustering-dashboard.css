@@ -405,3 +405,181 @@ code {
   height: 20px;
   /*  color: white;*/
 }
+
+
+
+/* =============================================================
+   ML-анализ — добавить в конец clustering-dashboard.css
+   ============================================================= */
+
+/* Кнопка ML-анализа */
+button[color="warn"] mat-spinner {
+  display: inline-block;
+  margin-right: 0.5rem;
+}
+
+/* Карточка результата ML */
+.ml-result-card {
+  margin-bottom: 2rem;
+  border-left: 4px solid #9c27b0;
+  background: linear-gradient(135deg, #f3e5f5 0%, #ffffff 100%);
+}
+
+.ml-avatar {
+  color: #9c27b0 !important;
+  font-size: 36px !important;
+  width: 36px !important;
+  height: 36px !important;
+}
+
+.ml-summary {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 1.5rem;
+  padding: 1rem 0;
+}
+
+.ml-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 1rem;
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+}
+
+.ml-stat.attack {
+  border-top: 3px solid #f44336;
+}
+
+.ml-stat.anomaly {
+  border-top: 3px solid #ff9800;
+}
+
+.ml-stat.safe {
+  border-top: 3px solid #4caf50;
+}
+
+.ml-stat-value {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #333;
+}
+
+.ml-stat.attack .ml-stat-value  { color: #f44336; }
+.ml-stat.anomaly .ml-stat-value { color: #ff9800; }
+.ml-stat.safe .ml-stat-value    { color: #4caf50; }
+
+.ml-stat-label {
+  font-size: 0.82rem;
+  color: #666;
+  text-align: center;
+}
+
+/* Колонка ML в таблице */
+.ml-column-header {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.ml-header-icon {
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+  color: #9c27b0;
+}
+
+.ml-cell {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* Чипы уровней угроз ML */
+.ml-chip {
+  font-size: 0.75rem !important;
+  min-height: 26px !important;
+  padding: 0 8px !important;
+}
+
+.ml-chip mat-icon {
+  font-size: 16px !important;
+  width: 16px !important;
+  height: 16px !important;
+  margin-right: 4px;
+}
+
+.ml-chip-critical {
+  background-color: #ffebee !important;
+  color: #c62828 !important;
+  border: 1px solid #ef9a9a;
+}
+
+.ml-chip-high {
+  background-color: #fff3e0 !important;
+  color: #e65100 !important;
+  border: 1px solid #ffcc80;
+}
+
+.ml-chip-medium {
+  background-color: #fffde7 !important;
+  color: #f57f17 !important;
+  border: 1px solid #fff176;
+}
+
+.ml-chip-low {
+  background-color: #e8f5e9 !important;
+  color: #2e7d32 !important;
+  border: 1px solid #a5d6a7;
+}
+
+/* Badge для zero-day аномалии */
+.zero-day-badge {
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: #fff;
+  background: #ff9800;
+  padding: 2px 5px;
+  border-radius: 4px;
+  letter-spacing: 0.05em;
+}
+
+/* Пустое значение ML */
+.ml-na {
+  color: #bbb;
+  font-size: 1.1rem;
+}
+
+/* Пустое состояние таблицы */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 3rem;
+  color: #999;
+  gap: 1rem;
+}
+
+.empty-state mat-icon {
+  font-size: 48px;
+  width: 48px;
+  height: 48px;
+}
+
+/* Строка таблицы danger-score */
+.danger-score {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.danger-bar-small {
+  width: 60px;
+  height: 6px;
+  background: #e0e0e0;
+  border-radius: 3px;
+  overflow: hidden;
+}

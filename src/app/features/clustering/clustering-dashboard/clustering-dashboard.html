@@ -6,7 +6,6 @@
       Кластеризация источников трафика
     </h1>
 
-    <!-- НОВАЯ КНОПКА -->
     @if (selectedSessionId()) {
       <button
         mat-raised-button
@@ -19,7 +18,6 @@
     }
   </div>
 
-  <!-- Загрузка -->
   @if (isLoading()) {
     <div class="loading">
       <mat-spinner></mat-spinner>
@@ -65,7 +63,6 @@
     <mat-card class="controls-card">
       <mat-card-content>
         <div class="controls">
-          <!-- НОВОЕ: Выбор сессии -->
           <mat-form-field appearance="outline">
             <mat-label>Сессия</mat-label>
             <mat-select [(ngModel)]="selectedSessionId">
@@ -96,7 +93,6 @@
             </mat-select>
           </mat-form-field>
 
-          <!-- НОВАЯ КНОПКА -->
           <button
             mat-raised-button
             color="primary"
@@ -107,25 +103,76 @@
               <span>Пересчёт...</span>
             } @else {
               <mat-icon>analytics</mat-icon>
+              <span>Пересчитать из БД</span>
             }
-            <span>Пересчитать из БД</span>
+          </button>
+
+          <!-- Кнопка ML-анализа -->
+          <button
+            mat-raised-button
+            color="warn"
+            [disabled]="isMLAnalyzing() || !selectedSessionId()"
+            (click)="runMLAnalysis()"
+            matTooltip="{{ !selectedSessionId() ? 'Выберите сессию для ML-анализа' : 'Запустить HybridIDS: Random Forest + Isolation Forest' }}">
+            @if (isMLAnalyzing()) {
+              <mat-spinner diameter="20"></mat-spinner>
+              <span>ML-анализ...</span>
+            } @else {
+              <mat-icon>psychology</mat-icon>
+              <span>ML-анализ</span>
+            }
           </button>
         </div>
 
-        <!-- Подсказка -->
         <div class="hint">
           <mat-icon>info</mat-icon>
           <span>
-        Эта кнопка анализирует существующие пакеты в базе данных
-            {{ selectedSessionId() ? '(выбранная сессия)' : '(все сессии)' }}
-      </span>
+            Пересчёт анализирует пакеты в БД
+            {{ selectedSessionId() ? '(выбранная сессия)' : '(все сессии)' }}.
+            ML-анализ запускает HybridIDS и требует выбора сессии.
+          </span>
         </div>
       </mat-card-content>
     </mat-card>
 
+    <!-- ML-результат (показывается после анализа) -->
+    @if (mlResult()) {
+      <mat-card class="ml-result-card">
+        <mat-card-header>
+          <mat-icon mat-card-avatar class="ml-avatar">psychology</mat-icon>
+          <mat-card-title>Результат ML-анализа (HybridIDS)</mat-card-title>
+          <mat-card-subtitle>
+            Random Forest + Isolation Forest · Сессия {{ mlResult()!.sessionId }}
+          </mat-card-subtitle>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="ml-summary">
+            <div class="ml-stat">
+              <span class="ml-stat-value">{{ mlResult()!.totalSources }}</span>
+              <span class="ml-stat-label">Источников проверено</span>
+            </div>
+            <div class="ml-stat attack">
+              <span class="ml-stat-value">{{ mlResult()!.attackSources }}</span>
+              <span class="ml-stat-label">Атакующих</span>
+            </div>
+            <div class="ml-stat anomaly">
+              <span class="ml-stat-value">{{ mlResult()!.anomalySources }}</span>
+              <span class="ml-stat-label">Аномалий (zero-day)</span>
+            </div>
+            <div class="ml-stat safe">
+              <span class="ml-stat-value">
+                {{ mlResult()!.totalSources - mlResult()!.attackSources }}
+              </span>
+              <span class="ml-stat-label">Безопасных</span>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    }
+
     <!-- Tabs: Кластеры / Источники -->
     <mat-tab-group>
-      <!-- Tab 1: Информация о кластерах -->
+      <!-- Tab 1: Кластеры -->
       <mat-tab label="Кластеры">
         <div class="tab-content">
           <div class="cluster-cards">
@@ -169,7 +216,6 @@
                   </div>
                 </div>
 
-                <!-- Прогресс-бар опасности -->
                 <div class="danger-bar">
                   <div
                     class="danger-fill"
@@ -195,7 +241,6 @@
       <!-- Tab 2: Таблица источников -->
       <mat-tab label="Источники">
         <div class="tab-content">
-          <!-- Фильтры -->
           <div class="filters">
             <button
               mat-stroked-button
@@ -220,7 +265,6 @@
             </span>
           </div>
 
-          <!-- Таблица -->
           @if (filteredSources().length > 0) {
             <mat-card>
               <table mat-table [dataSource]="filteredSources()" class="sources-table">
@@ -233,7 +277,7 @@
                   </td>
                 </ng-container>
 
-                <!-- Cluster -->
+                <!-- Кластер -->
                 <ng-container matColumnDef="clusterId">
                   <th mat-header-cell *matHeaderCellDef>Кластер</th>
                   <td mat-cell *matCellDef="let source">
@@ -245,7 +289,7 @@
                   </td>
                 </ng-container>
 
-                <!-- Packets/sec -->
+                <!-- Скорость -->
                 <ng-container matColumnDef="packetsPerSecond">
                   <th mat-header-cell *matHeaderCellDef>Скорость</th>
                   <td mat-cell *matCellDef="let source">
@@ -253,15 +297,13 @@
                   </td>
                 </ng-container>
 
-                <!-- Packet Count -->
+                <!-- Пакетов -->
                 <ng-container matColumnDef="packetCount">
                   <th mat-header-cell *matHeaderCellDef>Пакетов</th>
-                  <td mat-cell *matCellDef="let source">
-                    {{ source.packetCount }}
-                  </td>
+                  <td mat-cell *matCellDef="let source">{{ source.packetCount }}</td>
                 </ng-container>
 
-                <!-- Avg Size -->
+                <!-- Средний размер -->
                 <ng-container matColumnDef="averagePacketSize">
                   <th mat-header-cell *matHeaderCellDef>Средний размер</th>
                   <td mat-cell *matCellDef="let source">
@@ -269,7 +311,7 @@
                   </td>
                 </ng-container>
 
-                <!-- Unique Ports -->
+                <!-- Порты -->
                 <ng-container matColumnDef="uniquePorts">
                   <th mat-header-cell *matHeaderCellDef>Портов</th>
                   <td mat-cell *matCellDef="let source">
@@ -281,7 +323,7 @@
                   </td>
                 </ng-container>
 
-                <!-- Danger Score -->
+                <!-- Уровень опасности -->
                 <ng-container matColumnDef="dangerScore">
                   <th mat-header-cell *matHeaderCellDef>Уровень опасности</th>
                   <td mat-cell *matCellDef="let source">
@@ -298,18 +340,47 @@
                   </td>
                 </ng-container>
 
-                <!-- Status -->
+                <!-- Статус (кластеризация) -->
                 <ng-container matColumnDef="status">
                   <th mat-header-cell *matHeaderCellDef>Статус</th>
                   <td mat-cell *matCellDef="let source">
                     <mat-chip
                       [class.dangerous-chip]="source.isDangerous"
                       [class.safe-chip]="!source.isDangerous">
-                      <mat-icon>
-                        {{ source.isDangerous ? 'dangerous' : 'check_circle' }}
-                      </mat-icon>
+                      <mat-icon>{{ source.isDangerous ? 'warning' : 'check_circle' }}</mat-icon>
                       {{ source.isDangerous ? 'Опасный' : 'Безопасный' }}
                     </mat-chip>
+                  </td>
+                </ng-container>
+
+                <!-- ML-угроза (появляется после ML-анализа) -->
+                <ng-container matColumnDef="mlThreat">
+                  <th mat-header-cell *matHeaderCellDef>
+                    <div class="ml-column-header">
+                      <mat-icon class="ml-header-icon">psychology</mat-icon>
+                      ML
+                    </div>
+                  </th>
+                  <td mat-cell *matCellDef="let source">
+                    @if (getMLPrediction(source.sourceIP); as pred) {
+                      <div class="ml-cell" [matTooltip]="'Уверенность: ' + (pred.confidence * 100).toFixed(1) + '% · Метод: ' + getMethodLabel(pred.method)">
+                        <mat-chip
+                          [class]="'ml-chip ml-chip-' + pred.threatLevel.toLowerCase()"
+                          [class.ml-chip-attack]="pred.isAttack">
+                          <mat-icon>{{ pred.isAttack ? 'gpp_bad' : 'verified_user' }}</mat-icon>
+                          {{ pred.threatLevel }}
+                        </mat-chip>
+                        @if (pred.isAnomaly) {
+                          <span class="zero-day-badge" matTooltip="Аномалия Isolation Forest (zero-day)">
+                            ZD
+                          </span>
+                        }
+                      </div>
+                    } @else if (mlResult()) {
+                      <span class="ml-na">—</span>
+                    } @else {
+                      <span class="ml-na" matTooltip="Запустите ML-анализ">—</span>
+                    }
                   </td>
                 </ng-container>
 
@@ -317,17 +388,15 @@
                 <tr
                   mat-row
                   *matRowDef="let row; columns: displayedColumns;"
-                  (click)="viewSourceDetails(row.sourceIP)"
                   class="clickable-row">
                 </tr>
               </table>
             </mat-card>
           } @else {
-            <mat-card class="empty-state">
+            <div class="empty-state">
               <mat-icon>inbox</mat-icon>
-              <h3>Источники не найдены</h3>
-              <p>Попробуйте изменить фильтры</p>
-            </mat-card>
+              <p>Нет данных для отображения</p>
+            </div>
           }
         </div>
       </mat-tab>
