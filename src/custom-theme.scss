@@ -51,6 +51,7 @@ $dark-theme: mat.define-theme((
   --text-muted: rgba(0, 0, 0, 0.5);
   --text-disabled: rgba(0, 0, 0, 0.38);
   --text-unique: #ffffff;
+  --text-unique2: #000000;
 
   // Цвета границ и теней
   --border-color: #e0e0e0;
@@ -110,6 +111,7 @@ html.dark-theme {
   --text-muted: rgba(255, 255, 255, 0.5);
   --text-disabled: rgba(255, 255, 255, 0.38);
   --text-unique: rgba(255, 255, 255, 0.92);
+  --text-unique2: #0e0e0e;
 
   // Цвета границ и теней
   --border-color: #374151;

@@ -93,11 +93,11 @@
 .stat-value {
   font-size: 2rem;
   font-weight: 600;
-  color: #333;
+  color: var(--text-primary);
 }
 
 .stat-label {
-  color: #666;
+  color: var(--text-secondary);
   font-size: 0.9rem;
 }
 

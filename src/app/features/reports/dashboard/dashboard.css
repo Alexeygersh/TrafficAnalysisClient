@@ -226,11 +226,12 @@
   display: flex;
   align-items: center;
   gap: 12px;
+  color: var(--text-unique);
 }
 
 .ip-protocols {
   font-size: 13px;
-  color: var(--text-secondary);
+  color: var(--text-unique);
   font-style: italic;
 }
 
@@ -248,14 +249,14 @@
 
 .ip-stats .label {
   font-size: 11px;
-  color: var(--text-secondary);
+  color: var(--text-unique);
   text-transform: uppercase;
   font-weight: 500;
 }
 
 .ip-stats strong {
   font-size: 18px;
-  color: var(--text-secondary);
+  color: var(--text-unique);
 }
 
 /* Угрозы по протоколам */
@@ -338,6 +339,7 @@
   font-size: 13px !important;
   min-height: 24px !important;
   padding: 0 8px !important;
+  color: var(--text-unique); !important;
 }
 
 /* Цвета угроз */

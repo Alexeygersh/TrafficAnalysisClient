@@ -95,7 +95,7 @@ export class MainLayout {
       icon: 'upload_file',
       label: 'Импорт CSV',
       route: '/import/csv',
-      roles: ['Admin']
+      roles: ['Admin', 'Analyst']
     }
   ];
 
