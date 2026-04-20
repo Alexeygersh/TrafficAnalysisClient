@@ -136,9 +136,20 @@ export class PacketList implements OnInit {
     this.loadSessions();
   }
 
-  loadSessions() {
+    loadSessions() {
     this.sessionService.getAllSessions().subscribe({
-      next: (sessions) => this.sessions.set(sessions),
+      next: (sessions) => {
+        this.sessions.set(sessions);
+
+        // Автовыбор последней сессии (с максимальным id)
+        // Это значительно ускоряет первичную загрузку — не грузим все пакеты.
+        if (sessions.length > 0 && this.selectedSessionId() === null) {
+          const lastSession = sessions.reduce((prev, cur) =>
+            cur.id > prev.id ? cur : prev
+          );
+          this.selectedSessionId.set(lastSession.id);
+        }
+      },
       error: (err) => console.error('Error loading sessions:', err)
     });
   }

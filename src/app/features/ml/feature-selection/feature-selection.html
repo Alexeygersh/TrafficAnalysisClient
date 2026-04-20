@@ -1,0 +1,196 @@
+<div class="fs-container">
+  <!-- Заголовок -->
+  <div class="header">
+    <h1>
+      <mat-icon>filter_alt</mat-icon>
+      Отбор признаков (Feature Selection)
+    </h1>
+  </div>
+
+  <!-- Описание -->
+  <mat-card class="info-card">
+    <mat-card-content>
+      <p>
+        <mat-icon>info</mat-icon>
+        Для каждого числового признака из FlowMetrics отдельно запускается
+        K-Means (k=2) и считается <strong>silhouette score</strong>.
+        Чем выше силуэт, тем лучше признак сам по себе разделяет данные на группы —
+        такие признаки рекомендуются для обучения моделей.
+      </p>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Параметры -->
+  <mat-card class="params-card">
+    <mat-card-header>
+      <mat-card-title>Параметры анализа</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <div class="params-row">
+        <mat-form-field appearance="outline" class="session-field">
+          <mat-label>Сессия</mat-label>
+          <mat-select [(ngModel)]="selectedSessionId">
+            <mat-option [value]="null">Все сессии (рекомендуется)</mat-option>
+            @for (session of sessions(); track session.id) {
+              <mat-option [value]="session.id">
+                {{ session.sessionName }} ({{ session.packetCount }} пакетов)
+              </mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="topk-field">
+          <mat-label>Размер топа (top-K)</mat-label>
+          <input matInput type="number" [(ngModel)]="topK" min="1" max="50">
+        </mat-form-field>
+
+        <button
+          mat-raised-button
+          color="primary"
+          (click)="runAnalysis()"
+          [disabled]="isLoading()"
+          class="run-button">
+          @if (isLoading()) {
+            <mat-spinner diameter="20"></mat-spinner>
+            <span>&nbsp;Анализ...</span>
+          } @else {
+            <mat-icon>play_arrow</mat-icon>
+            <span>&nbsp;Запустить анализ</span>
+          }
+        </button>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Ошибка -->
+  @if (errorMessage()) {
+    <mat-card class="error-card">
+      <mat-card-content>
+        <mat-icon color="warn">error</mat-icon>
+        <span>{{ errorMessage() }}</span>
+      </mat-card-content>
+    </mat-card>
+  }
+
+  <!-- Результаты -->
+  @if (result(); as r) {
+    <!-- Сводка -->
+    <div class="stats-grid">
+      <mat-card class="stat-card">
+        <mat-icon class="stat-icon">dataset</mat-icon>
+        <div>
+          <div class="stat-value">{{ r.totalSamples }}</div>
+          <div class="stat-label">Flows проанализировано</div>
+        </div>
+      </mat-card>
+
+      <mat-card class="stat-card">
+        <mat-icon class="stat-icon">view_list</mat-icon>
+        <div>
+          <div class="stat-value">{{ r.totalFeatures }}</div>
+          <div class="stat-label">Всего признаков</div>
+        </div>
+      </mat-card>
+
+      <mat-card class="stat-card">
+        <mat-icon class="stat-icon">check_circle</mat-icon>
+        <div>
+          <div class="stat-value">{{ r.validFeatures }}</div>
+          <div class="stat-label">Валидных (non-const)</div>
+        </div>
+      </mat-card>
+
+      <mat-card class="stat-card highlight">
+        <mat-icon class="stat-icon">star</mat-icon>
+        <div>
+          <div class="stat-value">{{ r.top10.length }}</div>
+          <div class="stat-label">В топе</div>
+        </div>
+      </mat-card>
+    </div>
+
+    <!-- Топ-10 -->
+    <mat-card class="top10-card">
+      <mat-card-header>
+        <mat-card-title>
+          <mat-icon>emoji_events</mat-icon>
+          Топ-{{ r.top10.length }} лучших признаков
+        </mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="chips-container">
+          @for (name of r.top10; track name; let i = $index) {
+            <mat-chip class="top-chip">
+              <strong>#{{ i + 1 }}</strong>&nbsp;{{ name }}
+            </mat-chip>
+          }
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- График -->
+    @if (r.chart) {
+      <mat-card class="chart-card">
+        <mat-card-header>
+          <mat-card-title>
+            <mat-icon>bar_chart</mat-icon>
+            Silhouette Score по всем признакам
+          </mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <img [src]="r.chart" alt="Feature Silhouette Chart" class="chart-image">
+        </mat-card-content>
+      </mat-card>
+    }
+
+    <!-- Таблица рейтинга -->
+    <mat-card class="ranking-card">
+      <mat-card-header>
+        <mat-card-title>
+          <mat-icon>list</mat-icon>
+          Полный рейтинг
+        </mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <table mat-table [dataSource]="r.ranking" class="ranking-table">
+          <!-- Ранг -->
+          <ng-container matColumnDef="rank">
+            <th mat-header-cell *matHeaderCellDef>#</th>
+            <td mat-cell *matCellDef="let row">{{ row.rank }}</td>
+          </ng-container>
+
+          <!-- Признак -->
+          <ng-container matColumnDef="feature">
+            <th mat-header-cell *matHeaderCellDef>Признак</th>
+            <td mat-cell *matCellDef="let row">
+              <code>{{ row.feature }}</code>
+            </td>
+          </ng-container>
+
+          <!-- Silhouette -->
+          <ng-container matColumnDef="silhouette">
+            <th mat-header-cell *matHeaderCellDef>Silhouette</th>
+            <td mat-cell *matCellDef="let row">
+              <mat-chip [class]="silhouetteClass(row.silhouette)">
+                {{ silhouetteLabel(row.silhouette) }}
+              </mat-chip>
+            </td>
+          </ng-container>
+
+          <!-- Примечание -->
+          <ng-container matColumnDef="note">
+            <th mat-header-cell *matHeaderCellDef>Примечание</th>
+            <td mat-cell *matCellDef="let row" class="note-cell">
+              {{ row.note }}
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row
+              *matRowDef="let row; columns: displayedColumns"
+              [class]="rowClass(row)"></tr>
+        </table>
+      </mat-card-content>
+    </mat-card>
+  }
+</div>

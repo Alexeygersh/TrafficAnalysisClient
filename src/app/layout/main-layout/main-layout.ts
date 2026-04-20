@@ -68,15 +68,21 @@ export class MainLayout {
       roles: ['Admin', 'Analyst']
     },
     {
-      icon: 'network_check',
-      label: 'Пакеты',
-      route: '/packets',
+      icon: 'security',
+      label: 'ML-анализ потоков',
+      route: '/ml/flow-analyze',
       roles: ['Admin', 'Analyst']
     },
     {
-      icon: 'analytics',
-      label: 'Анализ',
-      route: '/analysis',
+      icon: 'filter_alt',
+      label: 'Отбор признаков',
+      route: '/ml/feature-selection',
+      roles: ['Admin', 'Analyst']
+    },
+    {
+      icon: 'network_check',
+      label: 'Пакеты',
+      route: '/packets',
       roles: ['Admin', 'Analyst']
     },
     {

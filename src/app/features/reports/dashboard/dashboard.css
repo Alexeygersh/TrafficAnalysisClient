@@ -339,7 +339,7 @@
   font-size: 13px !important;
   min-height: 24px !important;
   padding: 0 8px !important;
-  color: var(--text-unique); !important;
+  color: var(--text-unique) !important;
 }
 
 /* Цвета угроз */

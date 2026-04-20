@@ -157,15 +157,6 @@
                 <span class="value">{{ formatDate(packet()!.analysis!.detectedAt) }}</span>
               </div>
 
-              <div class="analysis-actions">
-                <button
-                  mat-raised-button
-                  color="accent"
-                  [routerLink]="['/analysis', packet()!.analysis!.id]">
-                  <mat-icon>analytics</mat-icon>
-                  Полный отчет
-                </button>
-              </div>
             </div>
           </mat-card-content>
         </mat-card>
@@ -203,16 +194,6 @@
             <h3>Анализ не выполнен</h3>
             <p>Для этого пакета пока нет результатов анализа угроз</p>
           </div>
-          @if (isAdmin) {
-            <button
-              mat-raised-button
-              color="primary"
-              [routerLink]="['/analysis/new']"
-              [queryParams]="{ packetId: packet()!.id }">
-              <mat-icon>play_arrow</mat-icon>
-              Запустить анализ
-            </button>
-          }
         </mat-card>
       }
     }

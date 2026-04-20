@@ -1,0 +1,291 @@
+<div class="fa-container">
+  <!-- Заголовок -->
+  <div class="header">
+    <h1>
+      <mat-icon>security</mat-icon>
+      ML-анализ потоков (Flow Analysis)
+    </h1>
+  </div>
+
+  <!-- Описание -->
+  <mat-card class="info-card">
+    <mat-card-content>
+      <p>
+        <mat-icon>info</mat-icon>
+        Прогоняет все flow-записи выбранной сессии через обученную модель
+        (Random Forest или CatBoost + Isolation Forest). Возвращает вероятность
+        атаки, уровень угрозы и метод обнаружения для каждого потока.
+      </p>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Параметры -->
+  <mat-card class="params-card">
+    <mat-card-header>
+      <mat-card-title>Параметры анализа</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <div class="params-row">
+        <mat-form-field appearance="outline" class="session-field">
+          <mat-label>Сессия</mat-label>
+          <mat-select [(ngModel)]="selectedSessionId">
+            @for (session of sessions(); track session.id) {
+              <mat-option [value]="session.id">
+                {{ session.sessionName }}
+                @if (session.flowCount > 0) {
+                  &nbsp;({{ session.flowCount }} flows)
+                } @else if (session.packetCount > 0) {
+                  &nbsp;({{ session.packetCount }} пакетов)
+                } @else {
+                  &nbsp;(пусто)
+                }
+              </mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+
+        <mat-button-toggle-group
+          [(ngModel)]="selectedModel"
+          class="model-toggle"
+          hideSingleSelectionIndicator="true">
+          <mat-button-toggle value="rf">
+            <mat-icon>forest</mat-icon>
+            Random Forest
+          </mat-button-toggle>
+          <mat-button-toggle value="catboost">
+            <mat-icon>bolt</mat-icon>
+            CatBoost
+          </mat-button-toggle>
+        </mat-button-toggle-group>
+
+        <button
+          mat-raised-button
+          color="primary"
+          (click)="runAnalysis()"
+          [disabled]="isLoading()"
+          class="run-button">
+          @if (isLoading()) {
+            <mat-spinner diameter="20"></mat-spinner>
+            <span>&nbsp;Анализ...</span>
+          } @else {
+            <mat-icon>play_arrow</mat-icon>
+            <span>&nbsp;Запустить</span>
+          }
+        </button>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Результаты -->
+  @if (result(); as r) {
+    <!-- Статистика -->
+    <div class="stats-grid">
+      <mat-card class="stat-card">
+        <mat-icon class="stat-icon">dns</mat-icon>
+        <div>
+          <div class="stat-value">{{ r.totalFlows }}</div>
+          <div class="stat-label">Всего потоков</div>
+        </div>
+      </mat-card>
+
+      <mat-card class="stat-card attack">
+        <mat-icon class="stat-icon">warning</mat-icon>
+        <div>
+          <div class="stat-value">{{ r.attackFlows }}</div>
+          <div class="stat-label">Атаки</div>
+        </div>
+      </mat-card>
+
+      <mat-card class="stat-card">
+        <mat-icon class="stat-icon">radar</mat-icon>
+        <div>
+          <div class="stat-value">{{ r.anomalyFlows }}</div>
+          <div class="stat-label">Аномалии (IF)</div>
+        </div>
+      </mat-card>
+
+      <mat-card class="stat-card">
+        <mat-icon class="stat-icon">timer</mat-icon>
+        <div>
+          <div class="stat-value">{{ r.elapsedMs }} ms</div>
+          <div class="stat-label">Время</div>
+        </div>
+      </mat-card>
+    </div>
+
+    <!-- Разбивка по уровням угрозы -->
+    <mat-card class="breakdown-card">
+      <mat-card-header>
+        <mat-card-title>
+          <mat-icon>pie_chart</mat-icon>
+          Распределение по уровням угрозы
+        </mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="chips-row">
+          @for (item of breakdownItems(); track item.level) {
+            <mat-chip [class]="threatChipClass(item.level)">
+              <strong>{{ item.level }}:</strong>&nbsp;{{ item.count }}
+            </mat-chip>
+          }
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Использованные признаки -->
+    <mat-card class="features-card">
+      <mat-card-header>
+        <mat-card-title>
+          <mat-icon>filter_alt</mat-icon>
+          Признаки модели ({{ r.usedFeatures.length }})
+        </mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="chips-row">
+          @for (f of r.usedFeatures; track f) {
+            <mat-chip class="feature-chip">{{ f }}</mat-chip>
+          }
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Таблица -->
+    <mat-card class="table-card">
+      <mat-card-header>
+        <mat-card-title>
+          <mat-icon>list</mat-icon>
+          Предсказания
+        </mat-card-title>
+        <mat-card-subtitle>
+          Показано {{ filteredPredictions().length }} из {{ r.totalFlows }}
+        </mat-card-subtitle>
+      </mat-card-header>
+
+      <!-- Фильтры -->
+      <div class="filter-toolbar">
+        <mat-button-toggle-group
+          [(ngModel)]="tableFilter"
+          hideSingleSelectionIndicator="true">
+          <mat-button-toggle value="all">Все ({{ r.totalFlows }})</mat-button-toggle>
+          <mat-button-toggle value="attacks">
+            Только атаки ({{ r.attackFlows }})
+          </mat-button-toggle>
+          @if (r.threatLevelBreakdown['Critical']) {
+            <mat-button-toggle value="Critical">
+              Critical ({{ r.threatLevelBreakdown['Critical'] }})
+            </mat-button-toggle>
+          }
+          @if (r.threatLevelBreakdown['High']) {
+            <mat-button-toggle value="High">
+              High ({{ r.threatLevelBreakdown['High'] }})
+            </mat-button-toggle>
+          }
+          @if (r.threatLevelBreakdown['Medium']) {
+            <mat-button-toggle value="Medium">
+              Medium ({{ r.threatLevelBreakdown['Medium'] }})
+            </mat-button-toggle>
+          }
+        </mat-button-toggle-group>
+      </div>
+
+      <mat-card-content>
+        <table mat-table [dataSource]="filteredPredictions()" class="flow-table">
+          <!-- Flow ID -->
+          <ng-container matColumnDef="flowId">
+            <th mat-header-cell *matHeaderCellDef>ID</th>
+            <td mat-cell *matCellDef="let row">#{{ row.flowId }}</td>
+          </ng-container>
+
+          <!-- Source -->
+          <ng-container matColumnDef="source">
+            <th mat-header-cell *matHeaderCellDef>Источник</th>
+            <td mat-cell *matCellDef="let row">
+              <code>{{ row.sourceIP }}</code>
+            </td>
+          </ng-container>
+
+          <!-- Destination -->
+          <ng-container matColumnDef="destination">
+            <th mat-header-cell *matHeaderCellDef>Назначение</th>
+            <td mat-cell *matCellDef="let row">
+              <code>{{ row.destinationIP }}</code>
+            </td>
+          </ng-container>
+
+          <!-- Port -->
+          <ng-container matColumnDef="port">
+            <th mat-header-cell *matHeaderCellDef>Порт</th>
+            <td mat-cell *matCellDef="let row">{{ row.destinationPort }}</td>
+          </ng-container>
+
+          <!-- Protocol -->
+          <ng-container matColumnDef="protocol">
+            <th mat-header-cell *matHeaderCellDef>Протокол</th>
+            <td mat-cell *matCellDef="let row">
+              <mat-chip class="proto-chip">{{ row.protocol }}</mat-chip>
+            </td>
+          </ng-container>
+
+          <!-- Attack flag -->
+          <ng-container matColumnDef="isAttack">
+            <th mat-header-cell *matHeaderCellDef>Атака</th>
+            <td mat-cell *matCellDef="let row">
+              @if (row.isAttack) {
+                <mat-icon class="attack-icon"
+                          matTooltip="Классифицирован как атака">warning</mat-icon>
+              } @else {
+                <mat-icon class="ok-icon"
+                          matTooltip="Нормальный трафик">check_circle</mat-icon>
+              }
+            </td>
+          </ng-container>
+
+          <!-- Confidence -->
+          <ng-container matColumnDef="confidence">
+            <th mat-header-cell *matHeaderCellDef>Вероятность</th>
+            <td mat-cell *matCellDef="let row">
+              <div class="confidence-bar">
+                <div class="confidence-fill"
+                     [style.width.%]="row.confidence * 100"
+                     [class.high-conf]="row.confidence >= 0.6"
+                     [class.med-conf]="row.confidence >= 0.3 && row.confidence < 0.6">
+                </div>
+                <span class="confidence-text">{{ confidencePct(row.confidence) }}</span>
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- Threat Level -->
+          <ng-container matColumnDef="threatLevel">
+            <th mat-header-cell *matHeaderCellDef>Уровень</th>
+            <td mat-cell *matCellDef="let row">
+              <mat-chip [class]="threatChipClass(row.threatLevel)">
+                {{ row.threatLevel }}
+              </mat-chip>
+            </td>
+          </ng-container>
+
+          <!-- Method -->
+          <ng-container matColumnDef="method">
+            <th mat-header-cell *matHeaderCellDef>Метод</th>
+            <td mat-cell *matCellDef="let row">
+              <span class="method-label">{{ methodLabel(row.method) }}</span>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row
+              *matRowDef="let row; columns: displayedColumns"
+              [class]="threatRowClass(row.threatLevel)"></tr>
+        </table>
+
+        @if (filteredPredictions().length === 0) {
+          <div class="empty-state">
+            <mat-icon>filter_list_off</mat-icon>
+            <p>Нет потоков под текущий фильтр</p>
+          </div>
+        }
+      </mat-card-content>
+    </mat-card>
+  }
+</div>

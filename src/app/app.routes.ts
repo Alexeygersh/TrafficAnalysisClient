@@ -15,10 +15,10 @@ export const routes: Routes = [
     component: MainLayout,
     canActivate: [authGuard],
     children: [
-      // Редирект на packets
+      // Редирект на
       {
         path: '',
-        redirectTo: 'packets',
+        redirectTo: 'reports',
         pathMatch: 'full'
       },
 
@@ -43,26 +43,6 @@ export const routes: Routes = [
             path: ':id/edit',
             canActivate: [adminGuard],
             loadComponent: () => import('./features/packets/packet-form/packet-form').then(m => m.PacketForm)
-          }
-        ]
-      },
-
-      // Анализ
-      {
-        path: 'analysis',
-        children: [
-          {
-            path: '',
-            loadComponent: () => import('./features/analysis/analysis-list/analysis-list').then(m => m.AnalysisList)
-          },
-          {
-            path: 'new',
-            canActivate: [adminGuard],
-            loadComponent: () => import('./features/analysis/analysis-form/analysis-form').then(m => m.AnalysisForm)
-          },
-          {
-            path: ':id',
-            loadComponent: () => import('./features/analysis/analysis-detail/analysis-detail').then(m => m.AnalysisDetail)
           }
         ]
       },
@@ -124,6 +104,23 @@ export const routes: Routes = [
         ]
       },
 
+      // ML-аналитика
+      {
+        path: 'ml/feature-selection',
+        canActivate: [authGuard],
+        loadComponent: () =>
+          import('./features/ml/feature-selection/feature-selection')
+            .then(m => m.FeatureSelectionComponent)
+      },
+
+      {
+        path: 'ml/flow-analyze',
+        canActivate: [authGuard],
+        loadComponent: () =>
+          import('./features/ml/flow-analyze/flow-analyze')
+            .then(m => m.FlowAnalyzeComponent)
+      },
+
       // Кластеризация
       // {
       //   path: 'clustering',
@@ -152,6 +149,6 @@ export const routes: Routes = [
   // 404
   {
     path: '**',
-    redirectTo: '/packets'
+    redirectTo: '/reports'
   }
 ];

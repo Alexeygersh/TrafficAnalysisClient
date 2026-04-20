@@ -37,7 +37,7 @@
               <mat-option [value]="null">Все сессии</mat-option>
               @for (session of sessions(); track session.id) {
                 <mat-option [value]="session.id">
-                  {{ session.sessionName }}
+                  {{ session.sessionName }} ({{ session.totalPackets }} пакетов)
                 </mat-option>
               }
             </mat-select>
