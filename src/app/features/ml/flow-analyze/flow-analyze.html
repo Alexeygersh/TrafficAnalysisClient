@@ -286,6 +286,19 @@
           </div>
         }
       </mat-card-content>
+
+    <ng-container matColumnDef="actions">
+      <th mat-header-cell *matHeaderCellDef></th>
+      <td mat-cell *matCellDef="let row">
+        <button mat-icon-button
+                [routerLink]="['/ml/similarity']"
+                [queryParams]="{ targetFlowId: row.flowId, sessionId: result()?.sessionId }"
+                matTooltip="Найти похожие">
+          <mat-icon>compare_arrows</mat-icon>
+        </button>
+      </td>
+    </ng-container>
+
     </mat-card>
   }
 </div>

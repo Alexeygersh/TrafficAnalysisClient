@@ -62,10 +62,10 @@ export class MainLayout {
       roles: ['Admin', 'Analyst']
     },
     {
-      icon: 'scatter_plot',
-      label: 'Кластеризация',
-      route: '/clustering',
-      roles: ['Admin', 'Analyst']
+      icon: 'upload_file',
+      label: 'Импорт PCAP',
+      route: '/import/pcap',
+      roles: ['Admin']
     },
     {
       icon: 'security',
@@ -79,6 +79,14 @@ export class MainLayout {
       route: '/ml/feature-selection',
       roles: ['Admin', 'Analyst']
     },
+
+    {
+      icon: 'compare_arrows',
+      label: 'Мера сходства',
+      route: '/ml/similarity',
+      roles: ['Admin', 'Analyst']
+    },
+
     {
       icon: 'network_check',
       label: 'Пакеты',
@@ -93,16 +101,10 @@ export class MainLayout {
     },
     {
       icon: 'admin_panel_settings',
-      label: 'Админ панель',
+      label: 'Администрирование',
       route: '/admin/users',
       roles: ['Admin']
     },
-    {
-      icon: 'upload_file',
-      label: 'Импорт CSV',
-      route: '/import/csv',
-      roles: ['Admin', 'Analyst']
-    }
   ];
 
   toggleSidenav(): void {

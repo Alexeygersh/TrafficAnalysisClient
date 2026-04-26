@@ -15,7 +15,8 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 
 import { FeatureSelectionService } from '../../../core/services/feature-selection';
 import { FeatureSelectionResult, FeatureRank } from '../../../core/models/feature-selection.model';
-import { ClusteringService, SessionFilter } from '../../../core/services/clustering';
+import { SessionApiService } from '../../../core/services/session-api';
+import { SessionFilter } from '../../../core/models/session-filter.model';
 
 @Component({
   selector: 'app-feature-selection',
@@ -39,7 +40,7 @@ import { ClusteringService, SessionFilter } from '../../../core/services/cluster
 })
 export class FeatureSelectionComponent implements OnInit {
   private service = inject(FeatureSelectionService);
-  private clusteringService = inject(ClusteringService);
+  private sessionApi = inject(SessionApiService);
   private snackBar = inject(MatSnackBar);
 
   // Параметры
@@ -62,7 +63,7 @@ export class FeatureSelectionComponent implements OnInit {
   }
 
   loadSessions(): void {
-    this.clusteringService.getSessions().subscribe({
+    this.sessionApi.getSessions().subscribe({
       next: (sessions) => this.sessions.set(sessions),
       error: (err) => console.error('Error loading sessions:', err),
     });

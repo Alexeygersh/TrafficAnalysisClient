@@ -1,0 +1,162 @@
+<div class="pi-container">
+  <!-- Заголовок -->
+  <div class="header">
+    <h1>
+      <mat-icon>upload_file</mat-icon>
+      Импорт PCAP
+    </h1>
+  </div>
+
+  <!-- Инфо -->
+  <mat-card class="info-card">
+    <mat-card-content>
+      <p>
+        <mat-icon>info</mat-icon>
+        Загрузите .pcap или .pcapng файл. Система разберёт пакеты,
+        построит двунаправленные flows (5-tuple), рассчитает ~78 признаков
+        и сохранит в БД. После импорта можно сразу запустить ML-анализ.
+      </p>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Drop zone -->
+  <mat-card class="drop-card">
+    <mat-card-content>
+      <div
+        class="drop-zone"
+        [class.active]="dragActive()"
+        [class.has-file]="selectedFile()"
+        (dragover)="onDragOver($event)"
+        (dragleave)="onDragLeave($event)"
+        (drop)="onDrop($event)">
+
+        @if (!selectedFile()) {
+          <mat-icon class="drop-icon">cloud_upload</mat-icon>
+          <h3>Перетащите .pcap сюда</h3>
+          <p>или нажмите чтобы выбрать файл</p>
+          <input
+            type="file"
+            accept=".pcap,.pcapng"
+            (change)="onFileInputChange($event)"
+            class="file-input">
+        } @else {
+          <mat-icon class="file-icon">insert_drive_file</mat-icon>
+          <h3>{{ selectedFile()!.name }}</h3>
+          <p>{{ fileSizeFormatted() }}</p>
+          <div class="file-actions">
+            <button mat-stroked-button (click)="clearFile()"
+                    [disabled]="isUploading()">
+              <mat-icon>close</mat-icon>
+              Убрать
+            </button>
+            <button mat-raised-button color="primary"
+                    (click)="upload()"
+                    [disabled]="isUploading()">
+              @if (isUploading()) {
+                <mat-spinner diameter="20"></mat-spinner>
+                <span>&nbsp;Загружаем...</span>
+              } @else {
+                <mat-icon>play_arrow</mat-icon>
+                <span>&nbsp;Импортировать</span>
+              }
+            </button>
+          </div>
+        }
+      </div>
+
+      @if (isUploading()) {
+        <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+      }
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Ошибка -->
+  @if (errorMessage()) {
+    <mat-card class="error-card">
+      <mat-card-content>
+        <mat-icon color="warn">error</mat-icon>
+        <span>{{ errorMessage() }}</span>
+      </mat-card-content>
+    </mat-card>
+  }
+
+  <!-- Результат -->
+  @if (result(); as r) {
+    <mat-card class="result-card">
+      <mat-card-header>
+        <mat-card-title>
+          <mat-icon>check_circle</mat-icon>
+          Импорт успешен
+        </mat-card-title>
+        <mat-card-subtitle>
+          Сессия #{{ r.sessionId }} — {{ r.sessionName }}
+        </mat-card-subtitle>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="result-grid">
+          <div class="result-item">
+            <mat-icon>network_check</mat-icon>
+            <div>
+              <div class="value">{{ r.rawPacketsParsed }}</div>
+              <div class="label">Пакетов распарсено</div>
+            </div>
+          </div>
+
+          <div class="result-item">
+            <mat-icon>dns</mat-icon>
+            <div>
+              <div class="value">{{ r.flowsBuilt }}</div>
+              <div class="label">Flows построено</div>
+            </div>
+          </div>
+
+          <div class="result-item">
+            <mat-icon>save</mat-icon>
+            <div>
+              <div class="value">{{ r.packetsSavedToDb }}</div>
+              <div class="label">Пакетов в БД</div>
+            </div>
+          </div>
+
+          <div class="result-item">
+            <mat-icon>link</mat-icon>
+            <div>
+              <div class="value">{{ r.packetsLinkedToFlows }}</div>
+              <div class="label">Связано с flows</div>
+            </div>
+          </div>
+
+          <div class="result-item">
+            <mat-icon>timer</mat-icon>
+            <div>
+              <div class="value">{{ r.elapsedMs }} ms</div>
+              <div class="label">Время обработки</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Разбивка по протоколам -->
+        @if (protocolStatsSorted().length > 0) {
+          <h4 class="sub-title">
+            <mat-icon>pie_chart</mat-icon>
+            Протоколы
+          </h4>
+          <div class="proto-chips">
+            @for (item of protocolStatsSorted(); track item.proto) {
+              <mat-chip>
+                <strong>{{ item.proto }}:</strong>&nbsp;{{ item.count }}
+              </mat-chip>
+            }
+          </div>
+        }
+
+        <div class="next-actions">
+          <button mat-raised-button color="primary" (click)="goToAnalysis()">
+            <mat-icon>security</mat-icon>
+            Запустить ML-анализ
+          </button>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  }
+</div>

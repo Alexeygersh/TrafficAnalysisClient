@@ -1,13 +1,7 @@
-.dashboard-container {
-  max-width: 1600px;
+.db-container {
+  max-width: 1400px;
   margin: 0 auto;
-}
-
-.header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 24px;
+  padding: 8px;
 }
 
 .header h1 {
@@ -15,592 +9,293 @@
   align-items: center;
   gap: 12px;
   font-size: 28px;
-  font-weight: 500;
-  margin: 0;
+  font-weight: 600;
   color: var(--text-primary);
+  margin: 0 0 16px 0;
 }
 
-.period-select {
-  min-width: 200px;
+.header h1 mat-icon {
+  font-size: 32px;
+  width: 32px;
+  height: 32px;
+  color: var(--button-primary);
 }
 
-.loading {
+/* === Параметры === */
+.params-card { margin-bottom: 16px; }
+
+.params-row {
   display: flex;
-  flex-direction: column;
+  gap: 12px;
   align-items: center;
-  justify-content: center;
-  padding: 60px;
-  gap: 16px;
+  flex-wrap: wrap;
 }
 
+.session-field {
+  flex: 1;
+  min-width: 280px;
+}
+
+.model-toggle { height: 48px; }
+
+.refresh-button {
+  height: 48px;
+  padding: 0 20px;
+}
+
+/* === Пустое состояние === */
+.empty-state {
+  text-align: center;
+  padding: 40px 20px;
+}
+
+.empty-state mat-icon {
+  font-size: 64px;
+  width: 64px;
+  height: 64px;
+  color: var(--button-primary);
+  opacity: 0.5;
+}
+
+.empty-state h3 {
+  color: var(--text-primary);
+  margin: 16px 0 8px 0;
+}
+
+.empty-state p {
+  color: var(--text-secondary);
+  margin-bottom: 20px;
+}
+
+/* === Ошибка === */
 .error-card {
+  background-color: rgba(244, 67, 54, 0.1);
+  border-left: 4px solid #f44336;
+  margin-bottom: 16px;
+}
+
+.error-card mat-card-content {
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 20px;
-  background-color: #ffebee;
-  color: var(--status-error);
 }
 
-.dashboard-content {
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
-}
-
-/* Статистика */
+/* === Статистика === */
 .stats-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 16px;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 12px;
+  margin-bottom: 16px;
 }
 
 .stat-card {
   display: flex;
   align-items: center;
-  gap: 20px;
-  padding: 24px !important;
-  transition: transform 0.2s, box-shadow 0.2s;
-  color: white;
+  gap: 14px;
+  padding: 16px 18px;
 }
 
-.stat-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 8px 24px var(--shadow-color);
-}
-
-.stat-card.primary {
-  background: var(--gradient-primary);
-}
-
-.stat-card.success {
-  background: var(--gradient-success);
-}
-
-.stat-card.danger {
-  background: var(--gradient-danger);
-}
-
-.stat-card.warning {
-  background: var(--gradient-warning);
+.stat-card.attack-card {
+  background: linear-gradient(135deg, rgba(244, 67, 54, 0.15), rgba(244, 67, 54, 0.05));
+  border-left: 4px solid #f44336;
 }
 
 .stat-icon {
-  font-size: 56px;
-  width: 56px;
-  height: 56px;
-  opacity: 0.9;
+  font-size: 36px;
+  width: 36px;
+  height: 36px;
 }
 
-.stat-info {
-  flex: 1;
-}
+.stat-icon.blue   { color: #667eea; }
+.stat-icon.red    { color: #f44336; }
+.stat-icon.green  { color: #66bb6a; }
+.stat-icon.purple { color: #7e57c2; }
+.stat-icon.cyan   { color: #26a69a; }
+.stat-icon.orange { color: #ff9800; }
 
 .stat-value {
-  font-size: 36px;
+  font-size: 24px;
   font-weight: 700;
+  color: var(--text-primary);
   line-height: 1;
-  margin-bottom: 8px;
 }
 
 .stat-label {
-  font-size: 14px;
-  opacity: 0.9;
-  font-weight: 500;
+  font-size: 12px;
+  color: var(--text-secondary);
+  margin-top: 4px;
 }
 
-/* Графики */
+/* === Графики === */
 .charts-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 24px;
+  gap: 16px;
+  margin-bottom: 16px;
 }
 
-.chart-card {
-  padding: 0 !important;
+.chart-card mat-card-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 16px;
 }
 
-.chart-card.large {
+.chart-card.wide {
   grid-column: span 2;
 }
 
-.chart-card mat-card-content {
-  padding: 20px !important;
-}
-
-.chart-container {
+.chart-wrap {
   position: relative;
-  height: 350px;
+  height: 280px;
   width: 100%;
 }
 
-/* Топ IP-адресов */
-.top-ips-table {
-  margin-top: 8px;
+.chart-card.wide .chart-wrap {
+  height: 240px;
 }
 
-.top-ips-table mat-card-header {
-  padding: 20px 20px 0 20px;
-}
-
-.top-ips-table mat-card-title {
+/* === Топ-угрозы === */
+.top-threats-card mat-card-title {
   display: flex;
   align-items: center;
-  gap: 12px;
-  font-size: 20px;
-  font-weight: 600;
-  color: var(--text-secondary);
-}
-
-.ip-list {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  padding: 20px;
-}
-
-.ip-item {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  padding: 16px;
-  background-color: var(--bg-secondary);
-  border-radius: 8px;
-  border-left: 4px solid var(--border-color);
-  transition: all 0.2s;
-}
-
-.ip-item:hover {
-  background-color: var(--hover-color);
-  box-shadow: 0 2px 8px var(--shadow-color);
-}
-
-.ip-item.threat-critical {
-  border-left-color: var(--threat-critical);
-}
-
-.ip-item.threat-high {
-  border-left-color: var(--threat-high);
-}
-
-.ip-item.threat-medium {
-  border-left-color: var(--threat-medium);
-}
-
-.ip-item.threat-low {
-  border-left-color: var(--threat-low);
-}
-
-.ip-rank {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 40px;
-  height: 40px;
-  background: var(--bg-gradient-accent);
-  color: white;
-  border-radius: 50%;
-  font-size: 18px;
-  font-weight: 700;
-  flex-shrink: 0;
-}
-
-.ip-details {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
   gap: 8px;
 }
 
-.ip-address code {
-  font-size: 16px;
-  font-weight: 600;
-  background-color: var(--bg-card);
-  padding: 4px 12px;
-  border-radius: 4px;
+.threats-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 8px 0;
+}
+
+.threat-item {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 16px;
+  align-items: center;
+  padding: 10px 12px;
+  background-color: rgba(102, 126, 234, 0.05);
+  border-radius: 6px;
+  border-left: 3px solid rgba(244, 67, 54, 0.5);
+}
+
+.threat-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.flow-id {
   font-family: 'Courier New', monospace;
+  color: var(--text-secondary);
+  font-size: 13px;
+}
+
+.threat-center {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.threat-center code {
+  font-family: 'Courier New', monospace;
+  font-size: 13px;
+  background-color: transparent;
   color: var(--text-primary);
 }
 
-.ip-info {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  color: var(--text-unique);
+.arrow {
+  font-size: 16px;
+  width: 16px;
+  height: 16px;
+  color: var(--text-secondary);
 }
 
-.ip-protocols {
-  font-size: 13px;
-  color: var(--text-unique);
-  font-style: italic;
-}
-
-.ip-stats {
-  display: flex;
-  gap: 24px;
-}
-
-.ip-stats .stat-item {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 4px;
-}
-
-.ip-stats .label {
+.proto-tag {
   font-size: 11px;
-  color: var(--text-unique);
-  text-transform: uppercase;
+  color: #667eea;
+  background-color: rgba(102, 126, 234, 0.15);
+  padding: 2px 8px;
+  border-radius: 10px;
   font-weight: 500;
 }
 
-.ip-stats strong {
-  font-size: 18px;
-  color: var(--text-unique);
-}
-
-/* Угрозы по протоколам */
-.protocols-table {
-  margin-top: 8px;
-}
-
-.protocols-table mat-card-header {
-  padding: 20px 20px 0 20px;
-}
-
-.protocols-table mat-card-title {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  font-size: 20px;
-  font-weight: 600;
-}
-
-.protocols-table .mat-card-title {
-  color: var(--text-secondary);
-}
-
-.protocol-list {
+.threat-right {
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  padding: 20px;
+  align-items: flex-end;
+  gap: 2px;
 }
 
-.protocol-item {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 16px;
-  background-color: var(--bg-secondary);
-  border-radius: 8px;
-  transition: all 0.2s;
-  box-shadow: 0 2px 8px var(--shadow-color);
-}
-
-.protocol-item:hover {
-  background-color: var(--hover-color);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
-}
-
-.protocol-name {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.protocol-name mat-icon {
-  color: var(--button-primary);
-}
-
-.protocol-name strong {
+.confidence {
   font-size: 16px;
-  color: var(--text-secondary);
-}
-
-.protocol-stats {
-  display: flex;
-  gap: 16px;
-  align-items: center;
-}
-
-.protocol-stats .stat {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.protocol-stats .stat span {
-  font-size: 13px;
-  color: var(--text-secondary);
-}
-
-.protocol-stats mat-chip {
-  font-size: 13px !important;
-  min-height: 24px !important;
-  padding: 0 8px !important;
-  color: var(--text-unique) !important;
-}
-
-/* Цвета угроз */
-.threat-critical {
-  background-color: var(--threat-critical) !important;
-  color: white !important;
-}
-
-.threat-high {
-  background-color: var(--threat-high) !important;
-  color: white !important;
-}
-
-.threat-medium {
-  background-color: var(--threat-medium) !important;
-  color: #333 !important;
-}
-
-.threat-low {
-  background-color: var(--threat-low) !important;
-  color: white !important;
-}
-
-.threat-none {
-  background-color: var(--threat-none) !important;
-  color: #666 !important;
-}
-
-/* Нет данных */
-.no-data {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 40px;
-  color: var(--text-muted);
-  text-align: center;
-}
-
-.no-data mat-icon {
-  font-size: 48px;
-  width: 48px;
-  height: 48px;
-  margin-bottom: 12px;
-  color: var(--status-safe);
-}
-
-.no-data p {
-  margin: 0;
-  font-size: 14px;
-}
-
-/* Тёмная тема для графиков */
-.dark-theme .chart-card {
-  background-color: var(--bg-card) !important;
-}
-
-.dark-theme .chart-title {
-  color: var(--text-secondary);
-}
-
-.dark-theme .protocol-list{
-  background-color: var(--bg-secondary);
-}
-
-.dark-theme .ip-item,
-.dark-theme .protocol-item {
-  background-color: var(--bg-secondary);
-  color: var(--text-secondary);
-}
-
-.dark-theme .ip-item:hover,
-.dark-theme .protocol-item:hover {
-  background-color: var(--hover-color);
-}
-
-.dark-theme code {
-  background-color: var(--bg-secondary);
+  font-weight: 700;
   color: var(--text-primary);
 }
 
-.dark-theme .threat-bar-progress {
-  background-color: var(--bg-secondary);
+.method {
+  font-size: 11px;
+  color: var(--text-secondary);
+  font-style: italic;
 }
 
-/* Адаптивность */
-@media (max-width: 1200px) {
+.see-all {
+  display: flex;
+  justify-content: flex-end;
+  padding-top: 8px;
+  border-top: 1px solid var(--border-color);
+}
+
+/* === Threat level chips === */
+.threat-chip-critical {
+  background-color: #d32f2f !important;
+  color: white !important;
+  min-height: 22px !important;
+  font-size: 11px !important;
+}
+
+.threat-chip-high {
+  background-color: #f57c00 !important;
+  color: white !important;
+  min-height: 22px !important;
+  font-size: 11px !important;
+}
+
+.threat-chip-medium {
+  background-color: #fbc02d !important;
+  color: black !important;
+  min-height: 22px !important;
+  font-size: 11px !important;
+}
+
+.threat-chip-low {
+  background-color: #66bb6a !important;
+  color: white !important;
+  min-height: 22px !important;
+  font-size: 11px !important;
+}
+
+/* === Адаптив === */
+@media (max-width: 900px) {
   .charts-grid {
     grid-template-columns: 1fr;
   }
-
-  .chart-card.large {
+  .chart-card.wide {
     grid-column: span 1;
   }
-}
-
-@media (max-width: 768px) {
-  .header {
+  .params-row {
     flex-direction: column;
-    align-items: flex-start;
-    gap: 16px;
+    align-items: stretch;
   }
-
-  .period-select {
-    width: 100%;
-  }
-
-  .stats-grid {
+  .threat-item {
     grid-template-columns: 1fr;
+    gap: 8px;
   }
-
-  .ip-item {
-    flex-direction: column;
+  .threat-right {
     align-items: flex-start;
-  }
-
-  .ip-stats {
-    width: 100%;
-    justify-content: space-around;
-  }
-
-  .protocol-item {
-    flex-direction: column;
-    align-items: flex-start;
+    flex-direction: row;
     gap: 12px;
   }
-
-  .protocol-stats {
-    width: 100%;
-    flex-wrap: wrap;
-  }
-
-  .chart-container {
-    height: 300px;
-  }
-}
-
-/* Анимации */
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.dashboard-content > * {
-  animation: fadeIn 0.5s ease-out;
-}
-
-.stat-card:nth-child(1) { animation-delay: 0.1s; }
-.stat-card:nth-child(2) { animation-delay: 0.2s; }
-.stat-card:nth-child(3) { animation-delay: 0.3s; }
-.stat-card:nth-child(4) { animation-delay: 0.4s; }
-
-
-
-/* ========================================
-   DASHBOARD - ТЁМНАЯ ТЕМА УЛУЧШЕНИЯ
-   ======================================== */
-
-html.dark-theme .dashboard-container {
-  background: linear-gradient(135deg, #0a0e27 0%, #1a1f3a 50%, #0f172a 100%);
-}
-
-/* Stat cards */
-html.dark-theme .stat-card {
-  filter: brightness(0.85);
-  border: 1px solid #374151;
-  transition: all 0.3s ease;
-}
-
-html.dark-theme .stat-card:hover {
-  filter: brightness(1);
-  transform: translateY(-2px);
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
-  border-color: #4b5563;
-}
-
-html.dark-theme .stat-icon {
-  filter: brightness(0.9);
-}
-
-html.dark-theme .stat-info {
-  color: rgba(255, 255, 255, 0.9);
-}
-
-html.dark-theme .stat-label {
-  color: rgba(255, 255, 255, 0.6);
-}
-
-html.dark-theme .stat-value {
-  color: rgba(255, 255, 255, 0.95);
-}
-
-/* Chart cards */
-html.dark-theme .chart-card {
-  border: 1px solid #374151;
-  background-color: #1f2937;
-}
-
-html.dark-theme .chart-card:hover {
-  border-color: #4b5563;
-}
-
-/* Header */
-html.dark-theme .header {
-  border-bottom: 1px solid #374151;
-}
-
-html.dark-theme .header h1 {
-  color: rgba(255, 255, 255, 0.95);
-}
-
-html.dark-theme .mat-mdc-select {
-  color: rgba(255, 255, 255, 0.9) !important;
-}
-
-html.dark-theme .mat-mdc-select-arrow {
-  color: rgba(255, 255, 255, 0.7);
-}
-
-/* Period select */
-html.dark-theme .period-select {
-  --mat-select-enabled-arrow-color: rgba(255, 255, 255, 0.7);
-}
-
-/* Error card */
-html.dark-theme .error-card {
-  background-color: rgba(239, 68, 68, 0.1);
-  border: 1px solid #dc2626;
-  color: #ef4444;
-}
-
-/* Top IPs table */
-html.dark-theme .top-ips-table {
-  border: 1px solid #374151;
-  background-color: #1f2937;
-}
-
-html.dark-theme .top-ips-table mat-card-header {
-  background-color: #1f2937;
-  border-bottom: 1px solid #374151;
-}
-
-html.dark-theme .top-ips-table mat-card-title {
-  color: rgba(255, 255, 255, 0.95);
-}
-
-/* Charts */
-html.dark-theme canvas {
-  filter: brightness(0.95);
-}
-
-/* ========================================
-   SMOOTH TRANSITIONS
-   ======================================== */
-
-.stat-card,
-.chart-card {
-  transition: all 0.3s ease;
 }

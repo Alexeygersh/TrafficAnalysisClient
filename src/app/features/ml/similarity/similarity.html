@@ -1,0 +1,400 @@
+<div class="sim-container">
+  <div class="header">
+    <h1>
+      <mat-icon>compare_arrows</mat-icon>
+      Мера сходства потоков
+    </h1>
+  </div>
+
+  <mat-card class="info-card">
+    <mat-card-content>
+      <p>
+        <mat-icon>info</mat-icon>
+        Расчёт сходства между сетевыми потоками по формуле:
+        <code>Sim = w1·Sim<sub>port</sub> + w2·Sim<sub>num</sub> + w3·Sim<sub>bin</sub></code>.
+        Веса задаются слайдерами и автоматически нормализуются.
+      </p>
+    </mat-card-content>
+  </mat-card>
+
+  <mat-card class="params-card">
+    <mat-card-content>
+      <div class="params-row">
+        <div class="mode-label">Режим:</div>
+        <mat-button-toggle-group [(ngModel)]="mode" hideSingleSelectionIndicator="true">
+          <mat-button-toggle value="find">
+            <mat-icon>search</mat-icon>
+            Поиск похожих
+          </mat-button-toggle>
+          <mat-button-toggle value="knn">
+            <mat-icon>group_work</mat-icon>
+            kNN-детектор
+          </mat-button-toggle>
+        </mat-button-toggle-group>
+      </div>
+
+      <div class="params-row">
+        <mat-form-field appearance="outline" class="session-field">
+          <mat-label>Сессия</mat-label>
+          <mat-select [(ngModel)]="selectedSessionId" (selectionChange)="onSessionChange()">
+            @for (s of sessions(); track s.id) {
+              <mat-option [value]="s.id">
+                {{ s.sessionName }}
+                @if (s.flowCount > 0) { ({{ s.flowCount }} flows) }
+              </mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+
+        @if (mode() === 'find') {
+          <mat-form-field appearance="outline" class="target-field">
+            <mat-label>Целевой поток</mat-label>
+            <mat-select [(ngModel)]="selectedTargetFlowId" [disabled]="isLoadingFlows()">
+              @for (f of flows(); track f.flowId) {
+                <mat-option [value]="f.flowId">
+                  #{{ f.flowId }}: {{ f.sourceIP }} → {{ f.destinationIP }}:{{ f.destinationPort }}
+                  ({{ f.protocol }})
+                  @if (f.isAttack) { ⚠️ {{ f.threatLevel }} }
+                </mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+        }
+
+        @if (mode() === 'knn') {
+          <mat-button-toggle-group [(ngModel)]="knnModel"
+                                   hideSingleSelectionIndicator="true"
+                                   class="model-toggle">
+            <mat-button-toggle value="rf">RF</mat-button-toggle>
+            <mat-button-toggle value="catboost">CatBoost</mat-button-toggle>
+          </mat-button-toggle-group>
+        }
+
+        <mat-form-field appearance="outline" class="k-field">
+          <mat-label>k</mat-label>
+          <input matInput type="number" [(ngModel)]="k" min="1" max="50">
+        </mat-form-field>
+
+        <button mat-raised-button color="primary"
+                (click)="run()" [disabled]="isLoading()" class="run-button">
+          @if (isLoading()) {
+            <mat-spinner diameter="20"></mat-spinner>
+            <span>&nbsp;Расчёт...</span>
+          } @else {
+            <mat-icon>play_arrow</mat-icon>
+            <span>&nbsp;Запустить</span>
+          }
+        </button>
+      </div>
+
+      <div class="weights-block">
+        <h4>
+          <mat-icon>tune</mat-icon>
+          Веса формулы (нормализуются автоматически)
+        </h4>
+
+        <div class="presets">
+          <span class="preset-label">Пресеты:</span>
+          <button mat-stroked-button (click)="presetByTz()">По ТЗ (10/60/30)</button>
+          <button mat-stroked-button (click)="presetEqual()">Равные</button>
+          <button mat-stroked-button (click)="presetOnlyA()">Только A</button>
+          <button mat-stroked-button (click)="presetOnlyB()">Только B</button>
+          <button mat-stroked-button (click)="presetOnlyC()">Только C</button>
+        </div>
+
+        <div class="slider-row">
+          <div class="slider-label">
+            <strong>w1</strong> · Sim<sub>port</sub>
+            <span class="block-hint">(IP, порты, протокол)</span>
+          </div>
+          <mat-slider min="0" max="100" step="1" discrete>
+            <input matSliderThumb [(ngModel)]="w1Raw">
+          </mat-slider>
+          <div class="slider-value">{{ weightsPct().w1 }}%</div>
+        </div>
+
+        <div class="slider-row">
+          <div class="slider-label">
+            <strong>w2</strong> · Sim<sub>num</sub>
+            <span class="block-hint">(числовые признаки, ~70 полей)</span>
+          </div>
+          <mat-slider min="0" max="100" step="1" discrete>
+            <input matSliderThumb [(ngModel)]="w2Raw">
+          </mat-slider>
+          <div class="slider-value">{{ weightsPct().w2 }}%</div>
+        </div>
+
+        <div class="slider-row">
+          <div class="slider-label">
+            <strong>w3</strong> · Sim<sub>bin</sub>
+            <span class="block-hint">(TCP-флаги: SYN, FIN, ACK, ...)</span>
+          </div>
+          <mat-slider min="0" max="100" step="1" discrete>
+            <input matSliderThumb [(ngModel)]="w3Raw">
+          </mat-slider>
+          <div class="slider-value">{{ weightsPct().w3 }}%</div>
+        </div>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  @if (errorMessage()) {
+    <mat-card class="error-card">
+      <mat-card-content>
+        <mat-icon color="warn">error</mat-icon>
+        <span>{{ errorMessage() }}</span>
+      </mat-card-content>
+    </mat-card>
+  }
+
+  @if (mode() === 'find' && findResult(); as r) {
+    <mat-card class="target-card">
+      <mat-card-header>
+        <mat-card-title>
+          <mat-icon>my_location</mat-icon>
+          Целевой поток
+        </mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="target-info">
+          <span class="flow-id">#{{ r.targetFlow.flowId }}</span>
+          <code>{{ r.targetFlow.sourceIP }}:{{ r.targetFlow.sourcePort }}</code>
+          <mat-icon class="arrow">arrow_forward</mat-icon>
+          <code>{{ r.targetFlow.destinationIP }}:{{ r.targetFlow.destinationPort }}</code>
+          <mat-chip class="proto-chip">{{ r.targetFlow.protocol }}</mat-chip>
+          <mat-chip [class]="threatChipClass(r.targetFlow.threatLevel)">
+            {{ r.targetFlow.threatLevel }}
+          </mat-chip>
+          @if (r.targetFlow.isAttack) {
+            <mat-chip class="attack-chip">
+              <mat-icon>warning</mat-icon>&nbsp;Атака
+            </mat-chip>
+          }
+        </div>
+        <div class="result-meta">
+          <span>Кандидатов: {{ r.totalCandidates }}</span>
+          <span>k: {{ r.k }}</span>
+          <span>Время: {{ r.elapsedMs }} ms</span>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="results-card">
+      <mat-card-header>
+        <mat-card-title>
+          <mat-icon>format_list_numbered</mat-icon>
+          Похожие потоки (по убыванию sim)
+        </mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <table mat-table [dataSource]="r.results" class="sim-table">
+          <ng-container matColumnDef="rank">
+            <th mat-header-cell *matHeaderCellDef>#</th>
+            <td mat-cell *matCellDef="let row; let i = index">{{ i + 1 }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="flowId">
+            <th mat-header-cell *matHeaderCellDef>Flow ID</th>
+            <td mat-cell *matCellDef="let row">#{{ row.flowId }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="source">
+            <th mat-header-cell *matHeaderCellDef>Источник</th>
+            <td mat-cell *matCellDef="let row">
+              <code>{{ row.sourceIP }}:{{ row.sourcePort }}</code>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="destination">
+            <th mat-header-cell *matHeaderCellDef>Назначение</th>
+            <td mat-cell *matCellDef="let row">
+              <code>{{ row.destinationIP }}:{{ row.destinationPort }}</code>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="protocol">
+            <th mat-header-cell *matHeaderCellDef>Прот.</th>
+            <td mat-cell *matCellDef="let row">
+              <mat-chip class="proto-chip">{{ row.protocol }}</mat-chip>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="simA">
+            <th mat-header-cell *matHeaderCellDef matTooltip="Sim_port (IP/порты)">A</th>
+            <td mat-cell *matCellDef="let row">{{ pct(row.simA) }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="simB">
+            <th mat-header-cell *matHeaderCellDef matTooltip="Sim_num (числовые)">B</th>
+            <td mat-cell *matCellDef="let row">{{ pct(row.simB) }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="simC">
+            <th mat-header-cell *matHeaderCellDef matTooltip="Sim_bin (TCP-флаги)">C</th>
+            <td mat-cell *matCellDef="let row">{{ pct(row.simC) }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="sim">
+            <th mat-header-cell *matHeaderCellDef>Sim итог</th>
+            <td mat-cell *matCellDef="let row">
+              <div class="sim-bar-wrap">
+                <div class="sim-bar"
+                     [class]="simBarClass(row.sim)"
+                     [style.width.%]="row.sim * 100"></div>
+                <span class="sim-text">{{ pct(row.sim) }}</span>
+              </div>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="label">
+            <th mat-header-cell *matHeaderCellDef>Метка</th>
+            <td mat-cell *matCellDef="let row">
+              <mat-chip [class]="threatChipClass(row.threatLevel)">
+                {{ row.threatLevel }}
+              </mat-chip>
+              @if (row.isAttack) {
+                <mat-icon class="attack-mini" matTooltip="Атака">warning</mat-icon>
+              }
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="findColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: findColumns"></tr>
+        </table>
+      </mat-card-content>
+    </mat-card>
+  }
+
+  @if (mode() === 'knn' && knnResult(); as r) {
+    <div class="stats-grid">
+      <mat-card class="stat-card">
+        <mat-icon class="stat-icon blue">dns</mat-icon>
+        <div>
+          <div class="stat-value">{{ r.totalFlows }}</div>
+          <div class="stat-label">Всего flows</div>
+        </div>
+      </mat-card>
+
+      <mat-card class="stat-card attack-card">
+        <mat-icon class="stat-icon red">forest</mat-icon>
+        <div>
+          <div class="stat-value">{{ r.originalAttackFlows }}</div>
+          <div class="stat-label">RF/CatBoost: атак</div>
+        </div>
+      </mat-card>
+
+      <mat-card class="stat-card">
+        <mat-icon class="stat-icon purple">group_work</mat-icon>
+        <div>
+          <div class="stat-value">{{ r.knnAttackFlows }}</div>
+          <div class="stat-label">kNN: атак</div>
+        </div>
+      </mat-card>
+
+      <mat-card class="stat-card highlight-card">
+        <mat-icon class="stat-icon green">handshake</mat-icon>
+        <div>
+          <div class="stat-value">{{ pct(r.agreementWithOriginal) }}</div>
+          <div class="stat-label">Согласие с ML</div>
+        </div>
+      </mat-card>
+
+      <mat-card class="stat-card">
+        <mat-icon class="stat-icon orange">timer</mat-icon>
+        <div>
+          <div class="stat-value">{{ r.elapsedMs }}ms</div>
+          <div class="stat-label">Время</div>
+        </div>
+      </mat-card>
+    </div>
+
+    <mat-card class="results-card">
+      <mat-card-header>
+        <mat-card-title>
+          <mat-icon>compare</mat-icon>
+          Сравнение kNN vs ML-модель
+        </mat-card-title>
+        <mat-card-subtitle>
+          Показано {{ filteredKnnPredictions().length }} из {{ r.totalFlows }}
+        </mat-card-subtitle>
+      </mat-card-header>
+
+      <div class="filter-toolbar">
+        <mat-button-toggle-group [(ngModel)]="showOnlyDisagreements"
+                                 hideSingleSelectionIndicator="true">
+          <mat-button-toggle [value]="false">Все ({{ r.totalFlows }})</mat-button-toggle>
+          <mat-button-toggle [value]="true">Только расхождения</mat-button-toggle>
+        </mat-button-toggle-group>
+      </div>
+
+      <mat-card-content>
+        <table mat-table [dataSource]="filteredKnnPredictions()" class="sim-table">
+          <ng-container matColumnDef="flowId">
+            <th mat-header-cell *matHeaderCellDef>ID</th>
+            <td mat-cell *matCellDef="let p">#{{ p.flowId }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="source">
+            <th mat-header-cell *matHeaderCellDef>Источник</th>
+            <td mat-cell *matCellDef="let p"><code>{{ p.sourceIP }}</code></td>
+          </ng-container>
+
+          <ng-container matColumnDef="destination">
+            <th mat-header-cell *matHeaderCellDef>Назначение</th>
+            <td mat-cell *matCellDef="let p">
+              <code>{{ p.destinationIP }}:{{ p.destinationPort }}</code>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="protocol">
+            <th mat-header-cell *matHeaderCellDef>Прот.</th>
+            <td mat-cell *matCellDef="let p">
+              <mat-chip class="proto-chip">{{ p.protocol }}</mat-chip>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="originalLabel">
+            <th mat-header-cell *matHeaderCellDef>ML</th>
+            <td mat-cell *matCellDef="let p">
+              @if (p.originalLabel) {
+                <mat-chip class="attack-chip">Атака</mat-chip>
+              } @else {
+                <mat-chip class="normal-chip">Норма</mat-chip>
+              }
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="knnLabel">
+            <th mat-header-cell *matHeaderCellDef>kNN</th>
+            <td mat-cell *matCellDef="let p">
+              @if (p.knnIsAttack) {
+                <mat-chip class="attack-chip">Атака</mat-chip>
+              } @else {
+                <mat-chip class="normal-chip">Норма</mat-chip>
+              }
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="knnConfidence">
+            <th mat-header-cell *matHeaderCellDef>Голосов</th>
+            <td mat-cell *matCellDef="let p">
+              {{ p.knnConfidence * 100 | number:'1.0-0' }}%
+              <span class="votes-text">({{ p.knnConfidence * r.k | number:'1.0-0' }}/{{ r.k }})</span>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="agree">
+            <th mat-header-cell *matHeaderCellDef>Согл.</th>
+            <td mat-cell *matCellDef="let p">
+              <mat-icon [class]="agreeClass(p)">{{ agreeIcon(p) }}</mat-icon>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="knnColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: knnColumns"
+              [class.disagree-row]="row.knnIsAttack !== row.originalLabel"></tr>
+        </table>
+      </mat-card-content>
+    </mat-card>
+  }
+</div>

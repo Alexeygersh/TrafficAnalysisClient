@@ -17,9 +17,9 @@ import { FlowMLService } from '../../../core/services/flow-ml';
 import {
   FlowMLAnalyzeResult, FlowMLPrediction, ModelType
 } from '../../../core/models/flow-ml.model';
-import {
-  ClusteringService, SessionFilter
-} from '../../../core/services/clustering';
+import { SessionApiService } from '../../../core/services/session-api';
+import { SessionFilter } from '../../../core/models/session-filter.model';
+import {RouterLink} from '@angular/router';
 
 @Component({
   selector: 'app-flow-analyze',
@@ -28,14 +28,14 @@ import {
     CommonModule, FormsModule,
     MatCardModule, MatIconModule, MatButtonModule, MatButtonToggleModule,
     MatProgressSpinnerModule, MatSelectModule, MatFormFieldModule,
-    MatTableModule, MatChipsModule, MatTooltipModule,
+    MatTableModule, MatChipsModule, MatTooltipModule, RouterLink,
   ],
   templateUrl: './flow-analyze.html',
   styleUrl: './flow-analyze.css',
 })
 export class FlowAnalyzeComponent implements OnInit {
   private service = inject(FlowMLService);
-  private clusteringService = inject(ClusteringService);
+  private sessionApi = inject(SessionApiService);
   private snackBar = inject(MatSnackBar);
 
   // Параметры
@@ -52,7 +52,7 @@ export class FlowAnalyzeComponent implements OnInit {
 
   displayedColumns = [
     'flowId', 'source', 'destination', 'port', 'protocol',
-    'isAttack', 'confidence', 'threatLevel', 'method',
+    'isAttack', 'confidence', 'threatLevel', 'method', 'actions',
   ];
 
   filteredPredictions = computed<FlowMLPrediction[]>(() => {
@@ -73,7 +73,7 @@ export class FlowAnalyzeComponent implements OnInit {
   }
 
   loadSessions(): void {
-    this.clusteringService.getSessions().subscribe({
+    this.sessionApi.getSessions().subscribe({
       next: (s) => this.sessions.set(s),
       error: (err) => console.error('Error loading sessions:', err),
     });

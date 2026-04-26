@@ -15,7 +15,7 @@ export const routes: Routes = [
     component: MainLayout,
     canActivate: [authGuard],
     children: [
-      // Редирект на
+      // Редирект на dashboard
       {
         path: '',
         redirectTo: 'reports',
@@ -28,21 +28,29 @@ export const routes: Routes = [
         children: [
           {
             path: '',
-            loadComponent: () => import('./features/packets/packet-list/packet-list').then(m => m.PacketList)
+            loadComponent: () =>
+              import('./features/packets/packet-list/packet-list')
+                .then(m => m.PacketList)
           },
           {
             path: 'new',
             canActivate: [adminGuard],
-            loadComponent: () => import('./features/packets/packet-form/packet-form').then(m => m.PacketForm)
+            loadComponent: () =>
+              import('./features/packets/packet-form/packet-form')
+                .then(m => m.PacketForm)
           },
           {
             path: ':id',
-            loadComponent: () => import('./features/packets/packet-detail/packet-detail').then(m => m.PacketDetail)
+            loadComponent: () =>
+              import('./features/packets/packet-detail/packet-detail')
+                .then(m => m.PacketDetail)
           },
           {
             path: ':id/edit',
             canActivate: [adminGuard],
-            loadComponent: () => import('./features/packets/packet-form/packet-form').then(m => m.PacketForm)
+            loadComponent: () =>
+              import('./features/packets/packet-form/packet-form')
+                .then(m => m.PacketForm)
           }
         ]
       },
@@ -53,29 +61,39 @@ export const routes: Routes = [
         children: [
           {
             path: '',
-            loadComponent: () => import('./features/sessions/session-list/session-list').then(m => m.SessionList)
+            loadComponent: () =>
+              import('./features/sessions/session-list/session-list')
+                .then(m => m.SessionList)
           },
           {
             path: 'new',
             canActivate: [adminGuard],
-            loadComponent: () => import('./features/sessions/session-form/session-form').then(m => m.SessionForm)
+            loadComponent: () =>
+              import('./features/sessions/session-form/session-form')
+                .then(m => m.SessionForm)
           },
           {
             path: ':id',
-            loadComponent: () => import('./features/sessions/session-detail/session-detail').then(m => m.SessionDetail)
+            loadComponent: () =>
+              import('./features/sessions/session-detail/session-detail')
+                .then(m => m.SessionDetail)
           },
           {
             path: ':id/edit',
             canActivate: [adminGuard],
-            loadComponent: () => import('./features/sessions/session-form/session-form').then(m => m.SessionForm)
+            loadComponent: () =>
+              import('./features/sessions/session-form/session-form')
+                .then(m => m.SessionForm)
           }
         ]
       },
 
-      // Отчеты
+      // Dashboard / Отчёты
       {
         path: 'reports',
-        loadComponent: () => import('./features/reports/dashboard/dashboard').then(m => m.Dashboard)
+        loadComponent: () =>
+          import('./features/reports/dashboard/dashboard')
+            .then(m => m.Dashboard)
       },
 
       // Администрирование
@@ -85,23 +103,20 @@ export const routes: Routes = [
         children: [
           {
             path: 'users',
-            loadComponent: () => import('./features/admin/user-management/user-management').then(m => m.UserManagement)
+            loadComponent: () =>
+              import('./features/admin/user-management/user-management')
+                .then(m => m.UserManagement)
           }
         ]
       },
 
-      // Импорт
+      // Импорт PCAP
       {
-        path: 'import',
+        path: 'import/pcap',
         canActivate: [adminGuard],
-        children: [
-          {
-            path: 'csv',
-            loadComponent: () =>
-              import('./features/import/csv-import/csv-import')
-                .then(m => m.CsvImportComponent)
-          }
-        ]
+        loadComponent: () =>
+          import('./features/import/pcap-import/pcap-import')
+            .then(m => m.PcapImportComponent)
       },
 
       // ML-аналитика
@@ -112,7 +127,6 @@ export const routes: Routes = [
           import('./features/ml/feature-selection/feature-selection')
             .then(m => m.FeatureSelectionComponent)
       },
-
       {
         path: 'ml/flow-analyze',
         canActivate: [authGuard],
@@ -121,27 +135,13 @@ export const routes: Routes = [
             .then(m => m.FlowAnalyzeComponent)
       },
 
-      // Кластеризация
-      // {
-      //   path: 'clustering',
-      //   canActivate: [authGuard],
-      //   loadComponent: () =>
-      //     import('./features/clustering/clustering-dashboard/clustering-dashboard')
-      //       .then(m => m.ClusteringDashboard)
-      // },
-      //
-      // {
-      //   path: 'clustering',
-      //   canActivate: [authGuard],
-      //   loadComponent: () => import('./features/clustering/cluster-visualization/cluster-visualization')
-      //     .then(m => m.ClusterVisualization)
-      // }
       {
-        path: 'clustering',
-        loadChildren: () =>
-          import('./features/clustering/clustering.routes')
-            .then(m => m.CLUSTERING_ROUTES)
-      }
+        path: 'ml/similarity',
+        canActivate: [authGuard],
+        loadComponent: () =>
+          import('./features/ml/similarity/similarity')
+            .then(m => m.SimilarityComponent)
+      },
 
     ]
   },
