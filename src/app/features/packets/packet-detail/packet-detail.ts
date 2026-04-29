@@ -11,8 +11,8 @@ import { MatChipsModule } from '@angular/material/chips';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatTooltipModule } from '@angular/material/tooltip';
 
-import { PacketService } from '../../../core/services/packet';
-import { AuthService } from '../../../core/services/auth';
+import { PacketService } from '../../../core/services/packet.service';
+import { AuthService } from '../../../core/services/auth.service';
 import { NetworkPacket, ThreatScore } from '../../../core/models/network-packet.model';
 import { MainLayout } from '../../../layout/main-layout/main-layout';
 

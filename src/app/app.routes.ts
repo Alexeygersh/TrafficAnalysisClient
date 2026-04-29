@@ -33,59 +33,61 @@ export const routes: Routes = [
                 .then(m => m.PacketList)
           },
           {
-            path: 'new',
-            canActivate: [adminGuard],
-            loadComponent: () =>
-              import('./features/packets/packet-form/packet-form')
-                .then(m => m.PacketForm)
-          },
-          {
             path: ':id',
             loadComponent: () =>
               import('./features/packets/packet-detail/packet-detail')
                 .then(m => m.PacketDetail)
           },
-          {
-            path: ':id/edit',
-            canActivate: [adminGuard],
-            loadComponent: () =>
-              import('./features/packets/packet-form/packet-form')
-                .then(m => m.PacketForm)
-          }
         ]
       },
 
       // Сессии
+      // {
+      //   path: 'sessions',
+      //   children: [
+      //     {
+      //       path: '',
+      //       loadComponent: () =>
+      //         import('./features/sessions/session-list/session-list')
+      //           .then(m => m.SessionList)
+      //     },
+      //     {
+      //       path: 'new',
+      //       canActivate: [adminGuard],
+      //       loadComponent: () =>
+      //         import('./features/sessions/session-form/session-form')
+      //           .then(m => m.SessionForm)
+      //     },
+      //     {
+      //       path: ':id',
+      //       loadComponent: () =>
+      //         import('./features/sessions/session-detail/session-detail')
+      //           .then(m => m.SessionDetail)
+      //     },
+      //     {
+      //       path: ':id/edit',
+      //       canActivate: [adminGuard],
+      //       loadComponent: () =>
+      //         import('./features/sessions/session-form/session-form')
+      //           .then(m => m.SessionForm)
+      //     }
+      //   ]
+      // },
+
+      // Файлы PCAP (объединённый импорт + список)
       {
-        path: 'sessions',
-        children: [
-          {
-            path: '',
-            loadComponent: () =>
-              import('./features/sessions/session-list/session-list')
-                .then(m => m.SessionList)
-          },
-          {
-            path: 'new',
-            canActivate: [adminGuard],
-            loadComponent: () =>
-              import('./features/sessions/session-form/session-form')
-                .then(m => m.SessionForm)
-          },
-          {
-            path: ':id',
-            loadComponent: () =>
-              import('./features/sessions/session-detail/session-detail')
-                .then(m => m.SessionDetail)
-          },
-          {
-            path: ':id/edit',
-            canActivate: [adminGuard],
-            loadComponent: () =>
-              import('./features/sessions/session-form/session-form')
-                .then(m => m.SessionForm)
-          }
-        ]
+        path: 'pcap-files',
+        loadComponent: () =>
+          import('./features/pcap-files/pcap-files')
+            .then(m => m.PcapFilesComponent)
+      },
+
+      // Детали файла (старый session-detail) — оставляем по тому же пути
+      {
+        path: 'sessions/:id',
+        loadComponent: () =>
+          import('./features/sessions/session-detail/session-detail')
+            .then(m => m.SessionDetail)
       },
 
       // Dashboard / Отчёты
@@ -110,15 +112,6 @@ export const routes: Routes = [
         ]
       },
 
-      // Импорт PCAP
-      {
-        path: 'import/pcap',
-        canActivate: [adminGuard],
-        loadComponent: () =>
-          import('./features/import/pcap-import/pcap-import')
-            .then(m => m.PcapImportComponent)
-      },
-
       // ML-аналитика
       {
         path: 'ml/feature-selection',
@@ -133,6 +126,14 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./features/ml/flow-analyze/flow-analyze')
             .then(m => m.FlowAnalyzeComponent)
+      },
+
+      {
+        path: 'flows/:id',
+        canActivate: [authGuard],
+        loadComponent: () =>
+          import('./features/ml/flow-detail/flow-detail')
+            .then(m => m.FlowDetailComponent)
       },
 
       {

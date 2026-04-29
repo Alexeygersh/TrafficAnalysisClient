@@ -56,8 +56,10 @@
             <mat-spinner diameter="20"></mat-spinner>
             <span>&nbsp;Анализ...</span>
           } @else {
-            <mat-icon>refresh</mat-icon>
-            <span>&nbsp;Обновить</span>
+            <ng-container>
+              <mat-icon>refresh</mat-icon>
+              <span>&nbsp;Обновить</span>
+            </ng-container>
           }
         </button>
       </div>

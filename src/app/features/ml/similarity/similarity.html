@@ -81,8 +81,10 @@
             <mat-spinner diameter="20"></mat-spinner>
             <span>&nbsp;Расчёт...</span>
           } @else {
-            <mat-icon>play_arrow</mat-icon>
-            <span>&nbsp;Запустить</span>
+            <ng-container>
+              <mat-icon>play_arrow</mat-icon>
+              <span>&nbsp;Запустить</span>
+            </ng-container>
           }
         </button>
       </div>

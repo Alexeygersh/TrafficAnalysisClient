@@ -172,6 +172,15 @@
   color: var(--text-primary);
 }
 
+.clickable-row {
+  cursor: pointer;
+
+  &:hover {
+    background-color: rgba(0, 0, 0, 0.04);
+  }
+}
+
+
 /* ==== Подсветка строк по threat level ==== */
 .flow-table tr.threat-row-critical {
   background-color: rgba(244, 67, 54, 0.1);
@@ -184,6 +193,17 @@
 .flow-table tr.threat-row-medium {
   background-color: rgba(255, 235, 59, 0.06);
 }
+
+
+.flow-link {
+  color: var(--button-primary);
+  text-decoration: none;
+  font-weight: 600;
+}
+.flow-link:hover {
+  text-decoration: underline;
+}
+
 
 /* ==== Чипы threat level ==== */
 .threat-chip-critical {

@@ -68,8 +68,10 @@
             <mat-spinner diameter="20"></mat-spinner>
             <span>&nbsp;Анализ...</span>
           } @else {
-            <mat-icon>play_arrow</mat-icon>
-            <span>&nbsp;Запустить</span>
+            <ng-container>
+              <mat-icon>play_arrow</mat-icon>
+              <span>&nbsp;Запустить</span>
+            </ng-container>
           }
         </button>
       </div>
@@ -191,9 +193,13 @@
       <mat-card-content>
         <table mat-table [dataSource]="filteredPredictions()" class="flow-table">
           <!-- Flow ID -->
-          <ng-container matColumnDef="flowId">
+          <ng-container matColumnDef="flowId" >
             <th mat-header-cell *matHeaderCellDef>ID</th>
-            <td mat-cell *matCellDef="let row">#{{ row.flowId }}</td>
+            <td mat-cell *matCellDef="let row">
+              <a [routerLink]="['/flows', row.flowId]" class="flow-link">
+                #{{ row.flowId }}
+              </a>
+            </td>
           </ng-container>
 
           <!-- Source -->
@@ -273,10 +279,34 @@
             </td>
           </ng-container>
 
+
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef></th>
+            <td mat-cell *matCellDef="let row">
+              <button mat-icon-button
+                      [routerLink]="['/ml/similarity']"
+                      [queryParams]="{ targetFlowId: row.flowId, sessionId: result()?.sessionId }"
+                      matTooltip="Найти похожие">
+                <mat-icon>compare_arrows</mat-icon>
+              </button>
+            </td>
+          </ng-container>
+
+
+<!--          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>-->
+<!--          <tr mat-row-->
+<!--              *matRowDef="let row; columns: displayedColumns"-->
+<!--              [class]="threatRowClass(row.threatLevel)"></tr>-->
+
+
           <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
           <tr mat-row
               *matRowDef="let row; columns: displayedColumns"
-              [class]="threatRowClass(row.threatLevel)"></tr>
+              [class]="threatRowClass(row.threatLevel)"
+              (click)="navigateToFlow(row.flowId)"
+              class="clickable-row">
+          </tr>
+
         </table>
 
         @if (filteredPredictions().length === 0) {
@@ -286,18 +316,6 @@
           </div>
         }
       </mat-card-content>
-
-    <ng-container matColumnDef="actions">
-      <th mat-header-cell *matHeaderCellDef></th>
-      <td mat-cell *matCellDef="let row">
-        <button mat-icon-button
-                [routerLink]="['/ml/similarity']"
-                [queryParams]="{ targetFlowId: row.flowId, sessionId: result()?.sessionId }"
-                matTooltip="Найти похожие">
-          <mat-icon>compare_arrows</mat-icon>
-        </button>
-      </td>
-    </ng-container>
 
     </mat-card>
   }

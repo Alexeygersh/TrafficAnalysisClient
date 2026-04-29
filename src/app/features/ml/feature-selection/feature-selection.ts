@@ -13,9 +13,9 @@ import { MatChipsModule } from '@angular/material/chips';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatSnackBar } from '@angular/material/snack-bar';
 
-import { FeatureSelectionService } from '../../../core/services/feature-selection';
+import { FeatureSelectionService } from '../../../core/services/feature-selection.service';
 import { FeatureSelectionResult, FeatureRank } from '../../../core/models/feature-selection.model';
-import { SessionApiService } from '../../../core/services/session-api';
+import { SessionApiService } from '../../../core/services/session-api.service';
 import { SessionFilter } from '../../../core/models/session-filter.model';
 
 @Component({

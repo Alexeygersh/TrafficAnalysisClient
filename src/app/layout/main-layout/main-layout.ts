@@ -9,8 +9,8 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
-import { AuthService } from '../../core/services/auth';
-import { ThemeService } from '../../core/services/theme';
+import { AuthService } from '../../core/services/auth.service';
+import { ThemeService } from '../../core/services/theme.service';
 import {DomSanitizer} from '@angular/platform-browser';
 import {MatTooltip} from '@angular/material/tooltip';
 
@@ -62,12 +62,6 @@ export class MainLayout {
       roles: ['Admin', 'Analyst']
     },
     {
-      icon: 'upload_file',
-      label: 'Импорт PCAP',
-      route: '/import/pcap',
-      roles: ['Admin']
-    },
-    {
       icon: 'security',
       label: 'ML-анализ потоков',
       route: '/ml/flow-analyze',
@@ -93,12 +87,14 @@ export class MainLayout {
       route: '/packets',
       roles: ['Admin', 'Analyst']
     },
+
     {
-      icon: 'schedule',
-      label: 'Сессии',
-      route: '/sessions',
+      icon: 'folder_zip',
+      label: 'Файлы PCAP',
+      route: '/pcap-files',
       roles: ['Admin', 'Analyst']
     },
+
     {
       icon: 'admin_panel_settings',
       label: 'Администрирование',

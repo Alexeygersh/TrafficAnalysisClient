@@ -1,0 +1,189 @@
+<div class="fd-container">
+  <!-- Заголовок -->
+  <div class="header">
+    <button mat-icon-button [routerLink]="['/ml/flow-analyze']"
+            matTooltip="Назад к ML-анализу">
+      <mat-icon>arrow_back</mat-icon>
+    </button>
+    <h1>
+      <mat-icon>device_hub</mat-icon>
+      Flow #{{ flowId() }}
+    </h1>
+  </div>
+
+  @if (isLoading()) {
+    <div class="loading">
+      <mat-spinner></mat-spinner>
+      <p>Загрузка...</p>
+    </div>
+  }
+
+  @if (errorMessage()) {
+    <mat-card class="error-card">
+      <mat-card-content>
+        <mat-icon color="warn">error</mat-icon>
+        <span>{{ errorMessage() }}</span>
+      </mat-card-content>
+    </mat-card>
+  }
+
+  @if (flow(); as f) {
+    <!-- Карточка обзора -->
+    <mat-card class="overview-card" [class.is-attack]="f.threatLevel === 'High' || f.threatLevel === 'Critical'">
+      <mat-card-content>
+        <div class="overview-grid">
+          <!-- 5-tuple -->
+          <div class="tuple-block">
+            <h3>Идентификация</h3>
+            <div class="tuple-row">
+              <code>{{ f.sourceIP }}:{{ f.sourcePort }}</code>
+              <mat-icon>arrow_forward</mat-icon>
+              <code>{{ f.destinationIP }}:{{ f.destinationPort }}</code>
+            </div>
+            <div class="meta-row">
+              <span class="proto-tag">{{ f.protocol }}</span>
+              <span class="muted">Сессия #{{ f.sessionId }}</span>
+            </div>
+            <div class="time-row">
+              <small><strong>Начало:</strong> {{ formatDate(f.flowStartTime) }}</small>
+              <small><strong>Конец:</strong> {{ formatDate(f.flowEndTime) }}</small>
+            </div>
+          </div>
+
+          <!-- ML результат -->
+          <div class="ml-block">
+            <h3>ML-анализ</h3>
+            @if (f.threatLevel) {
+              <div class="ml-row">
+                <mat-chip [class]="threatChipClass(f.threatLevel)">
+                  {{ f.threatLevel }}
+                </mat-chip>
+                @if (f.threatScore !== undefined && f.threatScore !== null) {
+                  <span class="score">Confidence:
+                    <strong>{{ (f.threatScore * 100).toFixed(1) }}%</strong>
+                  </span>
+                }
+              </div>
+              @if (f.predictedBy) {
+                <div class="meta-row">
+                  <span class="muted">Модель: {{ f.predictedBy }}</span>
+                </div>
+              }
+            } @else {
+              <p class="muted">
+                <mat-icon>info</mat-icon>
+                ML-анализ не запускался
+              </p>
+            }
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Tabs: Метрики / Пакеты -->
+    <mat-tab-group dynamicHeight>
+      <!-- Tab 1: Метрики -->
+      <mat-tab>
+        <ng-template mat-tab-label>
+          <mat-icon>analytics</mat-icon>&nbsp;Метрики потока
+        </ng-template>
+
+        <div class="tab-content">
+          <mat-accordion multi="true" class="metrics-accordion">
+            @for (block of flowMetricBlocks(); track block.title) {
+              <mat-expansion-panel [expanded]="true">
+                <mat-expansion-panel-header>
+                  <mat-panel-title>
+                    <mat-icon>{{ block.icon }}</mat-icon>
+                    &nbsp;{{ block.title }}
+                  </mat-panel-title>
+                </mat-expansion-panel-header>
+
+                <div class="metrics-grid">
+                  @for (item of block.items; track item.label) {
+                    <div class="metric-item">
+                      <span class="metric-label">{{ item.label }}</span>
+                      <span class="metric-value">{{ item.value }}</span>
+                    </div>
+                  }
+                </div>
+              </mat-expansion-panel>
+            }
+          </mat-accordion>
+        </div>
+      </mat-tab>
+
+      <!-- Tab 2: Пакеты -->
+      <mat-tab>
+        <ng-template mat-tab-label>
+          <mat-icon>inbox</mat-icon>
+          &nbsp;Пакеты внутри ({{ packets().length }})
+        </ng-template>
+
+        <div class="tab-content">
+          @if (packets().length === 0) {
+            <mat-card class="empty">
+              <mat-card-content>
+                <mat-icon>inbox</mat-icon>
+                <p>Пакеты не привязаны к этому flow.</p>
+              </mat-card-content>
+            </mat-card>
+          } @else {
+            <mat-card>
+              <mat-card-content style="overflow-x: auto;">
+                <table mat-table [dataSource]="packets()" class="packets-table">
+
+                  <ng-container matColumnDef="id">
+                    <th mat-header-cell *matHeaderCellDef>ID</th>
+                    <td mat-cell *matCellDef="let p">#{{ p.id }}</td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="time">
+                    <th mat-header-cell *matHeaderCellDef>Время</th>
+                    <td mat-cell *matCellDef="let p">
+                      <small>{{ formatDate(p.timestamp) }}</small>
+                    </td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="src">
+                    <th mat-header-cell *matHeaderCellDef>Источник</th>
+                    <td mat-cell *matCellDef="let p">
+                      <code>{{ p.sourceIP }}</code>
+                    </td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="dst">
+                    <th mat-header-cell *matHeaderCellDef>Назначение</th>
+                    <td mat-cell *matCellDef="let p">
+                      <code>{{ p.destinationIP }}</code>
+                    </td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="port">
+                    <th mat-header-cell *matHeaderCellDef>Порт</th>
+                    <td mat-cell *matCellDef="let p">{{ p.port }}</td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="proto">
+                    <th mat-header-cell *matHeaderCellDef>Прот.</th>
+                    <td mat-cell *matCellDef="let p">
+                      <span class="proto-tag small">{{ p.protocol }}</span>
+                    </td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="size">
+                    <th mat-header-cell *matHeaderCellDef>Размер</th>
+                    <td mat-cell *matCellDef="let p">{{ p.packetSize }} B</td>
+                  </ng-container>
+
+                  <tr mat-header-row *matHeaderRowDef="packetColumns"></tr>
+                  <tr mat-row *matRowDef="let row; columns: packetColumns"></tr>
+                </table>
+              </mat-card-content>
+            </mat-card>
+          }
+        </div>
+      </mat-tab>
+    </mat-tab-group>
+  }
+</div>

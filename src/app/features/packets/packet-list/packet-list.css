@@ -1,197 +1,207 @@
 .packet-list-container {
-  max-width: 1400px;
+  max-width: 1500px;
   margin: 0 auto;
+  padding: 8px;
 }
 
+/* === Заголовок === */
 .header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 24px;
+  margin-bottom: 16px;
 }
-
 .header h1 {
   display: flex;
   align-items: center;
   gap: 12px;
   font-size: 28px;
-  font-weight: 500;
+  font-weight: 600;
   margin: 0;
   color: var(--text-primary);
 }
-
-.header-actions {
-  display: flex;
-  gap: 12px;
+.header h1 mat-icon {
+  font-size: 32px;
+  width: 32px; height: 32px;
+  color: var(--button-primary);
 }
 
-.filters-card {
-  margin-bottom: 24px;
-}
+/* === Фильтры === */
+.filters-card { margin-bottom: 16px; }
 
 .filters {
   display: flex;
   gap: 16px;
   flex-wrap: wrap;
   align-items: center;
-  margin-bottom: 16px;
 }
-
 .filter-field {
   min-width: 200px;
   flex: 1;
 }
 
-.stats {
+.active-filters {
   margin-top: 8px;
+  display: flex;
+  gap: 8px;
+}
+.active-filter {
+  background-color: rgba(102, 126, 234, 0.2) !important;
+  color: var(--text-primary) !important;
 }
 
+.stats {
+  margin-top: 12px;
+}
 mat-chip-set {
   display: flex;
   gap: 8px;
 }
-
 mat-chip {
   display: flex;
   align-items: center;
   gap: 4px;
 }
 
+/* === Loading / Error === */
 .loading {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  padding: 60px;
-  gap: 16px;
+  padding: 40px;
 }
-
-.error-card {
+.loading p {
+  margin-top: 16px;
+  color: var(--text-secondary);
+}
+.error-card mat-card-content {
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 20px;
-  background-color: #ffebee;
-  color: var(--status-error);
 }
 
+/* === Таблица === */
 .packets-table {
   width: 100%;
+  background: transparent;
+  display: table !important;
+  table-layout: auto;
+  min-width: 1100px;
+}
+
+.packets-table thead { display: table-header-group !important; }
+.packets-table tbody { display: table-row-group !important; }
+.packets-table tr { display: table-row !important; }
+
+.packets-table th,
+.packets-table td {
+  display: table-cell !important;
+  padding: 10px 12px;
+  font-size: 13px;
+  border-bottom: 1px solid var(--border-color);
+  vertical-align: middle;
 }
 
 .packets-table th {
-  cursor: pointer;
-  -webkit-user-select: none;
-  user-select: none;
   font-weight: 600;
+  color: var(--text-primary);
+  text-align: left;
+  white-space: nowrap;
+  cursor: pointer;
+  user-select: none;
 }
 
 .packets-table th mat-icon {
   font-size: 16px;
-  width: 16px;
-  height: 16px;
+  width: 16px; height: 16px;
   vertical-align: middle;
   margin-left: 4px;
 }
 
 .packets-table code {
-  background-color: var(--bg-secondary);
+  font-family: 'Courier New', monospace;
+  font-size: 12px;
   padding: 2px 6px;
   border-radius: 3px;
-  font-size: 13px;
+  background-color: rgba(102, 126, 234, 0.05);
   color: var(--text-primary);
 }
 
-.no-analysis {
-  color: var(--text-muted);
-  font-style: italic;
-  font-size: 13px;
+.packets-table small {
+  color: var(--text-secondary);
+  font-size: 11px;
 }
 
-/* Цвета уровней угроз */
-.threat-critical {
-  background-color: var(--threat-critical) !important;
-  color: white !important;
+.proto-tag {
+  font-size: 11px;
+  color: #667eea;
+  background-color: rgba(102, 126, 234, 0.15);
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-weight: 500;
 }
 
-.threat-high {
-  background-color: var(--threat-high) !important;
-  color: white !important;
+.flow-link {
+  color: var(--button-primary);
+  text-decoration: none;
+  font-weight: 600;
+  font-family: 'Courier New', monospace;
+}
+.flow-link:hover {
+  text-decoration: underline;
 }
 
-.threat-medium {
-  background-color: var(--threat-medium) !important;
-  color: #333 !important;
+.muted {
+  color: var(--text-secondary);
+  opacity: 0.5;
+  font-size: 12px;
 }
 
-.threat-low {
-  background-color: var(--threat-low) !important;
-  color: white !important;
+/* Колонка Actions */
+.packets-table .mat-column-actions {
+  width: 100px;
+  min-width: 100px;
+  text-align: right;
+  white-space: nowrap;
+}
+.packets-table .mat-column-actions button {
+  margin: 0 1px;
 }
 
-.threat-none {
-  background-color: var(--threat-none) !important;
-  color: #666 !important;
-}
-
-.empty-state {
+/* === Empty === */
+.empty-state mat-card-content {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 60px;
   text-align: center;
+  padding: 40px 24px;
 }
-
 .empty-state mat-icon {
-  font-size: 72px;
-  width: 72px;
-  height: 72px;
-  color: var(--status-completed);
+  font-size: 64px;
+  width: 64px; height: 64px;
+  color: var(--text-secondary);
+  opacity: 0.4;
   margin-bottom: 16px;
 }
-
 .empty-state h3 {
   margin: 0 0 8px 0;
-  font-size: 20px;
-  color: var(--text-secondary);
+  font-size: 18px;
+  color: var(--text-primary);
 }
-
 .empty-state p {
-  margin: 0 0 24px 0;
-  color: var(--text-muted);
+  color: var(--text-secondary);
+  margin: 0;
+}
+.empty-state a {
+  color: var(--button-primary);
+  font-weight: 500;
 }
 
-/* Адаптивность */
+/* === Адаптив === */
 @media (max-width: 768px) {
-  .header {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 16px;
-  }
-
   .filters {
     flex-direction: column;
     align-items: stretch;
   }
-
-  .filter-field {
-    min-width: 100%;
-  }
-
-  .packets-table {
-    font-size: 12px;
-  }
-}
-
-.cards-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-  gap: 24px;
-  margin-top: 24px;
-}
-
-@media (max-width: 768px) {
-  .cards-grid {
-    grid-template-columns: 1fr;
-  }
+  .filter-field { min-width: 100%; }
 }

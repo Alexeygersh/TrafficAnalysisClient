@@ -11,8 +11,8 @@ import { MatDividerModule } from '@angular/material/divider';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatTableModule } from '@angular/material/table';
 
-import { SessionService } from '../../../core/services/session';
-import { AuthService } from '../../../core/services/auth';
+import { SessionService } from '../../../core/services/session.service';
+import { AuthService } from '../../../core/services/auth.service';
 import { TrafficSession, SessionStatistics } from '../../../core/models/traffic-session.model';
 import { NetworkPacket } from '../../../core/models/network-packet.model';
 

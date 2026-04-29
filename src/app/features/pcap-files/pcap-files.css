@@ -1,0 +1,253 @@
+.pf-container {
+  max-width: 1300px;
+  margin: 0 auto;
+  padding: 8px;
+}
+
+/* === Заголовок === */
+.header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 0 0 16px 0;
+}
+.header h1 {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 28px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0;
+}
+.header h1 mat-icon {
+  font-size: 32px; width: 32px; height: 32px;
+  color: var(--button-primary);
+}
+.files-count {
+  background-color: var(--button-primary);
+  color: white;
+  padding: 2px 12px;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+/* === Drop card === */
+.drop-card { margin-bottom: 16px; }
+
+.drop-zone {
+  position: relative;
+  border: 2px dashed var(--border-color);
+  border-radius: 8px;
+  padding: 48px 24px;
+  text-align: center;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+.drop-zone.compact {
+  padding: 14px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.drop-zone.compact mat-icon {
+  color: var(--button-primary);
+}
+.drop-zone.compact .muted {
+  font-size: 12px;
+}
+
+.drop-zone.active {
+  border-color: var(--button-primary);
+  background-color: rgba(102, 126, 234, 0.08);
+}
+.drop-zone .file-input {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.big-icon {
+  font-size: 64px;
+  width: 64px; height: 64px;
+  color: var(--button-primary);
+  margin-bottom: 16px;
+}
+
+.drop-zone h3 {
+  margin: 0 0 8px 0;
+  color: var(--text-primary);
+  font-weight: 500;
+  font-size: 18px;
+}
+.drop-zone p {
+  margin: 0;
+  color: var(--text-secondary);
+}
+
+/* === Selected file === */
+.selected-file {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 12px 16px;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  background-color: rgba(102, 126, 234, 0.05);
+}
+.file-icon {
+  font-size: 32px; width: 32px; height: 32px;
+  color: var(--button-primary);
+  flex-shrink: 0;
+}
+.file-info {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+.file-info strong {
+  color: var(--text-primary);
+  word-break: break-all;
+}
+.muted {
+  color: var(--text-secondary);
+  font-size: 12px;
+}
+.file-actions {
+  display: flex;
+  gap: 8px;
+}
+
+mat-progress-bar { margin-top: 12px; }
+
+.error-msg, .import-summary {
+  margin-top: 12px;
+  padding: 10px 14px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.error-msg {
+  background-color: rgba(244, 67, 54, 0.1);
+  border-left: 3px solid #f44336;
+}
+.import-summary {
+  background-color: rgba(102, 187, 106, 0.1);
+  border-left: 3px solid #66bb6a;
+}
+.ok-icon { color: #66bb6a; }
+
+/* === Loading === */
+.loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 40px;
+}
+.loading p {
+  margin-top: 16px;
+  color: var(--text-secondary);
+}
+
+.error-card mat-card-content {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* === Список === */
+.list-card mat-card-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Скролл для узких экранов */
+.list-card mat-card-content {
+  overflow-x: auto;
+}
+
+.files-table {
+  width: 100%;
+  background: transparent;
+  /* Минимальная ширина таблицы — иначе на узких экранах
+     Material сжимает колонки и кнопки превращаются в "..." */
+  min-width: 720px;
+}
+.files-table th, .files-table td {
+  padding: 10px 12px;
+  font-size: 13px;
+  align-content: center;
+}
+
+.name-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.name-cell strong {
+  color: var(--text-primary);
+}
+.name-cell small {
+  font-size: 12px;
+  color: var(--text-secondary);
+  font-style: italic;
+}
+
+/* Колонка Actions — фиксированная ширина чтобы все 4 иконки помещались */
+.files-table .mat-column-actions,
+.files-table th.mat-column-actions,
+.files-table td.mat-column-actions {
+  width: 220px;
+  min-width: 220px;
+  text-align: left;
+  white-space: nowrap;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+.files-table .mat-column-actions button {
+  margin: 0 1px;
+}
+
+/* === Empty === */
+.empty-card mat-card-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 40px 24px;
+}
+.empty-card mat-icon {
+  font-size: 64px;
+  width: 64px; height: 64px;
+  color: var(--text-secondary);
+  opacity: 0.4;
+  margin-bottom: 16px;
+}
+.empty-card p {
+  color: var(--text-secondary);
+  margin: 0;
+  line-height: 1.5;
+}
+
+/* === Адаптив === */
+@media (max-width: 700px) {
+  .selected-file {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .file-actions {
+    width: 100%;
+  }
+  .files-table {
+    font-size: 11px;
+  }
+}

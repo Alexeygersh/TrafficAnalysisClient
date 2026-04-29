@@ -6,13 +6,13 @@
         <span>#{{ packet.id }}</span>
       </div>
 
-      @if (packet.analysis) {
-        <mat-chip
-          [class]="getThreatClass(packet.analysis.threatLevel)"
-          class="threat-chip">
-          {{ packet.analysis.threatLevel }}
-        </mat-chip>
-      }
+<!--      @if (packet.analysis) {-->
+<!--        <mat-chip-->
+<!--          [class]="getThreatClass(packet.analysis.threatLevel)"-->
+<!--          class="threat-chip">-->
+<!--          {{ packet.analysis.threatLevel }}-->
+<!--        </mat-chip>-->
+<!--      }-->
     </div>
   </mat-card-header>
 
@@ -67,30 +67,30 @@
       </div>
     </div>
 
-    <!-- ML Score (если есть анализ) -->
-    @if (packet.analysis) {
-      <div class="ml-score-section">
-        <div class="ml-label">ML Score:</div>
-        <div class="ml-bar">
-          <div
-            class="ml-fill"
-            [style.width.%]="packet.analysis.mlModelScore * 100"
-            [class]="getThreatClass(packet.analysis.threatLevel)">
-          </div>
-        </div>
-        <div class="ml-value">
-          {{ (packet.analysis.mlModelScore * 100).toFixed(0) }}%
-        </div>
-      </div>
-    }
+<!--    &lt;!&ndash; ML Score (если есть анализ) &ndash;&gt;-->
+<!--    @if (packet.analysis) {-->
+<!--      <div class="ml-score-section">-->
+<!--        <div class="ml-label">ML Score:</div>-->
+<!--        <div class="ml-bar">-->
+<!--          <div-->
+<!--            class="ml-fill"-->
+<!--            [style.width.%]="packet.analysis.mlModelScore * 100"-->
+<!--            [class]="getThreatClass(packet.analysis.threatLevel)">-->
+<!--          </div>-->
+<!--        </div>-->
+<!--        <div class="ml-value">-->
+<!--          {{ (packet.analysis.mlModelScore * 100).toFixed(0) }}%-->
+<!--        </div>-->
+<!--      </div>-->
+<!--    }-->
 
-    <!-- Нет анализа -->
-    @if (!packet.analysis) {
-      <div class="no-analysis">
-        <mat-icon>info_outline</mat-icon>
-        <span>Анализ не выполнен</span>
-      </div>
-    }
+<!--    &lt;!&ndash; Нет анализа &ndash;&gt;-->
+<!--    @if (!packet.analysis) {-->
+<!--      <div class="no-analysis">-->
+<!--        <mat-icon>info_outline</mat-icon>-->
+<!--        <span>Анализ не выполнен</span>-->
+<!--      </div>-->
+<!--    }-->
   </mat-card-content>
 
   <mat-card-actions>

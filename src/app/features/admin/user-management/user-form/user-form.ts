@@ -11,7 +11,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatSelectModule } from '@angular/material/select';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
-import { UserService, CreateUserDto } from '../../../../core/services/user';
+import { UserService, CreateUserDto } from '../../../../core/services/user.service';
 
 export interface UserFormData {
   mode: 'create';

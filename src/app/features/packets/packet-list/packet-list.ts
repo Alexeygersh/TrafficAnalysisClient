@@ -1,248 +1,200 @@
-import { Component, OnInit, inject, signal, computed } from '@angular/core';
+import {
+  Component, OnInit, inject, signal, computed
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterOutlet, RouterLink, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 
-// Angular Material
-import { MatTableModule } from '@angular/material/table';
-import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
-import { MatInputModule } from '@angular/material/input';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatSelectModule } from '@angular/material/select';
 import { MatCardModule } from '@angular/material/card';
-import { MatChipsModule } from '@angular/material/chips';
+import { MatIconModule } from '@angular/material/icon';
+import { MatButtonModule } from '@angular/material/button';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatSelectModule } from '@angular/material/select';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatTableModule } from '@angular/material/table';
+import { MatChipsModule } from '@angular/material/chips';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { MatDatepickerModule } from '@angular/material/datepicker';
-import { MatNativeDateModule } from '@angular/material/core';
-import { MatDividerModule } from '@angular/material/divider';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
-import { PacketService, PacketFilters } from '../../../core/services/packet';
-import {SessionService} from '../../../core/services/session';
-import { AuthService } from '../../../core/services/auth';
+import { PacketService, PacketFilters } from '../../../core/services/packet.service';
 import { NetworkPacket } from '../../../core/models/network-packet.model';
-import { MainLayout } from '../../../layout/main-layout/main-layout';
-import { PacketCard } from '../packet-card/packet-card';
-import {TrafficSession} from '../../../core/models/traffic-session.model';
+import { SessionService } from '../../../core/services/session.service';
+import { TrafficSession } from '../../../core/models/traffic-session.model';
+import { AuthService } from '../../../core/services/auth.service';
 
 @Component({
   selector: 'app-packet-list',
   standalone: true,
   imports: [
-    CommonModule,
-    //RouterOutlet,
-    RouterLink,
-    FormsModule,
-    MatTableModule,
-    MatButtonModule,
-    MatIconModule,
-    MatInputModule,
-    MatFormFieldModule,
-    MatSelectModule,
-    MatCardModule,
-    MatChipsModule,
-    MatProgressSpinnerModule,
-    MatTooltipModule,
-    MatDatepickerModule,
-    MatNativeDateModule,
-    MatDividerModule,
-    PacketCard,
+    CommonModule, FormsModule, RouterLink,
+    MatCardModule, MatIconModule, MatButtonModule,
+    MatProgressSpinnerModule, MatSelectModule,
+    MatFormFieldModule, MatInputModule,
+    MatTableModule, MatChipsModule, MatTooltipModule,
+    MatSlideToggleModule,
   ],
   templateUrl: './packet-list.html',
-  styleUrl: './packet-list.css'
+  styleUrl: './packet-list.css',
 })
 export class PacketList implements OnInit {
   private packetService = inject(PacketService);
-  authService = inject(AuthService);
-  sessionService = inject(SessionService);
+  private sessionService = inject(SessionService);
+  private authService = inject(AuthService);
+  private route = inject(ActivatedRoute);
+  private router = inject(Router);
+  private snackBar = inject(MatSnackBar);
 
-  // Данные
+  // Состояние
   allPackets = signal<NetworkPacket[]>([]);
-  isLoading = signal(true);
+  sessions = signal<TrafficSession[]>([]);
+  isLoading = signal(false);
   errorMessage = signal('');
 
-  // Фильтры
-  filters = signal<PacketFilters>({});
-
-  // Сортировка
-  sortBy = signal<keyof NetworkPacket>('timestamp');
-  sortDirection = signal<'asc' | 'desc'>('desc');
-
-  // Режим отображения
-  viewMode = signal<'table' | 'cards'>('table');
-
-  // Вычисляемый список отфильтрованных пакетов
-  // filteredPackets = computed(() => {
-  //   let packets = this.allPackets();
-  //
-  //   // Применяем фильтры
-  //   packets = this.packetService.filterPackets(packets, this.filters());
-  //
-  //   // Применяем сортировку
-  //   packets = this.packetService.sortPackets(
-  //     packets,
-  //     this.sortBy(),
-  //     this.sortDirection()
-  //   );
-  //
-  //   return packets;
-  // });
-
-  // Обновить фильтрацию
-  filteredPackets = computed(() => {
-    let packets = this.allPackets();
-
-    // Применяем существующие фильтры
-    packets = this.packetService.filterPackets(packets, this.filters());
-
-    // ✅ НОВЫЙ ФИЛЬТР: По сессии
-    if (this.selectedSessionId() !== null) {
-      packets = packets.filter(p => p.sessionId === this.selectedSessionId());
-    }
-
-    // Сортировка
-    packets = this.packetService.sortPackets(
-      packets,
-      this.sortBy(),
-      this.sortDirection()
-    );
-
-    return packets;
+  // Параметры фильтра
+  selectedSessionId = signal<number | null>(null);
+  filters = signal<PacketFilters>({
+    searchTerm: '',
+    protocol: undefined,
+    onlyInFlow: false,
+    flowId: undefined,
   });
 
+  // Сортировка
+  sortBy = signal<keyof NetworkPacket>('id');
+  sortDirection = signal<'asc' | 'desc'>('asc');
+
   // Колонки таблицы
-  displayedColumns: string[] = [
-    'id',
-    'sourceIP',
-    'destinationIP',
-    'port',
-    'protocol',
-    'packetSize',
-    'timestamp',
-    'threatLevel',
-    'actions'
+  displayedColumns = [
+    'id', 'timestamp', 'sourceIP', 'destinationIP',
+    'port', 'protocol', 'packetSize', 'flow', 'actions'
   ];
 
-  // Опции для фильтров
-  protocols = ['ARP', 'DNS', 'ICMP', 'HTTP', 'HTTPS', 'TCP', 'TLS', 'UDP'];
-  threatLevels = ['Low', 'Medium', 'High', 'Critical'];
+  // Уникальные протоколы из загруженных пакетов
+  protocols = computed(() => {
+    const set = new Set<string>();
+    this.allPackets().forEach(p => p.protocol && set.add(p.protocol));
+    return Array.from(set).sort();
+  });
 
-  sessions = signal<TrafficSession[]>([]);
-  selectedSessionId = signal<number | null>(null);
+  // Отфильтрованные пакеты с применением сессии
+  filteredPackets = computed(() => {
+    let list = this.allPackets();
+    const sid = this.selectedSessionId();
+    if (sid !== null) list = list.filter(p => p.sessionId === sid);
+
+    list = this.packetService.filterPackets(list, this.filters());
+    list = this.packetService.sortPackets(list, this.sortBy(), this.sortDirection());
+    return list;
+  });
+
+  isAdmin = computed(() => this.authService.isAdmin());
 
   ngOnInit(): void {
-    this.loadPackets();
     this.loadSessions();
+
+    // Из query param: ?flowId=N — фильтр сразу на конкретный flow
+    this.route.queryParams.subscribe(params => {
+      if (params['flowId']) {
+        this.applyFilters({ flowId: Number(params['flowId']) });
+      }
+    });
   }
 
-    loadSessions() {
+  // === Загрузка ===
+  loadSessions(): void {
     this.sessionService.getAllSessions().subscribe({
       next: (sessions) => {
         this.sessions.set(sessions);
 
-        // Автовыбор последней сессии (с максимальным id)
-        // Это значительно ускоряет первичную загрузку — не грузим все пакеты.
+        // Автовыбор последней сессии (с max id)
         if (sessions.length > 0 && this.selectedSessionId() === null) {
-          const lastSession = sessions.reduce((prev, cur) =>
-            cur.id > prev.id ? cur : prev
-          );
-          this.selectedSessionId.set(lastSession.id);
+          const latest = sessions.reduce((p, c) => c.id > p.id ? c : p);
+          this.selectedSessionId.set(latest.id);
         }
-      },
-      error: (err) => console.error('Error loading sessions:', err)
-    });
-  }
 
-  selectSession(sessionId: number | null) {
-    this.selectedSessionId.set(sessionId);
+        // Затем грузим пакеты
+        this.loadPackets();
+      },
+      error: (err) => {
+        this.errorMessage.set('Ошибка загрузки сессий: ' + (err.message || err));
+      },
+    });
   }
 
   loadPackets(): void {
     this.isLoading.set(true);
     this.errorMessage.set('');
-
     this.packetService.getAllPackets().subscribe({
       next: (packets) => {
         this.allPackets.set(packets);
         this.isLoading.set(false);
       },
-      error: (error) => {
-        this.errorMessage.set(error.message || 'Ошибка загрузки пакетов');
+      error: (err) => {
+        this.errorMessage.set('Ошибка загрузки пакетов: ' + (err.message || err));
         this.isLoading.set(false);
-      }
+      },
     });
   }
 
-  // Применить фильтры
-  applyFilters(filterUpdates: Partial<PacketFilters>): void {
-    this.filters.update(current => ({ ...current, ...filterUpdates }));
+  // === Фильтрация ===
+  applyFilters(patch: Partial<PacketFilters>): void {
+    this.filters.update(f => ({ ...f, ...patch }));
   }
 
-  // Сбросить фильтры
   clearFilters(): void {
-    this.filters.set({});
+    this.filters.set({
+      searchTerm: '',
+      protocol: undefined,
+      onlyInFlow: false,
+      flowId: undefined,
+    });
   }
 
-  // Изменить сортировку
+  // === Сортировка ===
   changeSort(column: keyof NetworkPacket): void {
     if (this.sortBy() === column) {
-      // Переключаем направление
-      this.sortDirection.update(dir => dir === 'asc' ? 'desc' : 'asc');
+      this.sortDirection.update(d => d === 'asc' ? 'desc' : 'asc');
     } else {
-      // Новая колонка, сортировка по убыванию
       this.sortBy.set(column);
       this.sortDirection.set('desc');
     }
   }
 
-  // Переключить режим отображения
-  toggleViewMode(): void {
-    this.viewMode.update(mode => mode === 'table' ? 'cards' : 'table');
-  }
-
-  // Удаление пакета
+  // === Удаление ===
   deletePacket(id: number): void {
-    if (!confirm('Вы уверены, что хотите удалить этот пакет?')) {
-      return;
-    }
-
+    if (!confirm('Удалить этот пакет?')) return;
     this.packetService.deletePacket(id).subscribe({
       next: () => {
-        this.allPackets.update(packets => packets.filter(p => p.id !== id));
+        this.allPackets.update(list => list.filter(p => p.id !== id));
+        this.snackBar.open('Пакет удалён', 'OK', { duration: 2000 });
       },
-      error: (error) => {
-        alert(`Ошибка удаления: ${error.message}`);
-      }
+      error: (err) => {
+        this.snackBar.open(`Ошибка удаления: ${err.message || err}`,
+          'Закрыть', { duration: 4000, panelClass: ['error-snackbar'] });
+      },
     });
   }
 
-  // Получить CSS класс для уровня угрозы
-  getThreatClass(threatLevel?: string): string {
-    switch (threatLevel?.toLowerCase()) {
-      case 'critical': return 'threat-critical';
-      case 'high': return 'threat-high';
-      case 'medium': return 'threat-medium';
-      case 'low': return 'threat-low';
-      default: return 'threat-none';
-    }
-  }
-
-  // Форматирование даты
+  // === Helpers ===
   formatDate(date: Date): string {
     return new Date(date).toLocaleString('ru-RU');
   }
 
-  // Форматирование размера
   formatSize(bytes: number): string {
     if (bytes < 1024) return `${bytes} B`;
     if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(2)} KB`;
     return `${(bytes / (1024 * 1024)).toFixed(2)} MB`;
   }
 
-  get isAdmin(): boolean {
-    return this.authService.isAdmin();
+  // Очистить filter по конкретному flow и query param
+  clearFlowFilter(): void {
+    this.applyFilters({ flowId: undefined });
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: { flowId: null },
+      queryParamsHandling: 'merge',
+    });
   }
-
 }
-

@@ -1,3 +1,7 @@
+/**
+ * Сетевой пакет — минимальная модель без устаревшего analysis.
+ * Анализ теперь делается на flow-уровне через FlowMetrics.
+ */
 export interface NetworkPacket {
   id: number;
   sourceIP: string;
@@ -6,43 +10,18 @@ export interface NetworkPacket {
   protocol: string;
   packetSize: number;
   timestamp: Date;
+
   sessionId?: number;
   sessionName?: string;
-  analysis?: TrafficAnalysis;
+
+  /** ID потока к которому принадлежит пакет (если разобран в flow). */
+  flowId?: number;
 }
 
-export interface CreatePacketDto {
-  sourceIP: string;
-  destinationIP: string;
-  port: number;
-  protocol: string;
-  packetSize: number;
-  sessionId?: number;
-}
-
-export interface UpdatePacketDto {
-  sourceIP: string;
-  destinationIP: string;
-  port: number;
-  protocol: string;
-  packetSize: number;
-  sessionId?: number;
-}
-
+/** Балл угрозы (рассчитывается backend по правилам — не ML). */
 export interface ThreatScore {
   packetId: number;
   threatScore: number;
   category: string;
   explanation: string;
-}
-
-// Импорт для избежания циклических зависимостей
-interface TrafficAnalysis {
-  id: number;
-  packetId: number;
-  threatLevel: string;
-  isMalicious: boolean;
-  mlModelScore: number;
-  detectedAt: Date;
-  description?: string;
 }

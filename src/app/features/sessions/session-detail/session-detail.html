@@ -32,17 +32,17 @@
           <mat-icon>arrow_back</mat-icon>
           Назад к списку
         </button>
-        @if (isAdmin && session()!.isActive) {
-          <button mat-stroked-button color="accent" (click)="closeSession()">
-            <mat-icon>stop_circle</mat-icon>
-            Завершить сессию
-          </button>
-        }
+<!--        @if (isAdmin && session()!.isActive) {-->
+<!--          <button mat-stroked-button color="accent" (click)="closeSession()">-->
+<!--            <mat-icon>stop_circle</mat-icon>-->
+<!--            Завершить сессию-->
+<!--          </button>-->
+<!--        }-->
         @if (isAdmin) {
-          <button mat-stroked-button [routerLink]="['/sessions', session()!.id, 'edit']">
-            <mat-icon>edit</mat-icon>
-            Редактировать
-          </button>
+<!--          <button mat-stroked-button [routerLink]="['/sessions', session()!.id, 'edit']">-->
+<!--            <mat-icon>edit</mat-icon>-->
+<!--            Редактировать-->
+<!--          </button>-->
           <button mat-stroked-button color="warn" (click)="deleteSession()">
             <mat-icon>delete</mat-icon>
             Удалить
@@ -54,17 +54,17 @@
     <!-- Статус сессии -->
     <mat-card class="status-card">
       <div class="status-info">
-        @if (session()!.isActive) {
-          <mat-chip class="status-active">
-            <mat-icon>play_circle</mat-icon>
-            Активная
-          </mat-chip>
-        } @else {
-          <mat-chip class="status-closed">
-            <mat-icon>check_circle</mat-icon>
-            Завершена
-          </mat-chip>
-        }
+<!--        @if (session()!.isActive) {-->
+<!--          <mat-chip class="status-active">-->
+<!--            <mat-icon>play_circle</mat-icon>-->
+<!--            Активная-->
+<!--          </mat-chip>-->
+<!--        } @else {-->
+<!--          <mat-chip class="status-closed">-->
+<!--            <mat-icon>check_circle</mat-icon>-->
+<!--            Завершена-->
+<!--          </mat-chip>-->
+<!--        }-->
         <div class="status-details">
           <p><strong>Начало:</strong> {{ formatDate(session()!.startTime) }}</p>
           @if (session()!.endTime) {

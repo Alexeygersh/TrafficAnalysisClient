@@ -8,8 +8,8 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 import { UserList } from './user-list/user-list';
 import { UserForm } from './user-form/user-form';
-import { UserService } from '../../../core/services/user';
-import { AuthService } from '../../../core/services/auth';
+import { UserService } from '../../../core/services/user.service';
+import { AuthService } from '../../../core/services/auth.service';
 import { User } from '../../../core/models/user.model';
 
 @Component({

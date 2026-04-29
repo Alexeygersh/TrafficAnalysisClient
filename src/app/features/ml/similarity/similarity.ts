@@ -21,13 +21,13 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatSnackBar } from '@angular/material/snack-bar';
 
-import { SimilarityService } from '../../../core/services/similarity';
+import { SimilarityService } from '../../../core/services/similarity.service';
 import {
   SimilarityMode, FindSimilarResponse, KnnClassifyResponse, KnnPrediction
 } from '../../../core/models/similarity.model';
-import { SessionApiService } from '../../../core/services/session-api';
+import { SessionApiService } from '../../../core/services/session-api.service';
 import { SessionFilter } from '../../../core/models/session-filter.model';
-import { FlowMLService } from '../../../core/services/flow-ml';
+import { FlowMLService } from '../../../core/services/flow-ml.service';
 import { FlowMLPrediction } from '../../../core/models/flow-ml.model';
 
 @Component({

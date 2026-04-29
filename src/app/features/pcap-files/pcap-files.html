@@ -1,0 +1,222 @@
+<div class="pf-container">
+
+  <!-- Заголовок -->
+  <div class="header">
+    <h1>
+      <mat-icon>folder_zip</mat-icon>
+      Файлы PCAP
+    </h1>
+    @if (hasFiles()) {
+      <span class="files-count">{{ files().length }}</span>
+    }
+  </div>
+
+  <!-- Drop-zone (адаптивный) -->
+  <mat-card class="drop-card" [class.compact]="hasFiles()">
+    <mat-card-content>
+
+      @if (!selectedFile()) {
+        <div
+          class="drop-zone"
+          [class.active]="dragActive()"
+          [class.compact]="hasFiles()"
+          (dragover)="onDragOver($event)"
+          (dragleave)="onDragLeave($event)"
+          (drop)="onDrop($event)">
+
+          @if (hasFiles()) {
+            <!-- компактный режим -->
+            <mat-icon>cloud_upload</mat-icon>
+            <span>Перетащите .pcap или .pcapng сюда</span>
+            <span class="muted">либо нажмите чтобы выбрать</span>
+          } @else {
+            <!-- большой режим -->
+            <mat-icon class="big-icon">cloud_upload</mat-icon>
+            <h3>Перетащите .pcap сюда</h3>
+            <p>или нажмите чтобы выбрать файл</p>
+          }
+
+          <input
+            type="file"
+            accept=".pcap,.pcapng"
+            (change)="onFileInputChange($event)"
+            class="file-input">
+        </div>
+      } @else {
+        <!-- Файл выбран -->
+        <div class="selected-file">
+          <mat-icon class="file-icon">insert_drive_file</mat-icon>
+          <div class="file-info">
+            <strong>{{ selectedFile()!.name }}</strong>
+            <span class="muted">{{ fileSizeFormatted() }}</span>
+          </div>
+          <div class="file-actions">
+            <button mat-stroked-button (click)="clearFile()"
+                    [disabled]="isUploading()">
+              <mat-icon>close</mat-icon>
+              Убрать
+            </button>
+            <button mat-raised-button color="primary"
+                    (click)="upload()"
+                    [disabled]="isUploading()">
+              @if (isUploading()) {
+                <mat-spinner diameter="20"></mat-spinner>
+                <span>&nbsp;Загружаем...</span>
+              } @else {
+                <ng-container>
+                  <mat-icon>play_arrow</mat-icon>
+                  <span>&nbsp;Импортировать</span>
+                </ng-container>
+              }
+            </button>
+          </div>
+        </div>
+      }
+
+      @if (isUploading()) {
+        <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+      }
+
+      @if (importError()) {
+        <div class="error-msg">
+          <mat-icon color="warn">error</mat-icon>
+          <span>{{ importError() }}</span>
+        </div>
+      }
+
+      @if (importResult(); as r) {
+        <div class="import-summary">
+          <mat-icon class="ok-icon">check_circle</mat-icon>
+          <span>
+            Импорт #{{ r.sessionId }}: <strong>{{ r.flowsSavedToDb }}</strong> flows,
+            <strong>{{ r.packetsSavedToDb }}</strong> пакетов,
+            <strong>{{ r.elapsedMs }} ms</strong>
+          </span>
+          <button mat-stroked-button color="primary"
+                  (click)="goToAnalysis(r.sessionId)">
+            <mat-icon>security</mat-icon>
+            ML-анализ
+          </button>
+        </div>
+      }
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Список файлов -->
+  @if (isLoading()) {
+    <div class="loading">
+      <mat-spinner></mat-spinner>
+      <p>Загрузка файлов...</p>
+    </div>
+  }
+
+  @if (loadError()) {
+    <mat-card class="error-card">
+      <mat-card-content>
+        <mat-icon color="warn">error</mat-icon>
+        <span>{{ loadError() }}</span>
+        <button mat-button (click)="loadFiles()">Повторить</button>
+      </mat-card-content>
+    </mat-card>
+  }
+
+  @if (!isLoading() && hasFiles()) {
+    <mat-card class="list-card">
+      <mat-card-header>
+        <mat-card-title>
+          <mat-icon>list</mat-icon>
+          Список файлов
+        </mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <table mat-table [dataSource]="files()" class="files-table">
+
+          <ng-container matColumnDef="id">
+            <th mat-header-cell *matHeaderCellDef>ID</th>
+            <td mat-cell *matCellDef="let row">#{{ row.id }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="name">
+            <th mat-header-cell *matHeaderCellDef>Имя файла</th>
+            <td mat-cell *matCellDef="let row">
+              <div class="name-cell">
+                <strong>{{ row.sessionName }}</strong>
+                @if (row.description) {
+                  <small>{{ row.description }}</small>
+                }
+              </div>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="startTime">
+            <th mat-header-cell *matHeaderCellDef>Импортирован</th>
+            <td mat-cell *matCellDef="let row">{{ formatDate(row.startTime) }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="totalPackets">
+            <th mat-header-cell *matHeaderCellDef>Пакетов</th>
+            <td mat-cell *matCellDef="let row">{{ row.totalPackets || 0 }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="totalFlows">
+            <th mat-header-cell *matHeaderCellDef>Flows</th>
+            <td mat-cell *matCellDef="let row">{{ row.totalFlows || 0 }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef class="actions-col">Действия</th>
+            <td mat-cell *matCellDef="let row" class="actions-col">
+              <div>
+              <button
+                mat-icon-button
+                color="primary"
+                matTooltip="ML-анализ"
+                (click)="goToAnalysis(row.id)">
+                <mat-icon>security</mat-icon>
+              </button>
+
+              <button
+                mat-icon-button
+                [routerLink]="['/sessions', row.id]"
+                matTooltip="Подробности">
+                <mat-icon>info</mat-icon>
+              </button>
+
+              @if (isAdmin()) {
+                <button
+                  mat-icon-button
+                  matTooltip="Редактировать"
+                  (click)="editFile(row)">
+                  <mat-icon>edit</mat-icon>
+                </button>
+
+                <button
+                  mat-icon-button
+                  color="warn"
+                  matTooltip="Удалить файл и все его данные"
+                  (click)="deleteFile(row)">
+                  <mat-icon>delete_outline</mat-icon>
+                </button>
+              }
+              </div>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+        </table>
+      </mat-card-content>
+    </mat-card>
+  }
+
+  @if (!isLoading() && !hasFiles() && !loadError()) {
+    <mat-card class="empty-card">
+      <mat-card-content>
+        <mat-icon>folder_open</mat-icon>
+        <p>Пока нет загруженных файлов PCAP.<br>
+           Перетащите файл в область выше — будут разобраны пакеты,
+           построены flows и подготовлены данные для ML-анализа.</p>
+      </mat-card-content>
+    </mat-card>
+  }
+</div>

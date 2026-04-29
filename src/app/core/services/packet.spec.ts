@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 
-import { PacketService } from './packet';
+import { PacketService } from './packet.service';
 
 describe('Packet', () => {
   let service: PacketService;

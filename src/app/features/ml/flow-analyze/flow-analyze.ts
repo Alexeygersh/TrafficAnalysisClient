@@ -13,13 +13,13 @@ import { MatChipsModule } from '@angular/material/chips';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatSnackBar } from '@angular/material/snack-bar';
 
-import { FlowMLService } from '../../../core/services/flow-ml';
+import { FlowMLService } from '../../../core/services/flow-ml.service';
 import {
   FlowMLAnalyzeResult, FlowMLPrediction, ModelType
 } from '../../../core/models/flow-ml.model';
-import { SessionApiService } from '../../../core/services/session-api';
+import { SessionApiService } from '../../../core/services/session-api.service';
 import { SessionFilter } from '../../../core/models/session-filter.model';
-import {RouterLink} from '@angular/router';
+import {RouterLink, Router} from '@angular/router';
 
 @Component({
   selector: 'app-flow-analyze',
@@ -37,6 +37,7 @@ export class FlowAnalyzeComponent implements OnInit {
   private service = inject(FlowMLService);
   private sessionApi = inject(SessionApiService);
   private snackBar = inject(MatSnackBar);
+  constructor(private router: Router) {}
 
   // Параметры
   sessions = signal<SessionFilter[]>([]);
@@ -52,7 +53,7 @@ export class FlowAnalyzeComponent implements OnInit {
 
   displayedColumns = [
     'flowId', 'source', 'destination', 'port', 'protocol',
-    'isAttack', 'confidence', 'threatLevel', 'method', 'actions',
+    'isAttack', 'confidence', 'threatLevel', 'method', //'actions',
   ];
 
   filteredPredictions = computed<FlowMLPrediction[]>(() => {
@@ -109,6 +110,11 @@ export class FlowAnalyzeComponent implements OnInit {
         });
       },
     });
+  }
+
+
+  navigateToFlow(flowId: number) {
+    this.router.navigate(['/flows', flowId]);
   }
 
   // CSS-класс для цветовой подсветки строки

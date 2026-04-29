@@ -19,11 +19,11 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 
 import { Chart, registerables } from 'chart.js';
 
-import { FlowMLService } from '../../../core/services/flow-ml';
+import { FlowMLService } from '../../../core/services/flow-ml.service';
 import {
   FlowMLAnalyzeResult, FlowMLPrediction, ModelType
 } from '../../../core/models/flow-ml.model';
-import { SessionApiService } from '../../../core/services/session-api';
+import { SessionApiService } from '../../../core/services/session-api.service';
 import { SessionFilter } from '../../../core/models/session-filter.model';
 import { DashboardStats } from '../../../core/models/dashboard.model';
 

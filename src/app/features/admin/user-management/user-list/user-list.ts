@@ -8,7 +8,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatCardModule } from '@angular/material/card';
 
 import { User } from '../../../../core/models/user.model';
-import { UserService } from '../../../../core/services/user';
+import { UserService } from '../../../../core/services/user.service';
 
 @Component({
   selector: 'app-user-list',
